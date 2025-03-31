@@ -5,31 +5,31 @@ export class Zone {
 		this.#min = min;
 		this.#max = max;
 	}
-	public get min() {
+	public get min(): number {
 		return this.#min;
 	}
-	public get max() {
+	public get max(): number {
 		return this.#max;
 	}
-	public get start() {
+	public get start(): number {
 		return this.#min;
 	}
-	public get end() {
+	public get end(): number {
 		return this.#max;
 	}
-	public get from() {
+	public get from(): number {
 		return this.#min;
 	}
-	public get to() {
+	public get to(): number {
 		return this.#max;
 	}
-	public get length() {
+	public get length(): number {
 		return this.#max - this.#min;
 	}
-	public get positive() {
+	public get positive(): boolean {
 		return this.#max > this.#min;
 	}
-	public get nonnegative() {
+	public get nonnegative(): boolean {
 		return this.#max >= this.#min;
 	}
 

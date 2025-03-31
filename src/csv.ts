@@ -112,7 +112,7 @@ export class CSV {
 		this.columns = Math.max(this.columns, col + 1);
 	}
 
-	public toString() {
+	public toString(): string {
 		return CSV.stringify(this);
 	}
 
