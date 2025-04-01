@@ -1,4 +1,4 @@
-import { Options } from '@/options.ts';
+import { Options } from '../src/misc/options.ts';
 import { assert } from '@std/assert';
 import type { DeepPartial } from '@/types.ts';
 

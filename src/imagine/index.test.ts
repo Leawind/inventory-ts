@@ -1,4 +1,4 @@
-import { imagine, META } from '@/imagine.ts';
+import { imagine, META } from './index.ts';
 
 Deno.test('imagine', () => {
 	type A = {

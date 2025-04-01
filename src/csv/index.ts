@@ -42,6 +42,11 @@ export class CSV {
 		return raw as T;
 	}
 
+	public addRow(rawRow: string[]): this {
+		this.rawData.push(rawRow);
+		return this;
+	}
+
 	public getRaw(row: RowId, colId: ColumnId): string {
 		const col: number = this.getColIdNum(colId)!;
 		return this.rawData[row][col];

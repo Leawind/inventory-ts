@@ -70,7 +70,6 @@ export function imagine<T>(parent?: Imagined<T>): Imagined<T> {
 					return newImagined;
 				}
 				case 'symbol':
-					console.log(`Get key: ${key.toString()}`);
 					return internal[key as keyof typeof internal];
 			}
 		},
