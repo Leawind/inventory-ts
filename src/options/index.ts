@@ -53,10 +53,10 @@ export class Options<T> {
 	public readonly DeepPartial: DeepPartial<T> = null!;
 	public readonly Require: Required<T> = null!;
 
-	private readonly defaults: T;
+	public readonly Default: T;
 
 	protected constructor(defaults: T) {
-		this.defaults = defaults;
+		this.Default = defaults;
 	}
 
 	/**
@@ -67,7 +67,7 @@ export class Options<T> {
 	 * @returns The filled options.
 	 */
 	public fill(options?: DeepPartial<T>, fillOptions?: typeof Options.FillOptions.Partial): T {
-		return Options.fillRecursive({} as T, this.defaults, options, fillOptions);
+		return Options.fillRecursive({} as T, this.Default, options, fillOptions);
 	}
 
 	/**
