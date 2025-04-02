@@ -1,0 +1,46 @@
+import { Waited } from '@/waited/index.ts';
+import { assert } from '@std/assert';
+
+function wait(ms: number = 0) {
+	return new Promise<void>((resolve) => ms === 0 ? resolve() : setTimeout(resolve, ms));
+}
+
+Deno.test('wait', async () => {
+	const w = new Waited();
+
+	assert(w.isWaiting());
+
+	(async () => {
+		await wait();
+		w.resolve();
+	})();
+
+	assert(w.isWaiting());
+	await w.wait();
+	assert(w.isWaiting());
+
+	w.reset();
+	assert(w.isWaiting());
+	w.resolve();
+	assert(w.isWaiting());
+});
+
+Deno.test('wait autoreset', async () => {
+	const w = new Waited(false);
+
+	assert(w.isWaiting());
+
+	(async () => {
+		await wait();
+		w.resolve();
+	})();
+
+	assert(w.isWaiting());
+	await w.wait();
+	assert(!w.isWaiting());
+
+	w.reset();
+	assert(w.isWaiting());
+	w.resolve();
+	assert(!w.isWaiting());
+});
