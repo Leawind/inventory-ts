@@ -1,30 +1,52 @@
-// deno-lint-ignore-file ban-types
+// deno-lint-ignore-file ban-types no-explicit-any
 
 // Unique symbol for storing metadata about the imagined object's access chain
 export const META = Symbol('meta');
 
-/**
- * Base type for imagined objects containing primitive conversion and metadata
- */
-export type ImagineInternalType = {
-	[Symbol.toPrimitive](): string;
-	[META]: ImagineMeta;
-};
+export type ImagineAccess =
+	| { type: 'root'; identifier: string }
+	| { type: 'get'; key: string }
+	| { type: 'set'; key: string; value: any }
+	| { type: 'invoke'; args: any[] };
 
 /**
  * Metadata structure tracking object access path
  */
-export type ImagineMeta = {
+export type ImagineMeta<T, E> = {
 	/**
-	 * Access chain record:
-	 * - `string`: Property access (field name)
-	 * - `unknown[]`: Method call (arguments array)
+	 * Previous object in the access chain
 	 */
-	chain: (string | unknown[])[];
+	previous?: Imagined<T, E>;
+	/**
+	 * Internal object reference
+	 */
+	internal: Internal<T, E>;
+	/**
+	 * Access information for the current level
+	 */
+	access: ImagineAccess;
+	/**
+	 * Access chain leading to the current level
+	 */
+	get chain(): ImagineAccess[];
 };
 
 /**
+ * Base type for imagined objects containing primitive conversion, metadata, and extended fields
+ *
+ * @template E - Extended type of the internal object
+ */
+export type Internal<T, E> =
+	& {
+		[Symbol.toPrimitive](): string;
+		[META]: ImagineMeta<T, E>;
+	}
+	& { [K in symbol & keyof E]: E[K] };
+
+/**
  * Converts primitive types to their object wrapper equivalents recursively
+ *
+ * @template T - Type of the input value
  */
 export type ImaginePrimitive<T> = T extends number ? Number
 	: T extends string ? String
@@ -36,48 +58,84 @@ export type ImaginePrimitive<T> = T extends number ? Number
 
 /**
  * Recursive type that wraps all properties/methods of T with Imagined behavior
+ *
+ * @template T - Type of the imagined object
+ * @template E - Extended type of the internal object
  */
-export type Imagined<T> =
-	& ImagineInternalType // Base metadata capabilities
+export type Imagined<T, E> =
+	& Internal<T, E>
 	& {
 		// Process each property/method of T
 		[key in keyof T]: T[key] extends (...args: infer ArgsType) => infer ReturnType ?
-				& ImagineInternalType // Add metadata to methods
+				& Internal<T, E> // Add metadata to methods
 				& ((
 					// Allow both original and wrapped arguments
-					...args: { [K in keyof ArgsType]: ArgsType[K] | Imagined<ArgsType[K]> }
-				) => Imagined<ImaginePrimitive<ReturnType>>) // Return wrapped return type
-			: Imagined<ImaginePrimitive<T[key]>>; // Wrap non-method properties recursively
+					...args: { [K in keyof ArgsType]: ArgsType[K] | Imagined<ArgsType[K], E> }
+				) => Imagined<ImaginePrimitive<ReturnType>, E>) // Return wrapped return type
+			: Imagined<ImaginePrimitive<T[key]>, E>; // Wrap non-method properties recursively
 	};
+
+export type InternalExtender<T, E> = (extended: Internal<T, E>, internal: Internal<T, never>) => void;
 
 /**
- * Factory function creating proxied objects with access tracking
+ * Create proxied objects with access tracking
+ *
+ * @template T - Type of the imagined object
+ * @template E - Extended type of the internal object
+ *
+ * @param extend - Function to extend the internal object
+ * @param previous - Parent object for tracking access path
+ * @param access - Access information for the current level
+ *
+ * @returns Imagined object with access tracking
  */
-export function imagine<T>(parent?: Imagined<T>): Imagined<T> {
-	const internal = (() => {}) as unknown as ImagineInternalType;
+export function imagine<T, E = never>(
+	extend?: undefined,
+	access?: ImagineAccess,
+	previous?: Imagined<T, E>,
+): Imagined<T, E>;
+export function imagine<T, E>(
+	extend: InternalExtender<T, E>,
+	access?: ImagineAccess,
+	previous?: Imagined<T, E>,
+): Imagined<T, E>;
+export function imagine<T, E>(
+	extend: InternalExtender<T, E> = (e) => e,
+	access: ImagineAccess = { type: 'root', identifier: '' },
+	previous?: Imagined<T, E>,
+): Imagined<T, E> {
+	const internal = (() => {}) as unknown as Internal<T, E>;
+
 	internal[Symbol.toPrimitive] = () => 'Imagined';
 	internal[META] = {
-		chain: parent === undefined ? [] : [...parent[META].chain],
+		previous,
+		internal,
+		access,
+		get chain(): ImagineAccess[] {
+			const chain = [access];
+			if (previous) {
+				chain.unshift(...previous[META].chain);
+			}
+			return chain;
+		},
 	};
+	extend(internal, internal as Internal<T, never>);
 
 	const imagined = new Proxy(internal, {
-		get(_target, key) {
+		get(target, key) {
 			switch (typeof key) {
 				case 'number':
 				case 'string': {
-					const newImagined = imagine<T>(imagined);
-					newImagined[META].chain.push(key);
-					return newImagined;
+					return imagine<T, E>(extend, { type: 'get', key }, imagined);
 				}
 				case 'symbol':
-					return internal[key as keyof typeof internal];
+					return target[key as keyof typeof target];
 			}
 		},
 		apply(_target, _thisArg, args) {
-			const newImagined = imagine<T>(imagined);
-			newImagined[META].chain.push(args);
-			return newImagined;
+			return imagine<T, E>(extend, { type: 'invoke', args }, imagined);
 		},
-	}) as Imagined<T>;
+	}) as Imagined<T, E>;
+
 	return imagined;
 }
