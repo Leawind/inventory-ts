@@ -1,4 +1,4 @@
-import { Options } from './options.ts';
+import { Options } from './index.ts';
 import { assert } from '@std/assert';
 
 Deno.test('options example', () => {

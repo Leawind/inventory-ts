@@ -1,6 +1,5 @@
 export * from '@/misc/zone.ts';
 export * from '@/misc/parsing.ts';
-export * from '@/misc/options.ts';
 
 /**
  * @param dirPath start at this path
