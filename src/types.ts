@@ -30,3 +30,8 @@ export type EnsureFullCoverage<T, S1 extends DeepPartial<T>, S2 extends DeepPart
 	? (S1 & S2) extends T ? T
 	: never
 	: never;
+
+export type PromiseAction = {
+	resolve: (value: void | PromiseLike<void>) => void;
+	reject: (reason?: unknown) => void;
+};
