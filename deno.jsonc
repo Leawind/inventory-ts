@@ -5,7 +5,7 @@
 	"exports": "./src/index.ts",
 	"tasks": {
 		"dev": "deno test --watch --parallel",
-		"prepare": "deno fmt && deno lint && deno test -A"
+		"prepare": "deno fmt && deno lint && deno test -A && deno publish --dry-run"
 	},
 	"test": {
 		"include": [
