@@ -25,3 +25,8 @@ export type Keys<T, U extends (keyof T)[]> = Exclude<keyof T, U[number]> extends
 export function listKeys<T>(): <U extends (keyof T)[]>(...keys: Keys<T, U>) => Keys<T, U> {
 	return (...keys) => keys;
 }
+
+export type EnsureFullCoverage<T, S1 extends DeepPartial<T>, S2 extends DeepPartial<T>> = T extends DeepPartial<T>
+	? (S1 & S2) extends T ? T
+	: never
+	: never;

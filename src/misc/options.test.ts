@@ -90,41 +90,63 @@ Deno.test('options plain', () => {
 });
 
 Deno.test('FillOptions: objects', () => {
-	// 测试对象合并
-	// const MyOptions = Options.define<{
-	// 	nested: {
-	// 		a: number;
-	// 		b: { c: number; d: string };
-	// 		e: boolean;
-	// 	};
-	// }>({
-	// 	nested: {
-	// 		a: 1,
-	// 		b: { c: 2 },
-	// 	},
-	// });
+	const MyOptions = Options.define<{
+		nested: {
+			a: number;
+			b: { c: number; d: number };
+		};
+	}>({
+		nested: {
+			a: 1,
+			b: { c: 2, d: 3 },
+		},
+	});
+	{
+		const opts = MyOptions.fill({
+			nested: {
+				b: { c: 9 },
+			},
+		}, { objects: 'merge' });
 
-	// const opts = MyOptions.fill({
-	// 	nested: {
-	// 		b: {},
-	// 	},
-	// }, { objects: 'merge' });
+		assert(opts.nested.a === 1);
+		assert(opts.nested.b.c === 9);
+		assert(opts.nested.b.d === 3);
+	}
+	{
+		const opts = MyOptions.fill({
+			nested: {
+				b: { c: 9 },
+			},
+		}, { objects: 'replace' });
 
-	// 结果：
-	// {
-	//   nested: {
-	//     a: 1,
-	//     b: { c: 2 },
-	//   }
-	// }
+		assert(opts.nested.a === undefined);
+		assert(opts.nested.b.c === 9);
+		assert(opts.nested.b.d === undefined);
+	}
 });
 
-Deno.test('FillOptions: objects', () => {
-	// 测试数组合并
-	const arrOpts = Options.define({ list: [1, 2] });
+Deno.test('FillOptions: arrays', () => {
+	const MyOptions = Options.define({ list: [1, 2] });
+	{
+		const opts = MyOptions.fill({ list: [2, 3] }, { arrays: 'merge' });
 
-	arrOpts.fill({ list: [2, 3] }, { arrays: 'merge' });
-
-	// 结果：
-	// list: [1, 2, 3] (去重合并)
+		assert(opts.list.length === 3);
+		assert(opts.list[0] === 1);
+		assert(opts.list[1] === 2);
+		assert(opts.list[2] === 3);
+	}
+	{
+		const opts = MyOptions.fill({ list: [2, 3] }, { arrays: 'replace' });
+		assert(opts.list.length === 2);
+		assert(opts.list[0] === 2);
+		assert(opts.list[1] === 3);
+	}
+	{
+		const opts = MyOptions.fill({ list: [2, 3] }, { arrays: 'concat' });
+		assert(opts.list.length === 4);
+		assert(opts.list[0] === 1);
+		assert(opts.list[1] === 2);
+		assert(opts.list[2] === 2);
+		assert(opts.list[3] === 3);
+	}
 });

@@ -1,29 +1,57 @@
 import type { DeepPartial } from '@/types.ts';
 
-export type OptionsTypeOf<Opts> = Opts extends Options<infer U> ? U : never;
+/**
+ * Options for configuring object and array filling strategies.
+ */
+type FillOptionsType = {
+	/**
+	 * - `replace` **(Default)** Replace the object with the new object
+	 * - `merge` Merge the objects
+	 */
+	objects: 'replace' | 'merge';
+	/**
+	 * - `concat` **(Default)** Concatenate the arrays
+	 * - `replace` Replace the array with the new array
+	 * - `merge` Merge the arrays, excluding duplicates
+	 */
+	arrays: 'concat' | 'replace' | 'merge';
+};
 
+/**
+ * Defines an Options class with a generic type T representing the options type.
+ *
+ * @template T - The options type.
+ *
+ * @example
+ * ```ts
+ * const ListenOptions = Options.define({
+ *     host: '0.0.0.0',
+ *     port: 25565,
+ * });
+ *
+ * function listen(options?: typeof ListenOptions.Partial) {
+ *     const opts = ListenOptions.fill(options);
+ *     console.log(`Host: ${opts.host}`);
+ *     console.log(`Port: ${opts.port}`);
+ * }
+ *
+ * listen({
+ *     host: 'localhost',
+ *     port: 51120,
+ * });
+ * ```
+ */
 export class Options<T> {
-	private static FillOptions = Options.define<{
-		/**
-		 * - `replace` Replace the object with the new object
-		 * - `merge` Merge the objects
-		 */
-		objects: 'replace' | 'merge';
-		/**
-		 * - `concat` Concatenate the arrays
-		 * - `replace` Replace the array with the new array
-		 * - `merge` Merge the arrays, excluding duplicates
-		 */
-		arrays: 'concat' | 'replace' | 'merge';
-	}>({
+	public static FillOptions: Options<FillOptionsType> = Options.define<FillOptionsType>({
 		objects: 'merge',
 		arrays: 'concat',
 	});
 
-	public Type: T = null!;
-	public Partial: Partial<T> = null!;
-	public DeepPartial: DeepPartial<T> = null!;
-	public Require: Required<T> = null!;
+	//Readonly properties representing the options type, partial options, deep partial options, and required options.
+	public readonly Type: T = null!;
+	public readonly Partial: Partial<T> = null!;
+	public readonly DeepPartial: DeepPartial<T> = null!;
+	public readonly Require: Required<T> = null!;
 
 	private readonly defaults: T;
 
@@ -31,14 +59,37 @@ export class Options<T> {
 		this.defaults = defaults;
 	}
 
+	/**
+	 * Fill options with defaults, accepting partial options and fill strategies as parameters.
+	 *
+	 * @param options - Partial options to fill.
+	 * @param fillOptions - Fill strategies for objects and arrays.
+	 * @returns The filled options.
+	 */
 	public fill(options?: DeepPartial<T>, fillOptions?: typeof Options.FillOptions.Partial): T {
 		return Options.fillRecursive({} as T, this.defaults, options, fillOptions);
 	}
 
+	/**
+	 * Create an Options instance.
+	 *
+	 * @template T - The options type.
+	 * @param defaults - The default options.
+	 * @returns An Options instance.
+	 */
 	public static define<T>(defaults: T): Options<T> {
 		return new Options(defaults);
 	}
 
+	/**
+	 * Recursively fill options.
+	 *
+	 * @param result - The result object to fill.
+	 * @param defaults - The default options.
+	 * @param filledOptions - The partial options to fill.
+	 * @param options - Fill strategies for objects and arrays.
+	 * @returns The filled result object.
+	 */
 	private static fillRecursive<T>(
 		result: T,
 		defaults: T,
