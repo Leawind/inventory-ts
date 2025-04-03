@@ -11,11 +11,17 @@ export class Waited<T = void> {
 	/** The current active promise instance */
 	private promise?: Promise<T> = this.reset();
 
-	/**
-	 * @param autoReset - Whether to automatically create new promise after resolution/rejection
-	 *                    (default: true - enables seamless reuse)
-	 */
-	constructor(public autoReset: boolean = true) {}
+	constructor(
+		/**
+		 * Whether to automatically create new promise after resolution/rejection
+		 * (default: true - enables seamless reuse)
+		 */
+		public autoReset: boolean = true,
+		/**
+		 * Called when resolved or rejected
+		 */
+		public onfinished?: () => void,
+	) {}
 
 	/** Clear current resolver/rejector references */
 	private clear(): void {
@@ -70,6 +76,9 @@ export class Waited<T = void> {
 		if (this.resolveFn) {
 			this.resolveFn(value);
 			this.clear();
+			if (this.onfinished) {
+				this.onfinished();
+			}
 		}
 		if (this.autoReset) {
 			this.reset();
@@ -90,6 +99,9 @@ export class Waited<T = void> {
 		if (this.rejectFn) {
 			this.rejectFn(reason);
 			this.clear();
+			if (this.onfinished) {
+				this.onfinished();
+			}
 		}
 		if (this.autoReset) {
 			this.reset();
