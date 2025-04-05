@@ -1,10 +1,14 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@leawind/inventory@0.4.6": "0.4.6",
     "jsr:@std/assert@*": "1.0.11",
     "jsr:@std/internal@^1.0.5": "1.0.5"
   },
   "jsr": {
+    "@leawind/inventory@0.4.6": {
+      "integrity": "a6841d4c33e864da5e6d6b70208572c4c499c1a2420552ea20191c4c78000eb1"
+    },
     "@std/assert@1.0.11": {
       "integrity": "2461ef3c368fe88bc60e186e7744a93112f16fd110022e113a0849e94d1c83c1",
       "dependencies": [

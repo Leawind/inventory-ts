@@ -1,16 +1,9 @@
-import { Options } from '@/index.ts';
-
-export const OperationCosts: Options<{
+export type OperationCosts = {
 	delete: number;
 	insert: number;
 	replace: number;
 	swap: number;
-}> = Options.define({
-	delete: 1,
-	insert: 1,
-	replace: 1,
-	swap: 1,
-});
+};
 
 /**
  * The Damerau-Levenshtein Algorithm is an extension to the Levenshtein Algorithm which solves the
@@ -35,8 +28,13 @@ export const OperationCosts: Options<{
  * source string and m is the length of the target string. This implementation consumes O(n*m)
  * space.
  */
-export function levenshtein(source: string, target: string, costs?: typeof OperationCosts.Partial): number {
-	const cost = OperationCosts.fill(costs);
+export function levenshtein(source: string, target: string, costs?: Partial<OperationCosts>): number {
+	const cost = Object.assign({
+		delete: 1,
+		insert: 1,
+		replace: 1,
+		swap: 1,
+	}, costs);
 
 	// Required to facilitate the premise to the algorithm that two swaps of the same character are never required for optimality.
 	if (2 * cost.swap < cost.insert + cost.delete) {
