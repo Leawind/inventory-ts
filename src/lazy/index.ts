@@ -97,9 +97,13 @@ export class LazyAction<T> {
 	 */
 	private schedule(time: number): void {
 		this.timeoutId = setTimeout(() => {
-			this.waited.resolve(this.execute());
-			this.momentScheduledExecution = undefined;
 			this.timeoutId = undefined;
+
+			this.waited.resolve(this.execute());
+
+			this.momentScheduledExecution = undefined;
+			this.momentEarliestDeadline = Infinity;
+			this.momentLatestDelayTime = 0;
 		}, time - Date.now());
 	}
 

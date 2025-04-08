@@ -32,8 +32,8 @@ Deno.test('LazyAction simple urge', async () => {
  * - `U` urge()
  * - `[` Scheduled execution
  * - `]` Deadline
- * - `!` Not executed yet
- * - `O` Executed
+ * - `<` Not executed yet
+ * - `>` Executed
  */
 const _doc = null;
 
@@ -50,8 +50,8 @@ Deno.test('LazyAction delayed', async () => {
 	///    0  U-------------------[---------------------------------------]
 	///  100            U-------------------[-----------------------------]
 	///  250                           U-------------------[--------------]
-	///  400                                          !
-	///  500                                                    O
+	///  400                                          <
+	///  500                                                    >
 
 	// time =   0
 	la.urge(200, 600);
@@ -88,7 +88,7 @@ Deno.test('LazyAction deadline', async () => {
 	///    0  U-------------------[-------------------------------------------------]
 	///  100            U---------------------------------------[---------]
 	///  200                      U-------------------]
-	///                                          !         O
+	///                                          <         >
 
 	// time =   0
 	la.urge(200, 700);
@@ -131,6 +131,29 @@ Deno.test('LazyAction cancel then re-urge', async () => {
 
 	await wait(100);
 	assert(executed, 'Should execute after new urge');
+});
+
+Deno.test('LazyAction urge multiple times', async () => {
+	let executed: boolean;
+
+	const la = new LazyAction(() => {
+		executed = true;
+	});
+
+	///       0       100       200       300       400       500       600       700       800       900      1000
+	///      -|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-
+	///    0  U---------[---------]
+	///            <         >
+	///  200                      U---------[---------]
+
+	for (let i = 0; i < 3; i++) {
+		executed = false;
+		la.urge(100, 200);
+		await wait(50);
+		assert(!executed);
+		await wait(100);
+		assert(executed);
+	}
 });
 
 Deno.test('LazyAction cancel before execution', async () => {
