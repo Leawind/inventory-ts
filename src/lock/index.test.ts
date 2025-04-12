@@ -5,11 +5,21 @@ function wait(ms: number): Promise<void> {
 	return new Promise((resolve) => ms === 0 ? resolve() : setTimeout(resolve, ms));
 }
 
+Deno.test('Simple lock', async () => {
+	const lock = new Lock();
+	assert(!lock.isLocked());
+	await lock.acquire();
+	assert(lock.isLocked());
+	lock.release();
+	assert(!lock.isLocked());
+});
+
 Deno.test('Lock', async () => {
 	const lock = new Lock();
 
 	async function criticalSection(id: number) {
 		await lock.acquire();
+		assert(lock.isLocked());
 		try {
 			console.log(`Task ${id} entered`);
 			await wait(100);
@@ -131,7 +141,7 @@ Deno.test('Lock delay', async () => {
 	lock.release();
 });
 
-Deno.test("Dead lock", async () => {
+Deno.test('Dead lock', async () => {
 	const lockA = new Lock();
 	const lockB = new Lock();
 
@@ -162,4 +172,54 @@ Deno.test("Dead lock", async () => {
 	assert(!aliceGotB);
 	assert(bobGotB);
 	assert(!bobGotA);
+});
+
+Deno.test('getOwner', async () => {
+	const lock = new Lock();
+	const owner1 = { id: 'owner1' };
+	const owner2 = { id: 'owner2' };
+
+	assertStrictEquals(lock.getOwner(), undefined);
+
+	await lock.acquire(owner1);
+	assertStrictEquals(lock.getOwner(), owner1);
+	lock.release();
+
+	assertStrictEquals(lock.getOwner(), undefined);
+
+	await lock.acquire(owner2);
+	assertStrictEquals(lock.getOwner(), owner2);
+	lock.release();
+
+	assertStrictEquals(lock.getOwner(), undefined);
+
+	await lock.acquire();
+	assertStrictEquals(lock.getOwner(), undefined);
+	lock.release();
+});
+
+Deno.test('getOwner maintains correct owner during queued acquisitions', async () => {
+	const lock = new Lock();
+	const owner1 = { id: 'owner1' };
+	const owner2 = { id: 'owner2' };
+
+	await lock.acquire(owner1);
+	assertStrictEquals(lock.getOwner(), owner1);
+
+	let secondAcquired = false;
+	lock.acquire(owner2).then(() => {
+		secondAcquired = true;
+		assertStrictEquals(lock.getOwner(), owner2);
+		lock.release();
+	});
+
+	await wait(0);
+	assert(!secondAcquired, 'Second acquisition should be waiting');
+	assertStrictEquals(lock.getOwner(), owner1);
+
+	lock.release();
+
+	await wait(0);
+	assert(secondAcquired, 'Second acquisition should complete');
+	assertStrictEquals(lock.getOwner(), undefined);
 });

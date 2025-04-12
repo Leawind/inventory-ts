@@ -16,14 +16,18 @@ interface ILock {
  * This ensures requests are granted in the order they were received, preventing starvation.
  */
 export class Lock implements ILock {
-	private isLocked: boolean = false;
+	private owner: unknown;
+	private isLockedInternal: boolean = false;
 	private waitingQueue: (() => void)[] = [];
 
-	public acquire(): Promise<void> {
+	public acquire(owner?: unknown): Promise<void> {
 		return new Promise((resolve) => {
 			const attemptToAcquire = () => {
-				if (!this.isLocked) {
-					this.isLocked = true;
+				if (!this.isLockedInternal) {
+					this.isLockedInternal = true;
+					if (owner) {
+						this.owner = owner;
+					}
 					resolve();
 				} else {
 					this.waitingQueue.push(attemptToAcquire);
@@ -34,15 +38,24 @@ export class Lock implements ILock {
 	}
 
 	public release(): void {
-		if (!this.isLocked) {
+		if (!this.isLockedInternal) {
 			throw new Error('Cannot release an unlocked lock');
 		}
 
-		this.isLocked = false;
+		this.owner = undefined;
+		this.isLockedInternal = false;
 		const nextResolve = this.waitingQueue.shift();
 		if (nextResolve) {
 			nextResolve();
 		}
+	}
+
+	public isLocked(): boolean {
+		return this.isLockedInternal;
+	}
+
+	public getOwner(): unknown | undefined {
+		return this.owner;
 	}
 }
 
