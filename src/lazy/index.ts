@@ -9,7 +9,7 @@ import { Waited } from '@/waited/index.ts';
  * @template T - The return type of the action function
  */
 export class LazyAction<T> {
-	private waited: Waited<T> = new Waited(true);
+	private waited: Waited<T> = new Waited({ autoReset: true });
 
 	/** setTimeout reference for pending execution */
 	private timeoutId?: number;
@@ -33,7 +33,7 @@ export class LazyAction<T> {
 		private actionFn: () => T,
 		private defaultDelay: number = 5000,
 		private defaultDeadline: number = 20000,
-	) {}
+	) { }
 
 	/**
 	 * Replace the core action function
@@ -87,7 +87,7 @@ export class LazyAction<T> {
 			}
 		}
 
-		return this.waited.wait();
+		return this.waited.wait()!;
 	}
 
 	/**
@@ -110,7 +110,10 @@ export class LazyAction<T> {
 	public cancel(): void {
 		if (this.timeoutId !== undefined) {
 			clearTimeout(this.timeoutId);
-			this.waited.wait().catch(() => {});
+			const p = this.waited.wait();
+			if (p instanceof Promise) {
+				p.catch(() => { });
+			}
 			this.waited.reject(new Error(`Canceled`));
 		}
 		this.momentScheduledExecution = undefined;
