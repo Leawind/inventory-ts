@@ -130,3 +130,36 @@ Deno.test('Lock delay', async () => {
 
 	lock.release();
 });
+
+Deno.test("Dead lock", async () => {
+	const lockA = new Lock();
+	const lockB = new Lock();
+
+	let aliceGotA = false;
+	let aliceGotB = false;
+
+	let bobGotB = false;
+	let bobGotA = false;
+
+	lockA.acquire().then(async () => {
+		aliceGotA = true;
+		await lockB.acquire();
+		aliceGotB = true;
+		lockB.release();
+		lockA.release();
+	});
+	lockB.acquire().then(async () => {
+		bobGotB = true;
+		await lockA.acquire();
+		bobGotA = true;
+		lockA.release();
+		lockB.release();
+	});
+
+	await wait(50);
+
+	assert(aliceGotA);
+	assert(!aliceGotB);
+	assert(bobGotB);
+	assert(!bobGotA);
+});
