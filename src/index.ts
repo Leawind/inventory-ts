@@ -5,6 +5,7 @@ export * as misc from '@/misc/index.ts';
 export { LazyAction } from '@/lazy/index.ts';
 export { Options } from '@/options/index.ts';
 export { Waited } from '@/waited/index.ts';
+export { Lock, UnfairLock } from '@/lock/index.ts';
 
 export { CoMap } from '@/comap.ts';
 export * as tree from '@/tree.ts';
