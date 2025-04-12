@@ -56,7 +56,7 @@ export class UnfairLock implements ILock {
 
 	public acquire(): Promise<void> {
 		if (!this.isLocked()) {
-			this.promise = new Promise(resolve => this.resolveFn = resolve);
+			this.promise = new Promise((resolve) => this.resolveFn = resolve);
 		}
 		return this.promise!;
 	}

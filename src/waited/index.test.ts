@@ -62,7 +62,7 @@ Deno.test('keepResult: true (default)', () => {
 Deno.test('keepResult: false', () => {
 	const w = new Waited<number>({
 		autoReset: false,
-		keepResult: false
+		keepResult: false,
 	});
 
 	w.reset();
@@ -79,7 +79,7 @@ Deno.test('keepResult: false', () => {
 Deno.test('keepResult with async resolution', async () => {
 	const w = new Waited<string>({
 		autoReset: false,
-		keepResult: true
+		keepResult: true,
 	});
 	for (let i = 0; i < 3; i++) {
 		w.reset();
@@ -97,7 +97,7 @@ Deno.test('keepResult with async resolution', async () => {
 Deno.test('keepResult: false with async resolution', async () => {
 	const w = new Waited<string>({
 		autoReset: false,
-		keepResult: false
+		keepResult: false,
 	});
 
 	for (let i = 0; i < 3; i++) {
@@ -119,7 +119,7 @@ Deno.test('onresolved', async () => {
 		autoReset: false,
 		onresolved: () => {
 			isFinished = true;
-		}
+		},
 	});
 
 	for (let i = 0; i < 3; i++) {
@@ -154,7 +154,7 @@ Deno.test('onrejected', async () => {
 		autoReset: false,
 		onresolved: () => {
 			isFinished = true;
-		}
+		},
 	});
 
 	for (let i = 0; i < 3; i++) {

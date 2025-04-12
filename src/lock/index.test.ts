@@ -27,39 +27,39 @@ Deno.test('Lock', async () => {
 	lock.release();
 });
 
-Deno.test("Lock queue order with multiple acquirers", async () => {
+Deno.test('Lock queue order with multiple acquirers', async () => {
 	const lock = new Lock();
 	const order: number[] = [];
 
 	lock.acquire().then(() => {
 		order.push(1);
-		assertStrictEquals(order.join(','), "1");
+		assertStrictEquals(order.join(','), '1');
 		lock.release();
 	});
 
 	lock.acquire().then(() => {
 		order.push(2);
-		assertStrictEquals(order.join(','), "1,2");
+		assertStrictEquals(order.join(','), '1,2');
 		lock.release();
 	});
 
 	lock.acquire().then(() => {
 		order.push(3);
-		assertStrictEquals(order.join(','), "1,2,3");
+		assertStrictEquals(order.join(','), '1,2,3');
 		lock.release();
 	});
 
 	await lock.acquire();
-	assertStrictEquals(order.join(','), "1,2,3");
+	assertStrictEquals(order.join(','), '1,2,3');
 	lock.release();
 });
 
-Deno.test("Throw when releasing unlocked lock", () => {
+Deno.test('Throw when releasing unlocked lock', () => {
 	const lock = new Lock();
-	assertThrows(() => lock.release(), Error, "Cannot release an unlocked lock");
+	assertThrows(() => lock.release(), Error, 'Cannot release an unlocked lock');
 });
 
-Deno.test("Concurrent stress test", async () => {
+Deno.test('Concurrent stress test', async () => {
 	const lock = new Lock();
 	let counter = 0;
 	const concurrency = 100;
@@ -82,15 +82,15 @@ Deno.test("Concurrent stress test", async () => {
 	const duration = end - start;
 
 	assert(duration > totalCost);
-	assertStrictEquals(counter, concurrency, "All operations should complete");
+	assertStrictEquals(counter, concurrency, 'All operations should complete');
 });
 
-Deno.test("Immediate release before acquisition", () => {
+Deno.test('Immediate release before acquisition', () => {
 	const lock = new Lock();
 	assertThrows(() => lock.release(), Error);
 });
 
-Deno.test("Lock state consistency", async () => {
+Deno.test('Lock state consistency', async () => {
 	const lock = new Lock();
 
 	await lock.acquire();
@@ -100,11 +100,11 @@ Deno.test("Lock state consistency", async () => {
 	lateAcquire.then(() => acquired = true);
 
 	await wait(0);
-	assert(!acquired, "Should not acquire while locked");
+	assert(!acquired, 'Should not acquire while locked');
 
 	lock.release();
 	await wait(0);
-	assert(acquired, "Should acquire after release");
+	assert(acquired, 'Should acquire after release');
 
 	lock.release();
 	assertThrows(() => lock.release(), Error);

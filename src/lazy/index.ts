@@ -33,7 +33,7 @@ export class LazyAction<T> {
 		private actionFn: () => T,
 		private defaultDelay: number = 5000,
 		private defaultDeadline: number = 20000,
-	) { }
+	) {}
 
 	/**
 	 * Replace the core action function
@@ -112,7 +112,7 @@ export class LazyAction<T> {
 			clearTimeout(this.timeoutId);
 			const p = this.waited.wait();
 			if (p instanceof Promise) {
-				p.catch(() => { });
+				p.catch(() => {});
 			}
 			this.waited.reject(new Error(`Canceled`));
 		}

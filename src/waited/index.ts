@@ -1,14 +1,13 @@
 export type WaitedOptions<T> = {
 	/**
-	 * Whether to create new promise after resolution/rejection
-	 * 
+	 * Whether to create new promise after resolution/rejectio	 *
 	 * @default false
 	 */
 	autoReset: boolean;
 
 	/**
 	 * Whether to keep the result and error after resolution/rejection
-	 * 
+	 *
 	 * @default true
 	 */
 	keepResult: boolean;
@@ -52,9 +51,9 @@ export class Waited<T = void> {
 
 	private state: WaitedState = WaitedState.Init;
 
-	/** 
-	 * The current active promise instance 
-	 * 
+	/**
+	 * The current active promise instance
+	 *
 	 * Only available when {@link state} is {@link WaitedState.Waiting}
 	 */
 	private promise?: Promise<T>;
@@ -63,16 +62,14 @@ export class Waited<T = void> {
 	/** Internal rejector function for {@link promise} */
 	private rejectFn?: (reason?: unknown) => void;
 
-
 	private result?: T;
 	private reason?: unknown;
 
-
 	/**
-	 * Clear current resolver/rejector references 
-	 * 
+	 * Clear current resolver/rejector references
+	 *
 	 * Clear {@link promise}, {@link resolveFn} and {@link rejectFn}
-	 * 
+	 *
 	 * If {@link keepResult} is false, clear {@link result} and {@link reason}
 	 */
 	private clear(): void {
@@ -106,7 +103,7 @@ export class Waited<T = void> {
 
 	/**
 	 * Check if is waiting for resolution/rejection
-	 * 
+	 *
 	 * @returns true if there's pending promise waiting to settle
 	 */
 	public isWaiting(): boolean {
@@ -115,7 +112,7 @@ export class Waited<T = void> {
 
 	/**
 	 * Get the current promise instance
-	 * 
+	 *
 	 * @returns The active promise that can be awaited. Or the result if resolved.
 	 */
 	public wait(): Promise<T> | T | undefined {
@@ -133,14 +130,14 @@ export class Waited<T = void> {
 
 	/**
 	 * Resolve the current promise
-	 * 
+	 *
 	 * @param value - Resolution value or thenable
 	 * @returns The instance itself for chaining
 	 * @description
 	 * - Only affects the current active promise
 	 * - Subsequent calls before reset will be no-op
 	 * - Auto-reset if configured
-	 * 
+	 *
 	 * @throws Error if called on a non-waiting waited
 	 */
 	public resolve(value: T): this {
@@ -166,14 +163,38 @@ export class Waited<T = void> {
 
 	/**
 	 * Reject the current promise
-	 * 
+	 *
 	 * @param reason - Optional rejection reason
 	 * @returns The instance itself for chaining
 	 * @description
 	 * - Only affects the current active promise
 	 * - Subsequent calls before reset will be no-op
 	 * - Auto-reset if configured
-	 * 
+	 *
+itself for chaining
+	 * @description
+	 * - Only affects the current active promise
+	 * - Subsequent calls before reset will be no-op
+	 * - Auto-reset if configured
+	 *
+self for chaining
+	 * @description
+	 * - Only affects the current active promise
+	 * - Subsequent calls before reset will be no-op
+	 * - Auto-reset if configured
+	 *
+self for chaining
+	 * @description
+	 * - Only affects the current active promise
+	 * - Subsequent calls before reset will be no-op
+	 * - Auto-reset if configured
+	 *
+tself for chaining
+	 * @description
+	 * - Only affects the current active promise
+	 * - Subsequent calls before reset will be no-op
+	 * - Auto-reset if configured
+	 *
 	 * @throws Error if called on a non-waiting waited
 	 */
 	public reject(reason?: unknown): this {
