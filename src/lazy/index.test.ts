@@ -1,199 +1,113 @@
 import { LazyAction } from '@/lazy/index.ts';
-import { assert, assertGreater, assertRejects } from '@std/assert';
+import { assertStrictEquals } from '@std/assert';
+import { TimeRuler } from '@/test-utils.ts';
 
-function wait(ms: number) {
-	return new Promise((resolve) => setTimeout(resolve, Math.max(0, ms)));
-}
-
-Deno.test('LazyAction simple urge', async () => {
-	let executed = false;
+Deno.test('LazyAction simple', async () => {
+	let executeTimes = 0;
 
 	const la = new LazyAction(() => {
-		executed = true;
-		console.log(performance.now());
-	});
+		executeTimes++;
+	}, 200);
 
-	// Time = 0
-	la.urge(200, 1000);
+	///   0       100       200       300       400       500
+	///  -|---------|---------|---------|---------|---------|-
+	///   E-------------------|
+	///             e---------T
 
-	assert(!executed);
-	assertGreater(la.sinceLastExecute(), 10000000);
+	const t = new TimeRuler(0);
+	la.urge();
+	assertStrictEquals(executeTimes, 1);
 
-	await wait(100);
-	assert(!executed);
-	await wait(100);
+	await t.til(100);
+	la.urge();
 
-	await wait(50);
+	await t.til(150);
+	assertStrictEquals(executeTimes, 1);
 
-	assert(executed);
+	await t.til(250);
+	assertStrictEquals(executeTimes, 2);
 });
 
-/**
- * - `U` urge()
- * - `[` Scheduled execution
- * - `]` Deadline
- * - `<` Not executed yet
- * - `>` Executed
- */
-const _doc = null;
-
-Deno.test('LazyAction delayed', async () => {
-	let executed = false;
+Deno.test('LazyAction crazy', async () => {
+	let executeTimes = 0;
 
 	const la = new LazyAction(() => {
-		executed = true;
-		console.log(performance.now());
-	});
+		executeTimes++;
+	}, 100);
 
-	///       0       100       200       300       400       500       600       700       800       900      1000
-	///      -|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-
-	///    0  U-------------------[---------------------------------------]
-	///  100            U-------------------[-----------------------------]
-	///  250                           U-------------------[--------------]
-	///  400                                          <
-	///  500                                                    >
+	///   0       100       200       300       400       500
+	///  -|---------|---------|---------|---------|---------|-
+	///   EeeeeeeeeeEeeeeeeeeeEeeeeeeeeeEeeeee    E
 
-	// time =   0
-	la.urge(200, 600);
-
-	await wait(100);
-	// time = 100
-
-	la.urge(200, 600);
-
-	await wait(150);
-	// time = 250
-
-	la.urge(200, 600);
-
-	await wait(150);
-	// time = 400
-	assert(!executed);
-
-	await wait(100);
-	// time = 500
-	assert(executed);
-});
-
-Deno.test('LazyAction deadline', async () => {
-	let executed = false;
-
-	const la = new LazyAction(() => {
-		executed = true;
-		console.log(performance.now());
-	});
-
-	///       0       100       200       300       400       500       600       700       800       900      1000
-	///      -|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-
-	///    0  U-------------------[-------------------------------------------------]
-	///  100            U---------------------------------------[---------]
-	///  200                      U-------------------]
-	///                                          <         >
-
-	// time =   0
-	la.urge(200, 700);
-
-	await wait(100);
-	// time = 100
-	la.urge(400, 500);
-
-	await wait(100);
-	// time = 200
-	la.urge(100, 200);
-
-	await wait(150);
-	// time = 350
-	assert(!executed);
-
-	await wait(100);
-	// time = 450
-	assert(executed);
-});
-
-Deno.test('LazyAction cancel then re-urge', async () => {
-	let executed = false;
-	const la = new LazyAction(() => {
-		executed = true;
-	});
-
-	///       0       100       200       300       400       500       600       700       800       900      1000
-	///      -|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-
-	///    0  U-------------------[---------]
-	///    0  Cancel
-	///    0  U---------[---------]
-
-	la.urge(200, 300);
-	la.cancel();
-	la.urge(100, 200);
-
-	await wait(50);
-	assert(!executed, 'Should wait for new delay period');
-
-	await wait(100);
-	assert(executed, 'Should execute after new urge');
-});
-
-Deno.test('LazyAction urge multiple times', async () => {
-	let executed: boolean;
-
-	const la = new LazyAction(() => {
-		executed = true;
-	});
-
-	///       0       100       200       300       400       500       600       700       800       900      1000
-	///      -|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|-
-	///    0  U---------[---------]
-	///            <         >
-	///  200                      U---------[---------]
-
-	for (let i = 0; i < 3; i++) {
-		executed = false;
-		la.urge(100, 200);
-		await wait(50);
-		assert(!executed);
-		await wait(100);
-		assert(executed);
+	const t = new TimeRuler(0);
+	for (let i = 0; i < 350; i++) {
+		await t.til(i);
+		la.urge();
 	}
+	await t.til(450);
+	assertStrictEquals(executeTimes, 5);
 });
 
-Deno.test('LazyAction cancel before execution', async () => {
-	let executed = false;
+Deno.test('LazyAction executeImmediately should run instantly', async () => {
+	let times = 0;
 	const la = new LazyAction(() => {
-		executed = true;
+		times++;
 	});
-
-	const promise = la.urge(100, 1000);
-	la.cancel();
-	assertRejects(async () => await promise);
-	await wait(150);
-	assert(!executed);
+	assertStrictEquals(times, 0);
+	la.urge();
+	assertStrictEquals(times, 1);
+	la.executeImmediately();
+	assertStrictEquals(times, 2);
+	la.urge();
+	assertStrictEquals(times, 2);
+	await la.urge();
+	assertStrictEquals(times, 3);
 });
 
-Deno.test('LazyAction cancel during multiple urges', async () => {
-	let executionCount = 0;
-	const la = new LazyAction(() => {
-		executionCount++;
+Deno.test('LazyAction setAction replaces the function', () => {
+	let val = 0;
+	const la = new LazyAction(() => 1);
+	la.setAction(() => {
+		val = 42;
+		return 42;
 	});
-
-	const promise1 = la.urge(200, 1000);
-	await wait(100);
-	const promise2 = la.urge(300, 1500);
-
-	la.cancel();
-	assert(promise1 === promise2);
-	assertRejects(async () => await promise2);
-	assert(executionCount === 0, 'Should not execute after cancel');
+	const result = la.executeImmediately();
+	assertStrictEquals(result, 42);
+	assertStrictEquals(val, 42);
 });
 
-Deno.test('Immediate execution', async () => {
-	let executed = false;
-	const la = new LazyAction(() => {
-		executed = true;
-	});
+Deno.test('LazyAction byInterval and byFrequency create instances with expected behavior', () => {
+	let a = 0, b = 0;
 
-	const result = la.urge(0, 0);
-	assert(executed);
-	assert(result === undefined);
-	la.cancel();
-	await wait(10);
+	const byInterval = LazyAction.byInterval(() => a++, 100);
+	const byFreq = LazyAction.byFrequency(() => b++, 10); // every 100ms
+
+	const result1 = byInterval.executeImmediately();
+	const result2 = byFreq.executeImmediately();
+
+	assertStrictEquals(result1, 0);
+	assertStrictEquals(result2, 0);
+	assertStrictEquals(a, 1);
+	assertStrictEquals(b, 1);
+});
+
+Deno.test('LazyAction urge returns a promise if executed later', async () => {
+	let val = 0;
+	const la = new LazyAction(() => {
+		return ++val;
+	}, 200);
+
+	const t = new TimeRuler(0);
+	la.urge(); // execute immediately
+	assertStrictEquals(val, 1);
+
+	await t.til(50);
+	const promise = la.urge(); // will delay
+	assertStrictEquals(val, 1); // still only one execution
+
+	await t.til(250);
+	const result2 = await promise;
+
+	assertStrictEquals(result2, 2);
+	assertStrictEquals(val, 2);
 });

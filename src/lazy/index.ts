@@ -1,45 +1,84 @@
-import { Waited } from '@/waited/index.ts';
+import { Waited, type WaitingWaited } from '@/waited/index.ts';
 
 /**
- * A deferred action executor with deadline control and reschedulable execution.
+ * LazyAction encapsulates a function that is throttled by a minimum interval.
  *
- * - Delays action execution until optimal time window
- * - Guarantees execution before deadline
- *
- * @template T - The return type of the action function
+ * - If called too frequently, execution is deferred until the interval has passed.
+ * - Ensures that the function does not execute more often than desired.
  */
 export class LazyAction<T> {
-	private waited: Waited<T> = new Waited({ autoReset: true });
-
-	/** setTimeout reference for pending execution */
+	private waited = new Waited<T>({ autoReset: true }) as WaitingWaited<T>;
+	private lastExecutedAt: number = 0;
 	private timeoutId?: number;
-	/** Timestamp of scheduled execution time */
-	private momentScheduledExecution?: number;
-
-	/** Latest allowable delay time (timestamp) */
-	private momentLatestDelayTime: number = 0;
-	/** Earliest required deadline (timestamp) */
-	private momentEarliestDeadline: number = Infinity;
-
-	/** Timestamp of last execution */
-	private momentLastExecute: number = 0;
 
 	/**
-	 * @param actionFn - Function to execute
-	 * @param defaultDelay - Default waiting time before execution (ms)
-	 * @param defaultDeadline - Maximum allowable delay after first trigger (ms)
+	 * Creates a new LazyAction instance.
+	 *
+	 * @param actionFn - The function to be executed lazily.
+	 * @param interval - The minimum interval (in milliseconds) between executions (default: 200ms).
 	 */
-	constructor(
+	public constructor(
 		private actionFn: () => T,
-		private defaultDelay: number = 5000,
-		private defaultDeadline: number = 20000,
+		private interval: number = 200,
 	) {}
 
 	/**
-	 * Replace the core action function
+	 * Executes the action immediately and updates the last execution time.
+	 *
+	 * @returns The result of the executed action.
+	 */
+	public executeImmediately(): T {
+		this.lastExecutedAt = Date.now();
+		return this.actionFn();
+	}
 
-	 * @param action - New function to execute
-	 * @returns Instance for chaining
+	/**
+	 * Requests execution of the action function.
+	 *
+	 * - If enough time has passed since the last execution, the function runs immediately.
+	 * - Otherwise, schedules it to run after the remaining interval.
+	 * - Returns either the immediate result or a Promise that resolves when execution occurs.
+	 *
+	 * @returns The result of the action, either directly or via Promise.
+	 *
+	 * @example
+	 * ```ts
+	 * const la = new LazyAction(() => console.log('Executed'));
+	 * la.urge(); // Executes immediately
+	 * la.urge(); // Schedules for later
+	 * la.urge(); // Subsequent calls are ignored until execution
+	 * ```
+	 */
+	public urge(): T | Promise<T> {
+		const now = Date.now();
+		if (now - this.lastExecutedAt > this.interval) {
+			if (this.timeoutId === undefined) {
+				return this.executeImmediately();
+			}
+		} else if (this.timeoutId === undefined) {
+			this.timeoutId = setTimeout(() => {
+				this.timeoutId = undefined;
+				this.waited.resolve(this.executeImmediately());
+			}, this.lastExecutedAt + this.interval - now);
+		}
+		return this.waited.wait();
+	}
+
+	/**
+	 * Returns the time elapsed since the last execution.
+	 *
+	 * @param now - Optional timestamp to use as the current time (default: Date.now()).
+	 * @returns Milliseconds since the last execution.
+	 */
+	public sinceLastExecute(now: number = Date.now()): number {
+		return now - this.lastExecutedAt;
+	}
+
+	/**
+	 * Updates the function to be executed.
+	 *
+	 * @param action - The new action function.
+	 * @returns The current LazyAction instance (for chaining).
 	 */
 	public setAction(action: () => T): this {
 		this.actionFn = action;
@@ -47,97 +86,30 @@ export class LazyAction<T> {
 	}
 
 	/**
-	 * Request execution with timing constraints
+	 * Creates a LazyAction using a fixed interval.
 	 *
-	 * Behavior:
-	 * - Guarantees execution before `deadline`
-	 * - Attempts to wait at least `delay` ms from first trigger
-	 * - Returns immediate result if constraints are met, otherwise Promise
-	 *
-	 * @param delay - Minimum preferred waiting time (ms)
-	 * @param deadline - Maximum allowable delay (ms)
-	 * @returns Action result (immediate) | Promise that resolves with result
+	 * @param actionFn - The function to be executed.
+	 * @param interval - The interval between executions in milliseconds.
+	 * @returns A new LazyAction instance.
 	 */
-	public urge(delay: number = this.defaultDelay, deadline: number = this.defaultDeadline): T | Promise<T> {
-		const moment = Date.now();
-		const momentDelayTime = moment + delay;
-		const momentDeadline = moment + deadline;
-
-		// Update time constraints
-		this.momentLatestDelayTime = Math.max(this.momentLatestDelayTime, momentDelayTime);
-		this.momentEarliestDeadline = Math.min(this.momentEarliestDeadline, momentDeadline);
-		const momentExecute = Math.min(this.momentLatestDelayTime, this.momentEarliestDeadline);
-
-		if (momentExecute <= moment) {
-			// Immediate execution
-			if (this.timeoutId) {
-				clearTimeout(this.timeoutId);
-				this.timeoutId = undefined;
-			}
-			return this.execute();
-		} else {
-			// Reschedule if needed
-			if (this.timeoutId !== undefined) {
-				if (this.momentScheduledExecution !== momentExecute) {
-					clearTimeout(this.timeoutId);
-					this.schedule(momentExecute);
-				}
-			} else {
-				this.schedule(momentExecute);
-			}
-		}
-
-		return this.waited.wait()!;
+	public static byInterval<T>(
+		actionFn: () => T,
+		interval: number = 200,
+	): LazyAction<T> {
+		return new LazyAction(actionFn, interval);
 	}
 
 	/**
-	 * Schedule execution at specific timestamp
+	 * Creates a LazyAction based on a desired frequency.
 	 *
-	 * @param time - Target execution time (timestamp)
+	 * @param actionFn - The function to be executed.
+	 * @param frequency - The number of times the function is allowed to run per second.
+	 * @returns A new LazyAction instance.
 	 */
-	private schedule(time: number): void {
-		this.timeoutId = setTimeout(() => {
-			this.timeoutId = undefined;
-
-			this.waited.resolve(this.execute());
-
-			this.momentScheduledExecution = undefined;
-			this.momentEarliestDeadline = Infinity;
-			this.momentLatestDelayTime = 0;
-		}, time - Date.now());
-	}
-
-	public cancel(): void {
-		if (this.timeoutId !== undefined) {
-			clearTimeout(this.timeoutId);
-			const p = this.waited.wait();
-			if (p instanceof Promise) {
-				p.catch(() => {});
-			}
-			this.waited.reject(new Error(`Canceled`));
-		}
-		this.momentScheduledExecution = undefined;
-		this.momentEarliestDeadline = Infinity;
-		this.momentLatestDelayTime = 0;
-	}
-
-	/**
-	 * Immediately execute the action
-
-	 * @returns Action result
-	 */
-	public execute(): T {
-		const result = this.actionFn();
-		this.momentLastExecute = Date.now();
-		return result;
-	}
-
-	/**
-	 * Get time elapsed since last execution
-
-	 * @returns Milliseconds since last execute() call
-	 */
-	public sinceLastExecute(): number {
-		return Date.now() - this.momentLastExecute;
+	public static byFrequency<T>(
+		actionFn: () => T,
+		frequency: number = 5,
+	): LazyAction<T> {
+		return new LazyAction(actionFn, 1000 / frequency);
 	}
 }
