@@ -1,6 +1,6 @@
 {
 	"name": "@leawind/inventory",
-	"version": "0.7.0",
+	"version": "0.7.1",
 	"license": "MIT",
 	"exports": "./src/index.ts",
 	"tasks": {
@@ -11,6 +11,13 @@
 		"include": [
 			"src/**/*.test.ts",
 			"test/**/*.test.ts"
+		]
+	},
+	"publish": {
+		"exclude": [
+			"**/*.test.ts",
+			".github/",
+			".vscode/"
 		]
 	},
 	"imports": {
