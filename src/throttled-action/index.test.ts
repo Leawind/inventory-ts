@@ -1,11 +1,11 @@
-import { LazyAction } from '@/lazy/index.ts';
+import { ThrottledAction } from '@/throttled-action/index.ts';
 import { assertStrictEquals } from '@std/assert';
 import { TimeRuler } from '@/test-utils.ts';
 
-Deno.test('LazyAction simple', async () => {
+Deno.test('ThrottledAction simple', async () => {
 	let executeTimes = 0;
 
-	const la = new LazyAction(() => {
+	const ta = new ThrottledAction(() => {
 		executeTimes++;
 	}, 200);
 
@@ -15,11 +15,11 @@ Deno.test('LazyAction simple', async () => {
 	///             e---------T
 
 	const t = new TimeRuler(0);
-	la.urge();
+	ta.urge();
 	assertStrictEquals(executeTimes, 1);
 
 	await t.til(100);
-	la.urge();
+	ta.urge();
 
 	await t.til(150);
 	assertStrictEquals(executeTimes, 1);
@@ -28,10 +28,10 @@ Deno.test('LazyAction simple', async () => {
 	assertStrictEquals(executeTimes, 2);
 });
 
-Deno.test('LazyAction crazy', async () => {
+Deno.test('ThrottledAction crazy', async () => {
 	let executeTimes = 0;
 
-	const la = new LazyAction(() => {
+	const ta = new ThrottledAction(() => {
 		executeTimes++;
 	}, 100);
 
@@ -42,45 +42,45 @@ Deno.test('LazyAction crazy', async () => {
 	const t = new TimeRuler(0);
 	for (let i = 0; i < 350; i++) {
 		await t.til(i);
-		la.urge();
+		ta.urge();
 	}
 	await t.til(450);
 	assertStrictEquals(executeTimes, 5);
 });
 
-Deno.test('LazyAction executeImmediately should run instantly', async () => {
+Deno.test('ThrottledAction executeImmediately should run instantly', async () => {
 	let times = 0;
-	const la = new LazyAction(() => {
+	const ta = new ThrottledAction(() => {
 		times++;
 	});
 	assertStrictEquals(times, 0);
-	la.urge();
+	ta.urge();
 	assertStrictEquals(times, 1);
-	la.executeImmediately();
+	ta.executeImmediately();
 	assertStrictEquals(times, 2);
-	la.urge();
+	ta.urge();
 	assertStrictEquals(times, 2);
-	await la.urge();
+	await ta.urge();
 	assertStrictEquals(times, 3);
 });
 
-Deno.test('LazyAction setAction replaces the function', () => {
+Deno.test('ThrottledAction setAction replaces the function', () => {
 	let val = 0;
-	const la = new LazyAction(() => 1);
-	la.setAction(() => {
+	const ta = new ThrottledAction(() => 1);
+	ta.setAction(() => {
 		val = 42;
 		return 42;
 	});
-	const result = la.executeImmediately();
+	const result = ta.executeImmediately();
 	assertStrictEquals(result, 42);
 	assertStrictEquals(val, 42);
 });
 
-Deno.test('LazyAction byInterval and byFrequency create instances with expected behavior', () => {
+Deno.test('ThrottledAction byInterval and byFrequency create instances with expected behavior', () => {
 	let a = 0, b = 0;
 
-	const byInterval = LazyAction.byInterval(() => a++, 100);
-	const byFreq = LazyAction.byFrequency(() => b++, 10); // every 100ms
+	const byInterval = ThrottledAction.byInterval(() => a++, 100);
+	const byFreq = ThrottledAction.byFrequency(() => b++, 10); // every 100ms
 
 	const result1 = byInterval.executeImmediately();
 	const result2 = byFreq.executeImmediately();
@@ -91,18 +91,18 @@ Deno.test('LazyAction byInterval and byFrequency create instances with expected 
 	assertStrictEquals(b, 1);
 });
 
-Deno.test('LazyAction urge returns a promise if executed later', async () => {
+Deno.test('ThrottledAction urge returns a promise if executed later', async () => {
 	let val = 0;
-	const la = new LazyAction(() => {
+	const ta = new ThrottledAction(() => {
 		return ++val;
 	}, 200);
 
 	const t = new TimeRuler(0);
-	la.urge(); // execute immediately
+	ta.urge(); // execute immediately
 	assertStrictEquals(val, 1);
 
 	await t.til(50);
-	const promise = la.urge(); // will delay
+	const promise = ta.urge(); // will delay
 	assertStrictEquals(val, 1); // still only one execution
 
 	await t.til(250);

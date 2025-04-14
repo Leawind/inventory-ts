@@ -1,18 +1,18 @@
 import { Waited, type WaitingWaited } from '@/waited/index.ts';
 
 /**
- * LazyAction encapsulates a function that is throttled by a minimum interval.
+ * ThrottledAction encapsulates a function that is throttled by a minimum interval.
  *
  * - If called too frequently, execution is deferred until the interval has passed.
  * - Ensures that the function does not execute more often than desired.
  */
-export class LazyAction<T> {
+export class ThrottledAction<T> {
 	private waited = new Waited<T>({ autoReset: true }) as WaitingWaited<T>;
 	private lastExecutedAt: number = 0;
 	private timeoutId?: number;
 
 	/**
-	 * Creates a new LazyAction instance.
+	 * Creates a new ThrottledAction instance.
 	 *
 	 * @param actionFn - The function to be executed lazily.
 	 * @param interval - The minimum interval (in milliseconds) between executions (default: 200ms).
@@ -43,10 +43,10 @@ export class LazyAction<T> {
 	 *
 	 * @example
 	 * ```ts
-	 * const la = new LazyAction(() => console.log('Executed'));
-	 * la.urge(); // Executes immediately
-	 * la.urge(); // Schedules for later
-	 * la.urge(); // Subsequent calls are ignored until execution
+	 * const ta = new ThrottledAction(() => console.log('Executed'));
+	 * ta.urge(); // Executes immediately
+	 * ta.urge(); // Schedules for later
+	 * ta.urge(); // Subsequent calls are ignored until execution
 	 * ```
 	 */
 	public urge(): T | Promise<T> {
@@ -78,7 +78,7 @@ export class LazyAction<T> {
 	 * Updates the function to be executed.
 	 *
 	 * @param action - The new action function.
-	 * @returns The current LazyAction instance (for chaining).
+	 * @returns The current ThrottledAction instance (for chaining).
 	 */
 	public setAction(action: () => T): this {
 		this.actionFn = action;
@@ -86,30 +86,30 @@ export class LazyAction<T> {
 	}
 
 	/**
-	 * Creates a LazyAction using a fixed interval.
+	 * Creates a ThrottledAction using a fixed interval.
 	 *
 	 * @param actionFn - The function to be executed.
 	 * @param interval - The interval between executions in milliseconds.
-	 * @returns A new LazyAction instance.
+	 * @returns A new ThrottledAction instance.
 	 */
 	public static byInterval<T>(
 		actionFn: () => T,
 		interval: number = 200,
-	): LazyAction<T> {
-		return new LazyAction(actionFn, interval);
+	): ThrottledAction<T> {
+		return new ThrottledAction(actionFn, interval);
 	}
 
 	/**
-	 * Creates a LazyAction based on a desired frequency.
+	 * Creates a ThrottledAction based on a desired frequency.
 	 *
 	 * @param actionFn - The function to be executed.
 	 * @param frequency - The number of times the function is allowed to run per second.
-	 * @returns A new LazyAction instance.
+	 * @returns A new ThrottledAction instance.
 	 */
 	public static byFrequency<T>(
 		actionFn: () => T,
 		frequency: number = 5,
-	): LazyAction<T> {
-		return new LazyAction(actionFn, 1000 / frequency);
+	): ThrottledAction<T> {
+		return new ThrottledAction(actionFn, 1000 / frequency);
 	}
 }
