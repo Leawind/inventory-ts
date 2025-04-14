@@ -1,9 +1,6 @@
 import { Waited } from '@/waited/index.ts';
+import { wait } from '@/test-utils.ts';
 import { assert, assertStrictEquals, assertThrows } from '@std/assert';
-
-function wait(ms: number) {
-	return new Promise<void>((resolve) => ms === 0 ? resolve() : setTimeout(resolve, ms));
-}
 
 Deno.test('wait with auto reset', async () => {
 	const w = new Waited({ autoReset: true });

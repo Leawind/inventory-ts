@@ -1,9 +1,6 @@
-import { Lock } from '@/lock/index.ts';
 import { assert, assertStrictEquals, assertThrows } from '@std/assert';
-
-function wait(ms: number): Promise<void> {
-	return new Promise((resolve) => ms === 0 ? resolve() : setTimeout(resolve, ms));
-}
+import { wait } from '@/test-utils.ts';
+import { Lock } from '@/lock/index.ts';
 
 Deno.test('Simple lock', async () => {
 	const lock = new Lock();

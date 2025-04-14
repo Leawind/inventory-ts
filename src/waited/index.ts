@@ -1,28 +1,33 @@
+/**
+ * Options to configure the behavior of a Waited instance.
+ */
 export type WaitedOptions<T> = {
 	/**
-	 * Whether to create new promise after resolution/rejectio	 *
+	 * Automatically resets the Waited instance after resolution or rejection.
 	 * @default false
 	 */
 	autoReset: boolean;
 
 	/**
-	 * Whether to keep the result and error after resolution/rejection
-	 *
+	 * Whether to keep the resolved/rejected result after settling.
 	 * @default true
 	 */
 	keepResult: boolean;
 
 	/**
-	 * Callback when resolved
+	 * Callback to invoke when resolved.
 	 */
 	onresolved?: (value: T) => void;
 
 	/**
-	 * Callback when rejected
+	 * Callback to invoke when rejected.
 	 */
 	onrejected?: (reason: unknown) => void;
 };
 
+/**
+ * Represents the internal state of a Waited instance.
+ */
 export enum WaitedState {
 	Init = 'init',
 	Waiting = 'waiting',
@@ -31,9 +36,40 @@ export enum WaitedState {
 }
 
 /**
- * A controllable promise wrapper that allows manual resolution/rejection and optional auto-reset.
+ * A Waited instance currently in the "waiting" state.
+ */
+export interface WaitingWaited<T> extends Waited<T> {
+	isWaiting(): true;
+	wait(): Promise<T>;
+}
+
+/**
+ * A Waited instance that has been resolved.
+ */
+export interface ResolvedWaited<T> extends Waited<T> {
+	isWaiting(): false;
+	wait(): T;
+}
+
+/**
+ * A Waited instance that has been rejected.
+ */
+export interface RejectedWaited<T> extends Waited<T> {
+	isWaiting(): false;
+
+	/**
+	 * Throws the stored rejection reason.
+	 */
+	wait(): never;
+}
+
+/**
+ * A controllable Promise wrapper with optional auto-reset and result retention.
  *
- * @template T - The type of the resolved value (default: void)
+ * Can be manually resolved or rejected from outside, while exposing a `wait()` method
+ * to retrieve the result or await its fulfillment.
+ *
+ * @template T - The type of the resolved value.
  */
 export class Waited<T = void> {
 	private options: WaitedOptions<T> = {
@@ -41,7 +77,7 @@ export class Waited<T = void> {
 		keepResult: true,
 	};
 
-	constructor(options?: Partial<WaitedOptions<T>>) {
+	public constructor(options?: Partial<WaitedOptions<T>>) {
 		this.options = Object.assign(this.options, options);
 
 		if (this.options.autoReset) {
@@ -51,26 +87,15 @@ export class Waited<T = void> {
 
 	private state: WaitedState = WaitedState.Init;
 
-	/**
-	 * The current active promise instance
-	 *
-	 * Only available when {@link state} is {@link WaitedState.Waiting}
-	 */
 	private promise?: Promise<T>;
-	/** Internal resolver function for {@link promise} */
 	private resolveFn?: (value: T | PromiseLike<T>) => void;
-	/** Internal rejector function for {@link promise} */
 	private rejectFn?: (reason?: unknown) => void;
 
 	private result?: T;
 	private reason?: unknown;
 
 	/**
-	 * Clear current resolver/rejector references
-	 *
-	 * Clear {@link promise}, {@link resolveFn} and {@link rejectFn}
-	 *
-	 * If {@link keepResult} is false, clear {@link result} and {@link reason}
+	 * Clears internal promise and result references.
 	 */
 	private clear(): void {
 		this.resolveFn = undefined;
@@ -84,12 +109,9 @@ export class Waited<T = void> {
 	}
 
 	/**
-	 * Create new promise instance and return it
-	 * @returns The newly created promise
-	 * @description
-	 * - Resets internal state
-	 * - Creates fresh promise with new resolver/rejector
-	 * - Maintains chainability with previous instances
+	 * Resets the Waited instance, preparing it to wait for the next resolution or rejection.
+	 *
+	 * @returns The current instance (for chaining).
 	 */
 	public reset(): this {
 		this.clear();
@@ -102,18 +124,21 @@ export class Waited<T = void> {
 	}
 
 	/**
-	 * Check if is waiting for resolution/rejection
+	 * Checks whether the instance is currently waiting for resolution or rejection.
 	 *
-	 * @returns true if there's pending promise waiting to settle
+	 * @returns `true` if in "waiting" state, otherwise `false`.
 	 */
 	public isWaiting(): boolean {
 		return this.state === WaitedState.Waiting;
 	}
 
 	/**
-	 * Get the current promise instance
+	 * Returns the current result or promise depending on the state.
 	 *
-	 * @returns The active promise that can be awaited. Or the result if resolved.
+	 * - If waiting, returns a pending promise.
+	 * - If resolved, returns the resolved value.
+	 * - If rejected, throws the rejection reason.
+	 * - If never started, returns undefined.
 	 */
 	public wait(): Promise<T> | T | undefined {
 		switch (this.state) {
@@ -129,92 +154,82 @@ export class Waited<T = void> {
 	}
 
 	/**
-	 * Resolve the current promise
-	 *
-	 * @param value - Resolution value or thenable
-	 * @returns The instance itself for chaining
-	 * @description
-	 * - Only affects the current active promise
-	 * - Subsequent calls before reset will be no-op
-	 * - Auto-reset if configured
-	 *
-	 * @throws Error if called on a non-waiting waited
+	 * Checks whether the instance is settled (either resolved or rejected).
 	 */
-	public resolve(value: T): this {
-		if (this.state === WaitedState.Waiting) {
-			this.state = WaitedState.Resolved;
-			this.result = value;
-
-			this.resolveFn!(value);
-			if (this.options.onresolved) {
-				this.options.onresolved(value);
-			}
-
-			this.clear();
-			if (this.options.autoReset) {
-				this.reset();
-			}
-
-			return this;
-		} else {
-			throw new Error('Cannot resolve a non-waiting waited');
-		}
+	public isSettled(): boolean {
+		return this.state === WaitedState.Resolved || this.state === WaitedState.Rejected;
 	}
 
 	/**
-	 * Reject the current promise
+	 * Checks whether the instance is resolved.
+	 */
+	public isResolved(): boolean {
+		return this.state === WaitedState.Resolved;
+	}
+
+	/**
+	 * Checks whether the instance is rejected.
+	 */
+	public isRejected(): boolean {
+		return this.state === WaitedState.Rejected;
+	}
+
+	/**
+	 * Resolves the current promise with the given value.
 	 *
-	 * @param reason - Optional rejection reason
-	 * @returns The instance itself for chaining
-	 * @description
-	 * - Only affects the current active promise
-	 * - Subsequent calls before reset will be no-op
-	 * - Auto-reset if configured
+	 * @param value - The resolution value.
+	 * @throws Error if called when not in the "waiting" state.
+	 */
+	public resolve(value: T): this {
+		if (this.state !== WaitedState.Waiting) {
+			throw new Error('Cannot resolve a non-waiting waited');
+		}
+
+		this.state = WaitedState.Resolved;
+		this.result = value;
+
+		this.resolveFn!(value);
+		this.options.onresolved?.(value);
+
+		this.clear();
+		if (this.options.autoReset) {
+			this.reset();
+		}
+
+		return this;
+	}
+
+	/**
+	 * Rejects the current promise with the given reason.
 	 *
-itself for chaining
-	 * @description
-	 * - Only affects the current active promise
-	 * - Subsequent calls before reset will be no-op
-	 * - Auto-reset if configured
-	 *
-self for chaining
-	 * @description
-	 * - Only affects the current active promise
-	 * - Subsequent calls before reset will be no-op
-	 * - Auto-reset if configured
-	 *
-self for chaining
-	 * @description
-	 * - Only affects the current active promise
-	 * - Subsequent calls before reset will be no-op
-	 * - Auto-reset if configured
-	 *
-tself for chaining
-	 * @description
-	 * - Only affects the current active promise
-	 * - Subsequent calls before reset will be no-op
-	 * - Auto-reset if configured
-	 *
-	 * @throws Error if called on a non-waiting waited
+	 * @param reason - The rejection reason (optional).
+	 * @throws Error if called when not in the "waiting" state.
 	 */
 	public reject(reason?: unknown): this {
-		if (this.state === WaitedState.Waiting) {
-			this.state = WaitedState.Rejected;
-			this.reason = reason;
-
-			this.rejectFn!(reason);
-			if (this.options.onrejected) {
-				this.options.onrejected(reason);
-			}
-
-			this.clear();
-			if (this.options.autoReset) {
-				this.reset();
-			}
-
-			return this;
-		} else {
+		if (this.state !== WaitedState.Waiting) {
 			throw new Error('Cannot reject a non-waiting waited');
 		}
+
+		this.state = WaitedState.Rejected;
+		this.reason = reason;
+
+		this.rejectFn!(reason);
+		this.options.onrejected?.(reason);
+
+		this.clear();
+		if (this.options.autoReset) {
+			this.reset();
+		}
+
+		return this;
+	}
+
+	/**
+	 * Creates a new Waited instance with the given options.
+	 *
+	 * If `autoReset: true` is set, the instance starts in a "waiting" state.
+	 */
+	public static create<T>(options?: Partial<WaitedOptions<T>>): Waited<T> {
+		return new Waited(options);
 	}
 }
