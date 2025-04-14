@@ -1,4 +1,4 @@
-export function wait(ms: number) {
+export function wait(ms: number): Promise<void> {
 	if (ms < 0) {
 		ms = 0;
 	}
