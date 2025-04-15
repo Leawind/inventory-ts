@@ -13,7 +13,7 @@ await build({
 	],
 	outDir: OUTPUT_DIR,
 	shims: {
-		deno: true,
+		// deno: true,
 		timers: true,
 	},
 	esModule: true,
