@@ -34,6 +34,9 @@ await build({
 			"esm",
 			"LICENSE"
 		],
+		publishConfig: {
+			access: "public"
+		},
 	},
 	compilerOptions: {
 		target: "ES2023",
