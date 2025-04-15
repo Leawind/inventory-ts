@@ -17,6 +17,7 @@
 	"publish": {
 		"exclude": [
 			"**/*.test.ts",
+			"scripts",
 			".github/",
 			".vscode/"
 		]

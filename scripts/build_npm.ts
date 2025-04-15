@@ -48,5 +48,6 @@ await build({
 });
 
 [
+	'README.md',
 	'LICENSE',
 ].forEach((file) => Deno.copyFileSync(`./${file}`, `./${OUTPUT_DIR}/${file}`));
