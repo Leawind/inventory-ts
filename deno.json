@@ -16,6 +16,7 @@
 	},
 	"publish": {
 		"exclude": [
+			"example",
 			"**/*.test.ts",
 			"scripts",
 			".github/",

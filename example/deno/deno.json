@@ -1,0 +1,7 @@
+{
+	"tasks": {},
+	"imports": {
+		"@leawind/inventory": "jsr:@leawind/inventory@^0.8.0",
+		"@std/assert": "jsr:@std/assert@1"
+	}
+}

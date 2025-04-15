@@ -32,7 +32,6 @@ await build({
 		private: false,
 		files: [
 			"esm",
-			"LICENSE"
 		],
 		publishConfig: {
 			access: "public"
