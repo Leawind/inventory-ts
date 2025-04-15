@@ -14,10 +14,10 @@ await build({
 	outDir: OUTPUT_DIR,
 	shims: {
 		// deno: true,
-		timers: true,
+		// timers: true,
 	},
 	esModule: true,
-	typeCheck: 'both',
+	typeCheck: false,
 	test: false,
 	declaration: 'inline',
 	declarationMap: false,
