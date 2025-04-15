@@ -13,7 +13,7 @@ export function walkSync(
 ): void {
 	if (maxDepth == 0) return;
 	if (!Deno.statSync(dirPath).isDirectory) return;
-	const sublist = Deno.readDirSync(dirPath).map((entry) => entry.name);
+	const sublist = [...Deno.readDirSync(dirPath)].map((entry) => entry.name);
 	const subFileNames: string[] = [];
 	const subDirNames: string[] = [];
 	const subDirPaths: string[] = [];
@@ -59,7 +59,7 @@ export function printPathTreeSync(dir: string): string {
 	let result = '';
 	walkInTreeSync<string>(
 		dir,
-		(nodePath) => Deno.readDirSync(nodePath.join('/')).map((entry) => entry.name),
+		(nodePath) => [...Deno.readDirSync(nodePath.join('/'))].map((entry) => entry.name),
 		(nodePath) => Deno.statSync(nodePath.join('/')).isFile,
 		(nodePath, isleave, brothers) => {
 			const me: string = nodePath.at(-1)!;

@@ -85,10 +85,9 @@ export class CSV {
 
 	public getRawRow(row: number): string[] {
 		this.validateRowId(row);
-		const rawRow = [];
+		const rawRow: string[] = [];
 		for (let col = 0; col < this.cols(); col++) {
-			const raw = this.getRaw(row, col);
-			rawRow.push(raw);
+			rawRow.push(this.getRaw(row, col));
 		}
 		return rawRow;
 	}
