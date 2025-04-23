@@ -5,6 +5,7 @@
 	"exports": "./src/index.ts",
 	"tasks": {
 		"dev": "deno test --watch --parallel",
+		"test": "deno test --parallel",
 		"prepare": "deno fmt && deno lint && deno test -A && deno publish --dry-run",
 		"build-npm": "deno run -A scripts/build_npm.ts"
 	},
