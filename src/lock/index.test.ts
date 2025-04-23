@@ -253,7 +253,6 @@ Deno.test('Lock.of', async () => {
 	assertStrictEquals(Lock['locks'].size, 0);
 });
 
-
 Deno.test('Lock.untilReleased', async () => {
 	const lock = new Lock();
 

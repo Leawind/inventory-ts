@@ -29,8 +29,7 @@ export class Lock implements ILock {
 	public readonly onRelease: Delegate<void> = new Delegate();
 
 	public acquire(owner?: unknown): Promise<void> {
-
-		this.releasePromise = new Promise(resolve => {
+		this.releasePromise = new Promise((resolve) => {
 			this.releasePromiseResolveFn = resolve;
 		});
 
@@ -76,7 +75,7 @@ export class Lock implements ILock {
 	}
 	/**
 	 * Gets the current owner of the lock, if one was specified during acquisition.
-	 * 
+	 *
 	 * @see {@link acquire}
 	 */
 	public getOwner(): unknown | undefined {
