@@ -20,15 +20,25 @@ interface ILock {
 export class Lock implements ILock {
 	private owner: unknown;
 	private isLockedInternal: boolean = false;
-	private waitingQueue: (() => void)[] = [];
+
+	private readonly waitingQueue: (() => void)[] = [];
+
+	private releasePromise?: Promise<void>;
+	private releasePromiseResolveFn?: (value: void | PromiseLike<void>) => void;
 
 	public readonly onRelease: Delegate<void> = new Delegate();
 
 	public acquire(owner?: unknown): Promise<void> {
+
+		this.releasePromise = new Promise(resolve => {
+			this.releasePromiseResolveFn = resolve;
+		});
+
 		return new Promise((resolve) => {
 			const attemptToAcquire = () => {
 				if (!this.isLockedInternal) {
 					this.isLockedInternal = true;
+
 					if (owner) {
 						this.owner = owner;
 					}
@@ -48,11 +58,13 @@ export class Lock implements ILock {
 
 		this.owner = undefined;
 		this.isLockedInternal = false;
+
 		const nextResolve = this.waitingQueue.shift();
 		if (nextResolve) {
 			nextResolve();
 		}
 
+		this.releasePromiseResolveFn!();
 		this.onRelease.broadcast();
 	}
 	/**
@@ -69,6 +81,14 @@ export class Lock implements ILock {
 	 */
 	public getOwner(): unknown | undefined {
 		return this.owner;
+	}
+
+	/**
+	 * Returns a Promise that resolves when the lock is released.
+	 * If the lock is not currently held, the Promise resolves immediately.
+	 */
+	public untilReleased(): Promise<void> {
+		return this.releasePromise ?? Promise.resolve();
 	}
 
 	private static locks: Map<string, Lock> = new Map();

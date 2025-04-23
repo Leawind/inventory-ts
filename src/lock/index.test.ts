@@ -1,5 +1,5 @@
-import { assert, assertStrictEquals, assertThrows } from '@std/assert';
-import { wait } from '@/test-utils.ts';
+import { assert, assertAlmostEquals, assertStrictEquals, assertThrows } from '@std/assert';
+import { TimeRuler, wait } from '@/test-utils.ts';
 import { Lock } from '@/lock/index.ts';
 
 Deno.test('Simple lock', async () => {
@@ -21,6 +21,7 @@ Deno.test('Lock', async () => {
 			console.log(`Task ${id} entered`);
 			await wait(100);
 		} finally {
+			console.log(`Task ${id} start to left`);
 			lock.release();
 			console.log(`Task ${id} left`);
 		}
@@ -250,4 +251,27 @@ Deno.test('Lock.of', async () => {
 	}
 
 	assertStrictEquals(Lock['locks'].size, 0);
+});
+
+
+Deno.test('Lock.untilReleased', async () => {
+	const lock = new Lock();
+
+	const t = new TimeRuler(0);
+
+	await lock.untilReleased();
+	assertAlmostEquals(t.now(), 0, 25);
+
+	await lock.acquire();
+
+	await Promise.all([
+		(async () => {
+			await lock.untilReleased();
+			assertAlmostEquals(t.now(), 150, 25);
+		})(),
+		(async () => {
+			await t.til(150);
+			lock.release();
+		})(),
+	]);
 });
