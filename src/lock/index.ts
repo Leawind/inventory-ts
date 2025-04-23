@@ -55,17 +55,29 @@ export class Lock implements ILock {
 
 		this.onRelease.broadcast();
 	}
-
+	/**
+	 * Checks if the lock is currently held.
+	 * @returns `true` if lock is held, `false` otherwise
+	 */
 	public isLocked(): boolean {
 		return this.isLockedInternal;
 	}
-
+	/**
+	 * Gets the current owner of the lock, if one was specified during acquisition.
+	 * 
+	 * @see {@link acquire}
+	 */
 	public getOwner(): unknown | undefined {
 		return this.owner;
 	}
 
 	private static locks: Map<string, Lock> = new Map();
 
+	/**
+	 * Get or create a named lock instance.
+	 * The lock will be automatically cleaned up when released.
+	 * @param key - Unique identifier for the lock
+	 */
 	public static of(key: string): Lock {
 		if (!this.locks.has(key)) {
 			const lock = new Lock();
