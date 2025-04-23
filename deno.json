@@ -1,12 +1,12 @@
 {
 	"name": "@leawind/inventory",
-	"version": "0.8.2",
+	"version": "0.8.3",
 	"license": "MIT",
 	"exports": "./src/index.ts",
 	"tasks": {
 		"dev": "deno test --watch --parallel",
 		"test": "deno test --parallel",
-		"prepare": "deno fmt && deno lint && deno test -A && deno publish --dry-run",
+		"prepare": "deno fmt && deno lint && deno test --parallel -A && deno publish --dry-run",
 		"build-npm": "deno run -A scripts/build_npm.ts"
 	},
 	"test": {
