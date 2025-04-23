@@ -1,3 +1,5 @@
+import { Delegate } from 'jsr:@leawind/delegate@0.4';
+
 interface ILock {
 	/**
 	 * Acquires the lock. Returns a Promise that resolves when the lock is obtained.
@@ -19,6 +21,8 @@ export class Lock implements ILock {
 	private owner: unknown;
 	private isLockedInternal: boolean = false;
 	private waitingQueue: (() => void)[] = [];
+
+	public readonly onRelease: Delegate<void> = new Delegate();
 
 	public acquire(owner?: unknown): Promise<void> {
 		return new Promise((resolve) => {
@@ -48,6 +52,8 @@ export class Lock implements ILock {
 		if (nextResolve) {
 			nextResolve();
 		}
+
+		this.onRelease.broadcast();
 	}
 
 	public isLocked(): boolean {
@@ -56,6 +62,19 @@ export class Lock implements ILock {
 
 	public getOwner(): unknown | undefined {
 		return this.owner;
+	}
+
+	private static locks: Map<string, Lock> = new Map();
+
+	public static of(key: string): Lock {
+		if (!this.locks.has(key)) {
+			const lock = new Lock();
+			this.locks.set(key, lock);
+			lock.onRelease.addListener(() => {
+				this.locks.delete(key);
+			});
+		}
+		return this.locks.get(key)!;
 	}
 }
 

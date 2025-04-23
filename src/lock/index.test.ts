@@ -220,3 +220,34 @@ Deno.test('getOwner maintains correct owner during queued acquisitions', async (
 	assert(secondAcquired, 'Second acquisition should complete');
 	assertStrictEquals(lock.getOwner(), undefined);
 });
+
+Deno.test('Lock.of', async () => {
+	for (let i = 0; i < 100; i++) {
+		const key = `key-${i}`;
+
+		const lock1 = Lock.of(key);
+		const lock2 = Lock.of(key);
+
+		assert(lock1 === lock2);
+
+		await lock1.acquire();
+		lock1.release();
+	}
+
+	assertStrictEquals(Lock['locks'].size, 0);
+
+	for (let i = 0; i < 100; i++) {
+		const lock = Lock.of(`key-${i}`);
+
+		await lock.acquire();
+	}
+
+	assertStrictEquals(Lock['locks'].size, 100);
+
+	for (let i = 0; i < 100; i++) {
+		const lock = Lock.of(`key-${i}`);
+		lock.release();
+	}
+
+	assertStrictEquals(Lock['locks'].size, 0);
+});
