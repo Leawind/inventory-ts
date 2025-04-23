@@ -28,6 +28,22 @@ export class Lock implements ILock {
 
 	public readonly onRelease: Delegate<void> = new Delegate();
 
+	public tryAcquire(owner?: unknown): boolean {
+		if (!this.isLockedInternal) {
+			this.isLockedInternal = true;
+
+			this.releasePromise = new Promise((resolve) => {
+				this.releasePromiseResolveFn = resolve;
+			});
+
+			if (owner) {
+				this.owner = owner;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	public acquire(owner?: unknown): Promise<void> {
 		this.releasePromise = new Promise((resolve) => {
 			this.releasePromiseResolveFn = resolve;

@@ -274,3 +274,30 @@ Deno.test('Lock.untilReleased', async () => {
 		})(),
 	]);
 });
+
+Deno.test('tryAcquire', async () => {
+	const lock = new Lock();
+
+	// basic
+	if (lock.tryAcquire()) {
+		assert(lock.isLocked());
+		lock.release();
+	}
+
+	{
+		assert(lock.tryAcquire());
+		assert(!lock.tryAcquire());
+		lock.release();
+		assert(lock.tryAcquire());
+		lock.release();
+	}
+
+	{
+		await lock.acquire();
+		assert(!lock.tryAcquire());
+		lock.release();
+		assert(lock.tryAcquire());
+		lock.release();
+		assert(!lock.isLocked());
+	}
+});
