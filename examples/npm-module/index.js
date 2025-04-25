@@ -1,4 +1,4 @@
-import { Lock } from '@leawind/inventory';
+import { Lock } from '@leawind/inventory/lock';
 
 const lock = new Lock();
 

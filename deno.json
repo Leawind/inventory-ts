@@ -32,7 +32,7 @@
 	},
 	"publish": {
 		"exclude": [
-			"example",
+			"examples/",
 			"**/*.test.ts",
 			"scripts",
 			".github/",

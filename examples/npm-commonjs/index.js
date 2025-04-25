@@ -1,5 +1,5 @@
 (async () => {
-	const { Lock } = await import('@leawind/inventory');
+	const { Lock } = await import('@leawind/inventory/lock');
 
 	const lock = new Lock();
 
