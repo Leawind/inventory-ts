@@ -1,14 +1,12 @@
-export * as algo from '@/algorithm/index.ts';
-export * as imagine from '@/imagine/index.ts';
+export * as algorithm from '@/algorithm/index.ts';
+export * as comap from '@/comap.ts';
 export * as csv from '@/csv/index.ts';
+export * as imagine from '@/imagine/index.ts';
+export * as lock from '@/lock/index.ts';
 export * as misc from '@/misc/index.ts';
-export { ThrottledAction } from '@/throttled-action/index.ts';
-export { Options } from '@/options/index.ts';
-export { Waited } from '@/waited/index.ts';
-export { Lock, UnfairLock } from '@/lock/index.ts';
-
-export { CoMap } from '@/comap.ts';
-export * as tree from '@/tree.ts';
-export * from '@/types.ts';
-
+export * as options from '@/options/index.ts';
 export * as test_utils from '@/test-utils.ts';
+export * as throttled_action from '@/throttled-action/index.ts';
+export * as tree from '@/tree.ts';
+export * as types from '@/types.ts';
+export * as waited from '@/waited/index.ts';

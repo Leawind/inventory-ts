@@ -2,6 +2,10 @@ export type DeepPartial<T> = {
 	[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
+export type DeepRequire<T> = {
+	[P in keyof T]-?: T[P] extends object ? DeepRequire<T[P]> : T[P];
+};
+
 export type Keys<T, U extends (keyof T)[]> = Exclude<keyof T, U[number]> extends never ? U
 	: U & ['Missing key: ', Exclude<keyof T, U[number]>];
 

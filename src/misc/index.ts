@@ -1,3 +1,5 @@
+import * as posix_path from '@std/path@1/posix';
+
 export * from '@/misc/zone.ts';
 export * from '@/misc/parsing.ts';
 
@@ -37,4 +39,24 @@ export function unescapeMarkers(s: string, markers: string[], esc: string = '\\'
 	}
 	s = s.replaceAll(esc + esc, esc);
 	return s;
+}
+
+export function rebasePath(rpath: string, fromBase: string, toBase: string): string {
+	if (!rpath.startsWith('/')) {
+		rpath = '/' + rpath;
+	}
+	if (!fromBase.startsWith('/')) {
+		fromBase = '/' + fromBase;
+	}
+
+	if (!rpath.startsWith(fromBase)) {
+		throw new Error(`rpath '${rpath}' does not start with fromBase '${fromBase}'`);
+	}
+
+	const relative = posix_path.relative(fromBase, rpath);
+	const result = posix_path.join(toBase, relative);
+	if (!result.startsWith('/')) {
+		return '/' + result;
+	}
+	return result;
 }

@@ -1,4 +1,4 @@
-import type { DeepPartial } from '@/types.ts';
+import type { DeepPartial, DeepRequire } from '@/types.ts';
 
 /**
  * Options for configuring object and array filling strategies.
@@ -52,6 +52,7 @@ export class Options<T> {
 	public readonly Partial: Partial<T> = null!;
 	public readonly DeepPartial: DeepPartial<T> = null!;
 	public readonly Require: Required<T> = null!;
+	public readonly DeepRequire: DeepRequire<T> = null!;
 
 	public readonly Default: T;
 

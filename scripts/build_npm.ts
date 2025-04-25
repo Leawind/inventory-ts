@@ -31,15 +31,15 @@ await build({
 		description: '',
 		private: false,
 		files: [
-			"esm",
+			'esm',
 		],
 		publishConfig: {
-			access: "public"
+			access: 'public',
 		},
 	},
 	compilerOptions: {
-		target: "ES2023",
-		lib: ["ES2023"],
+		target: 'ES2023',
+		lib: ['ES2023'],
 		inlineSources: true,
 		sourceMap: true,
 		strictFunctionTypes: false,

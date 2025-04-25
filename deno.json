@@ -2,11 +2,26 @@
 	"name": "@leawind/inventory",
 	"version": "0.8.4",
 	"license": "MIT",
-	"exports": "./src/index.ts",
+	"exports": {
+		"./algorithm": "./src/algorithm/index.ts",
+		"./comap": "./src/comap.ts",
+		"./csv": "./src/csv/index.ts",
+		"./imagine": "./src/imagine/index.ts",
+		"./lock": "./src/lock/index.ts",
+		"./misc": "./src/misc/index.ts",
+		"./options": "./src/options/index.ts",
+		"./test_utils": "./src/test-utils.ts",
+		"./throttled_action": "./src/throttled-action/index.ts",
+		"./tree": "./src/tree.ts",
+		"./types": "./src/types.ts",
+		"./waited": "./src/waited/index.ts",
+		".": "./src/index.ts"
+	},
 	"tasks": {
 		"dev": "deno test --watch --parallel",
 		"test": "deno test --parallel",
-		"prepare": "deno fmt && deno lint && deno test --parallel -A && deno publish --dry-run",
+		"prepare": "deno task gen-index && deno fmt && deno lint && deno test --parallel -A && deno publish --dry-run",
+		"gen-index": "deno -A ./scripts/gen_index.ts",
 		"build-npm": "deno run -A scripts/build_npm.ts"
 	},
 	"test": {
@@ -39,6 +54,7 @@
 		"include": [
 			"README.md",
 			"deno.json",
+			"scripts",
 			"src/",
 			"test/"
 		],
