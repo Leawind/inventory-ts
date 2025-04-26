@@ -4,6 +4,7 @@
 	"license": "MIT",
 	"exports": {
 		"./algorithm": "./src/algorithm/index.ts",
+		"./call_stack": "./src/call-stack/index.ts",
 		"./comap": "./src/comap.ts",
 		"./csv": "./src/csv/index.ts",
 		"./imagine": "./src/imagine/index.ts",
