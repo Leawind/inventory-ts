@@ -8,6 +8,7 @@
 		"./comap": "./src/comap.ts",
 		"./csv": "./src/csv/index.ts",
 		"./imagine": "./src/imagine/index.ts",
+		"./list_iterator": "./src/list-iterator/index.ts",
 		"./lock": "./src/lock/index.ts",
 		"./misc": "./src/misc/index.ts",
 		"./options": "./src/options/index.ts",
