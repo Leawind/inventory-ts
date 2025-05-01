@@ -34,11 +34,11 @@ Deno.test('Deferred chaining', async () => {
 });
 
 Deno.test('Deferred finally execution', async () => {
-	const deferred = new Deferred();
+	const deferred = new Deferred<void>();
 	let finallyCalled = false;
 
 	deferred.finally(() => finallyCalled = true);
-	deferred.resolve('done');
+	deferred.resolve();
 
 	await deferred;
 	assert(finallyCalled);
@@ -64,4 +64,23 @@ Deno.test('Deferred custom executor', async () => {
 Deno.test('Deferred inheritance check', () => {
 	const deferred = new Deferred();
 	assert(deferred instanceof Promise);
+});
+
+Deno.test('Deferred as promise', async () => {
+	let seq = '';
+
+	const deferred = new Deferred((resolve) => {
+		seq += 'A';
+		resolve(3);
+	});
+
+	assert(deferred.resolve);
+	assert(deferred.reject);
+
+	seq += 'B';
+	const result = await deferred;
+	seq += 'C';
+
+	assertStrictEquals(result, 3);
+	assertStrictEquals(seq, 'ABC');
 });

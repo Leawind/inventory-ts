@@ -19,12 +19,14 @@ export class Deferred<T> extends Promise<T> {
 		let tempResolve: ResolveFn<T>;
 		let tempReject: RejectFn;
 
-		super(
-			executor ?? ((resolve, reject) => {
-				tempResolve = resolve;
-				tempReject = reject;
-			}),
-		);
+		super((resolve, reject) => {
+			tempResolve = resolve;
+			tempReject = reject;
+
+			if (executor) {
+				executor(resolve, reject);
+			}
+		});
 
 		this.reject = tempReject!;
 		this.resolve = tempResolve!;
