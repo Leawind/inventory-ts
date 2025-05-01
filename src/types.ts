@@ -18,8 +18,8 @@ export type Keys<T, U extends (keyof T)[]> = Exclude<keyof T, U[number]> extends
  *
  * ```ts
  * const keys = listKeys<{
- * 	a: number;
- * 	b: string;
+ *     a: number;
+ *     b: string;
  * }>()('a', 'b');
  * // keys is ['a', 'b']
  * ```
@@ -35,7 +35,7 @@ export type EnsureFullCoverage<T, S1 extends DeepPartial<T>, S2 extends DeepPart
 	: never
 	: never;
 
-export type PromiseAction = {
+export type PromiseControl = {
 	resolve: (value: void | PromiseLike<void>) => void;
 	reject: (reason?: unknown) => void;
 };

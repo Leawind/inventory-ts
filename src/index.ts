@@ -2,6 +2,7 @@ export * as algorithm from '@/algorithm/index.ts';
 export * as call_stack from '@/call-stack/index.ts';
 export * as comap from '@/comap.ts';
 export * as csv from '@/csv/index.ts';
+export * as deferred from '@/deferred/index.ts';
 export * as imagine from '@/imagine/index.ts';
 export * as list_iterator from '@/list-iterator/index.ts';
 export * as lock from '@/lock/index.ts';

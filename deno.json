@@ -7,6 +7,7 @@
 		"./call_stack": "./src/call-stack/index.ts",
 		"./comap": "./src/comap.ts",
 		"./csv": "./src/csv/index.ts",
+		"./deferred": "./src/deferred/index.ts",
 		"./imagine": "./src/imagine/index.ts",
 		"./list_iterator": "./src/list-iterator/index.ts",
 		"./lock": "./src/lock/index.ts",
