@@ -1,3 +1,5 @@
+import { Deferred } from '@/deferred/index.ts';
+
 /**
  * Options to configure the behavior of a Waited instance.
  */
@@ -72,6 +74,12 @@ export interface RejectedWaited<T> extends Waited<T> {
  * @template T - The type of the resolved value.
  */
 export class Waited<T = void> {
+	private state: WaitedState = WaitedState.Init;
+
+	private deferred?: Deferred<T>;
+	private result?: T;
+	private reason?: unknown;
+
 	private options: WaitedOptions<T> = {
 		autoReset: false,
 		keepResult: true,
@@ -85,22 +93,11 @@ export class Waited<T = void> {
 		}
 	}
 
-	private state: WaitedState = WaitedState.Init;
-
-	private promise?: Promise<T>;
-	private resolveFn?: (value: T | PromiseLike<T>) => void;
-	private rejectFn?: (reason?: unknown) => void;
-
-	private result?: T;
-	private reason?: unknown;
-
 	/**
 	 * Clears internal promise and result references.
 	 */
 	private clear(): void {
-		this.resolveFn = undefined;
-		this.rejectFn = undefined;
-		this.promise = undefined;
+		this.deferred = undefined;
 
 		if (!this.options.keepResult) {
 			this.result = undefined;
@@ -115,10 +112,7 @@ export class Waited<T = void> {
 	 */
 	public reset(): this {
 		this.clear();
-		this.promise = new Promise<T>((resolve, reject) => {
-			this.resolveFn = resolve;
-			this.rejectFn = reject;
-		});
+		this.deferred = new Deferred();
 		this.state = WaitedState.Waiting;
 		return this;
 	}
@@ -145,7 +139,7 @@ export class Waited<T = void> {
 			case WaitedState.Init:
 				return undefined;
 			case WaitedState.Waiting:
-				return this.promise!;
+				return this.deferred!;
 			case WaitedState.Resolved:
 				return this.result;
 			case WaitedState.Rejected:
@@ -188,7 +182,7 @@ export class Waited<T = void> {
 		this.state = WaitedState.Resolved;
 		this.result = value;
 
-		this.resolveFn!(value);
+		this.deferred!.resolve(value);
 		this.options.onresolved?.(value);
 
 		this.clear();
@@ -213,7 +207,7 @@ export class Waited<T = void> {
 		this.state = WaitedState.Rejected;
 		this.reason = reason;
 
-		this.rejectFn!(reason);
+		this.deferred!.reject(reason);
 		this.options.onrejected?.(reason);
 
 		this.clear();
