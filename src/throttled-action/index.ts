@@ -49,11 +49,11 @@ export class ThrottledAction<T> {
 	 * ta.urge(); // Subsequent calls are ignored until execution
 	 * ```
 	 */
-	public urge(): T | Promise<T> {
+	public urge(): Promise<T> {
 		const now = Date.now();
 		if (now - this.lastExecutedAt > this.interval) {
 			if (this.timeoutId === undefined) {
-				return this.executeImmediately();
+				return Promise.resolve(this.executeImmediately());
 			}
 		} else if (this.timeoutId === undefined) {
 			this.timeoutId = setTimeout(() => {
