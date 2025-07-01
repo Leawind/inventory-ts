@@ -23,8 +23,8 @@
 		".": "./src/index.ts"
 	},
 	"tasks": {
-		"dev": "deno test --watch --parallel",
-		"test": "deno test --parallel",
+		"dev": "deno test --watch --parallel -R",
+		"test": "deno test --parallel -R",
 		"prepare": "deno task gen-index && deno fmt && deno lint && deno test --parallel -A && deno publish --dry-run",
 		"gen-index": "deno -A ./scripts/gen_index.ts",
 		"build-npm": "deno run -A scripts/build_npm.ts"
