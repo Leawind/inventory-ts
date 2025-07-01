@@ -44,12 +44,12 @@ export class ThrottledAction<T> {
 	 * @example
 	 * ```ts
 	 * const ta = new ThrottledAction(() => console.log('Executed'));
-	 * ta.urge(); // Executes immediately
-	 * ta.urge(); // Schedules for later
-	 * ta.urge(); // Subsequent calls are ignored until execution
+	 * ta.execute(); // Executes immediately
+	 * ta.execute(); // Schedules for later
+	 * ta.execute(); // Subsequent calls are ignored until execution
 	 * ```
 	 */
-	public urge(): Promise<T> {
+	public execute(): Promise<T> {
 		const now = Date.now();
 		if (now - this.lastExecutedAt > this.interval) {
 			if (this.timeoutId === undefined) {

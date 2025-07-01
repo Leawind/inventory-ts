@@ -15,11 +15,11 @@ Deno.test('ThrottledAction simple', async () => {
 	///             e---------T
 
 	const t = new TimeRuler(0);
-	ta.urge();
+	ta.execute();
 	assertStrictEquals(executeTimes, 1);
 
 	await t.til(100);
-	ta.urge();
+	ta.execute();
 
 	await t.til(150);
 	assertStrictEquals(executeTimes, 1);
@@ -42,7 +42,7 @@ Deno.test('ThrottledAction crazy', async () => {
 	const t = new TimeRuler(0);
 	for (let i = 0; i < 350; i++) {
 		await t.til(i);
-		ta.urge();
+		ta.execute();
 	}
 	await t.til(450);
 	assertStrictEquals(executeTimes, 5);
@@ -54,13 +54,13 @@ Deno.test('ThrottledAction executeImmediately should run instantly', async () =>
 		times++;
 	});
 	assertStrictEquals(times, 0);
-	ta.urge();
+	ta.execute();
 	assertStrictEquals(times, 1);
 	ta.executeImmediately();
 	assertStrictEquals(times, 2);
-	ta.urge();
+	ta.execute();
 	assertStrictEquals(times, 2);
-	await ta.urge();
+	await ta.execute();
 	assertStrictEquals(times, 3);
 });
 
@@ -91,18 +91,18 @@ Deno.test('ThrottledAction byInterval and byFrequency create instances with expe
 	assertStrictEquals(b, 1);
 });
 
-Deno.test('ThrottledAction urge returns a promise if executed later', async () => {
+Deno.test('ThrottledAction execute returns a promise if executed later', async () => {
 	let val = 0;
 	const ta = new ThrottledAction(() => {
 		return ++val;
 	}, 200);
 
 	const t = new TimeRuler(0);
-	ta.urge(); // execute immediately
+	ta.execute(); // execute immediately
 	assertStrictEquals(val, 1);
 
 	await t.til(50);
-	const promise = ta.urge(); // will delay
+	const promise = ta.execute(); // will delay
 	assertStrictEquals(val, 1); // still only one execution
 
 	await t.til(250);
