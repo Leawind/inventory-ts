@@ -31,7 +31,7 @@ export class StaticResourceManager {
 	 * Creates a new StaticResourceManager instance.
 	 *
 	 * @param base - The base directory path where static resources are located.
-	 * @param relativePath - The relative path to the base directory.
+	 * @param relativePath - The relative path added to the base directory.
 	 * @param fetchOptions - Refer to [Window: fetch() method - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#options)
 	 */
 	public static at(base: string, relativePath: string = '.', fetchOptions?: RequestInit): StaticResourceManager {
