@@ -46,6 +46,7 @@
 	},
 	"imports": {
 		"@deno/dnt": "jsr:@deno/dnt@^0.41.3",
+		"@leawind/delegate": "jsr:@leawind/delegate@^0.6.0",
 		"@std": "jsr:@std",
 		"@/": "./src/"
 	},

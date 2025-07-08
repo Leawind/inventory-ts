@@ -1,4 +1,4 @@
-import { Delegate } from 'jsr:@leawind/delegate@0.4';
+import { Delegate } from '@leawind/delegate';
 
 interface ILock {
 	/**
@@ -135,7 +135,7 @@ export class UnfairLock implements ILock {
 
 	public acquire(): Promise<void> {
 		if (!this.isLocked()) {
-			this.promise = new Promise((resolve) => this.resolveFn = resolve);
+			this.promise = new Promise((resolve) => (this.resolveFn = resolve));
 		}
 		return this.promise!;
 	}

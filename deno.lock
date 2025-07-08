@@ -7,6 +7,7 @@
     "jsr:@denosaurs/plug@1": "1.1.0",
     "jsr:@leawind/delegate@*": "0.4.1",
     "jsr:@leawind/delegate@0.4": "0.4.1",
+    "jsr:@leawind/delegate@0.6": "0.6.0",
     "jsr:@leawind/inventory@0.4.6": "0.4.6",
     "jsr:@std/assert@*": "1.0.11",
     "jsr:@std/assert@0.223": "0.223.0",
@@ -67,6 +68,9 @@
     },
     "@leawind/delegate@0.4.1": {
       "integrity": "882bd86d38af9864d6e060a548b2e7b3fd021882d2a1f3b6980780a250cf2fe8"
+    },
+    "@leawind/delegate@0.6.0": {
+      "integrity": "37b5638a8ba0393d40f16f8cfc1788dff3b597bdb3251633d5893c9c366f3e24"
     },
     "@leawind/inventory@0.4.6": {
       "integrity": "a6841d4c33e864da5e6d6b70208572c4c499c1a2420552ea20191c4c78000eb1"
@@ -168,7 +172,8 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@deno/dnt@~0.41.3"
+      "jsr:@deno/dnt@~0.41.3",
+      "jsr:@leawind/delegate@0.6"
     ]
   }
 }
