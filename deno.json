@@ -6,6 +6,7 @@
 		"./algorithm": "./src/algorithm/index.ts",
 		"./call_stack": "./src/call-stack/index.ts",
 		"./comap": "./src/comap.ts",
+		"./communication": "./src/communication/index.ts",
 		"./csv": "./src/csv/index.ts",
 		"./deferred": "./src/deferred/index.ts",
 		"./imagine": "./src/imagine/index.ts",
