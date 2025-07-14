@@ -32,7 +32,7 @@ jobs:
             - name: Install Deno
               uses: denoland/setup-deno@v1
               with:
-                  deno-version: v2.2.x
+                  deno-version: v2.3.x
             - working-directory: ./examples/deno
               run: deno test
     pnpm:
