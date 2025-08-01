@@ -60,3 +60,25 @@ export function rebasePath(rpath: string, fromBase: string, toBase: string): str
 	}
 	return result;
 }
+
+export function percent(a: number, b: number): string {
+	return (((b - a) / a) * 100).toFixed(2) + '%';
+}
+
+export const pyutils = {
+	ord(c: string): number {
+		return c.charCodeAt(0);
+	},
+	chr(n: number): string {
+		return String.fromCharCode(n);
+	},
+	bin(n: number): string {
+		return ((n | 0) >>> 0).toString(2).padStart(32, '0');
+	},
+	hex(n: number): string {
+		return ((n | 0) >>> 0).toString(16).padStart(8, '0');
+	},
+	oct(n: number): string {
+		return ((n | 0) >>> 0).toString(8).padStart(11, '0');
+	},
+};
