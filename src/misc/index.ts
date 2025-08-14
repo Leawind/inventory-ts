@@ -61,24 +61,37 @@ export function rebasePath(rpath: string, fromBase: string, toBase: string): str
 	return result;
 }
 
-export function percent(a: number, b: number): string {
-	return (((b - a) / a) * 100).toFixed(2) + '%';
+export function ord(c: string): number {
+	return c.charCodeAt(0);
+}
+export function chr(n: number): string {
+	return String.fromCharCode(n);
+}
+export function bin(n: number): string {
+	return ((n | 0) >>> 0).toString(2).padStart(32, '0');
+}
+export function hex(n: number): string {
+	return ((n | 0) >>> 0).toString(16).padStart(8, '0');
+}
+export function oct(n: number): string {
+	return ((n | 0) >>> 0).toString(8).padStart(11, '0');
 }
 
-export const pyutils = {
-	ord(c: string): number {
-		return c.charCodeAt(0);
-	},
-	chr(n: number): string {
-		return String.fromCharCode(n);
-	},
-	bin(n: number): string {
-		return ((n | 0) >>> 0).toString(2).padStart(32, '0');
-	},
-	hex(n: number): string {
-		return ((n | 0) >>> 0).toString(16).padStart(8, '0');
-	},
-	oct(n: number): string {
-		return ((n | 0) >>> 0).toString(8).padStart(11, '0');
-	},
-};
+export function range(to: number): Iterable<number>;
+export function range(begin: number, end: number, step?: number): Iterable<number>;
+export function* range(...args: [number] | [number, number, step?: number]): Iterable<number> {
+	if (args.length === 1) {
+		for (let i = 0; i < args[0]; i++) {
+			yield i;
+		}
+	} else {
+		const [begin, end, step = 1] = args;
+		if (step > 0) {
+			for (let i = begin; i < end; i += step) yield i;
+		} else if (step < 0) {
+			for (let i = begin; i > end; i += step) yield i;
+		} else {
+			throw new Error('step must not be zero');
+		}
+	}
+}
