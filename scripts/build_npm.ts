@@ -30,6 +30,15 @@ await build({
 		license: META.license,
 		description: '',
 		private: false,
+		exports: Object.fromEntries(
+			Object.entries(META.exports)
+				.map(([key, value]) => [
+					key,
+					value
+						.replace(/^\.\/src/, './esm')
+						.replace(/\.ts$/, '.js'),
+				]),
+		),
 		files: [
 			'esm',
 		],

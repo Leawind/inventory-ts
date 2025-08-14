@@ -27,6 +27,7 @@
 		"dev": "deno test --watch --parallel -R",
 		"test": "deno test --parallel -R",
 		"prepare": "deno task gen-index && deno fmt && deno lint && deno task test && deno publish --dry-run",
+		"prepare-npm": "deno task gen-index && deno fmt && deno lint && deno task test && deno task build-npm && cd npm && npm publish --dry-run",
 		"gen-index": "deno -A ./scripts/gen_index.ts",
 		"build-npm": "deno run -A scripts/build_npm.ts"
 	},
