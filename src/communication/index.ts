@@ -1,4 +1,4 @@
-import { Deferred } from '@leawind/inventory/deferred';
+import { Deferred } from '@/deferred/index.ts';
 
 export interface IBasePeer {
 	send(data: string): void;
