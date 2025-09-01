@@ -1,5 +1,5 @@
 import * as posix_path from '@std/path@1/posix';
-import type { JsonValue } from '@leawind/inventory/types';
+import type { JsonValue } from '@/types.ts';
 
 export * from '@/misc/zone.ts';
 export * from '@/misc/parsing.ts';
