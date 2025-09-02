@@ -1,6 +1,6 @@
 {
 	"name": "@leawind/inventory",
-	"version": "0.11.7",
+	"version": "0.12.0",
 	"license": "MIT",
 	"exports": {
 		"./algorithm": "./src/algorithm/index.ts",
@@ -20,6 +20,7 @@
 		"./test_utils": "./src/test-utils.ts",
 		"./throttled_action": "./src/throttled-action/index.ts",
 		"./tree": "./src/tree.ts",
+		"./tstr": "./src/tstr/index.ts",
 		"./types": "./src/types.ts",
 		"./waited": "./src/waited/index.ts",
 		"./wash": "./src/wash/index.ts",

@@ -15,6 +15,7 @@ export * as static_resource from '@/static-resource/index.ts';
 export * as test_utils from '@/test-utils.ts';
 export * as throttled_action from '@/throttled-action/index.ts';
 export * as tree from '@/tree.ts';
+export * as tstr from '@/tstr/index.ts';
 export * as types from '@/types.ts';
 export * as waited from '@/waited/index.ts';
 export * as wash from '@/wash/index.ts';
