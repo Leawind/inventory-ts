@@ -170,10 +170,16 @@ export class Wash {
 		return this.env.get('PATHEXT')?.split(';') ?? [];
 	}
 	public findExecutableFile(name: string): string | null {
-		const dirs = [this.cwd, ...this.getPaths()];
-		for (const dir of dirs) {
-			const path = std_path.join(dir, name);
-			try {
+		try {
+			if (std_fs.existsSync(name)) {
+				if (Deno.statSync(name).isFile) {
+					return name;
+				}
+			}
+
+			const dirs = [this.cwd, ...this.getPaths()];
+			for (const dir of dirs) {
+				const path = std_path.join(dir, name);
 				if (this.#omitExtutableExt) {
 					for (const ext of this.getPathExts()) {
 						const pathext = path + ext;
@@ -190,8 +196,8 @@ export class Wash {
 						}
 					}
 				}
-			} catch { /* ignore */ }
-		}
+			}
+		} catch { /* ignore */ }
 		return null;
 	}
 
