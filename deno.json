@@ -25,7 +25,7 @@
 	},
 	"tasks": {
 		"dev": "deno test --watch --parallel -R",
-		"test": "deno test --parallel -R",
+		"test": "deno test --parallel -R --allow-env",
 		"gen-index": "deno -A ./scripts/gen_index.ts",
 		"build-npm": "deno run -A scripts/build_npm.ts",
 		"prepare": "deno task gen-index && deno fmt && deno lint && deno task test && deno publish --dry-run",
