@@ -1,6 +1,6 @@
 {
 	"name": "@leawind/inventory",
-	"version": "0.11.4",
+	"version": "0.11.5",
 	"license": "MIT",
 	"exports": {
 		"./algorithm": "./src/algorithm/index.ts",
@@ -9,6 +9,7 @@
 		"./communication": "./src/communication/index.ts",
 		"./csv": "./src/csv/index.ts",
 		"./deferred": "./src/deferred/index.ts",
+		"./func_type": "./src/func-type/index.ts",
 		"./imagine": "./src/imagine/index.ts",
 		"./list_iterator": "./src/list-iterator/index.ts",
 		"./lock": "./src/lock/index.ts",
@@ -21,11 +22,12 @@
 		"./tree": "./src/tree.ts",
 		"./types": "./src/types.ts",
 		"./waited": "./src/waited/index.ts",
+		"./wash": "./src/wash/index.ts",
 		".": "./src/index.ts"
 	},
 	"tasks": {
 		"dev": "deno test --watch --parallel -R",
-		"test": "deno test --parallel -R --allow-env",
+		"test": "deno test --parallel -A",
 		"gen-index": "deno -A ./scripts/gen_index.ts",
 		"build-npm": "deno run -A scripts/build_npm.ts",
 		"prepare": "deno task gen-index && deno fmt && deno lint && deno task test && deno publish --dry-run",
