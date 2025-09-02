@@ -1,10 +1,5 @@
 import { assertEquals } from '@std/assert/equals';
-import { cmd, r } from './utils.ts';
-
-Deno.test('r', () => {
-	assertEquals(r`abcd`, 'abcd');
-	assertEquals(r`\t\r\n\a\b`, '\\t\\r\\n\\a\\b');
-});
+import { cmd } from './utils.ts';
 
 Deno.test('cmd', () => {
 	assertEquals(cmd``, []);

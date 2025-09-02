@@ -1,6 +1,7 @@
 import * as std_fs from 'jsr:@std/fs@1';
 import * as std_path from 'jsr:@std/path@1';
-import { cmd, collectStream, r, Uint8ArrayCollector } from './utils.ts';
+import { r } from '@/tstr/index.ts';
+import { cmd, collectStream, Uint8ArrayCollector } from './utils.ts';
 export * from './utils.ts';
 
 const ENV_PATH_SEPARATOR = Deno.build.os === 'windows' ? ';' : ':';

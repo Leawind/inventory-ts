@@ -1,13 +1,4 @@
-export function r(strs: TemplateStringsArray, ...args: unknown[]): string {
-	let result = '';
-	for (let i = 0; i < strs.raw.length; i++) {
-		result += strs.raw[i];
-		if (i < args.length) {
-			result += args[i];
-		}
-	}
-	return result;
-}
+import { r } from '@/tstr/index.ts';
 
 export function cmd(strs: TemplateStringsArray, ...args: unknown[]): string[] {
 	const src = r(strs, ...args);
