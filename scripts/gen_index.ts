@@ -1,6 +1,7 @@
 import * as fs from '@std/fs';
+import { p } from 'jsr:@leawind/inventory@0.12.0/tstr';
 
-type ExportItem = {
+type ExportedItem = {
 	id: string;
 	export: string;
 	import: string;
@@ -20,9 +21,9 @@ function writeIfDifferentSync(path: string, content: string) {
 	}
 }
 
-const items: ExportItem[] = [];
+const exporteds: ExportedItem[] = [];
 
-Deno.readDirSync('./src')
+Deno.readDirSync(p`./src`)
 	.forEach((entry) => {
 		if (entry.isFile) {
 			if (
@@ -35,13 +36,17 @@ Deno.readDirSync('./src')
 
 			const name = entry.name.replace(/\.ts$/, '');
 
-			items.push({
+			exporteds.push({
 				id: normalizeName(name),
 				import: `@/${entry.name}`,
 				export: `./src/${entry.name}`,
 			});
 		} else if (entry.isDirectory) {
 			const name = entry.name;
+
+			if (name === 'bin') {
+				return;
+			}
 
 			const hasIndex = fs.existsSync(`./src/${name}/index.ts`);
 			const hasMod = fs.existsSync(`./src/${name}/mod.ts`);
@@ -52,7 +57,7 @@ Deno.readDirSync('./src')
 
 			const main = hasIndex ? 'index' : 'mod';
 
-			items.push({
+			exporteds.push({
 				id: normalizeName(name),
 				import: `@/${name}/${main}.ts`,
 				export: `./src/${name}/${main}.ts`,
@@ -60,23 +65,23 @@ Deno.readDirSync('./src')
 		}
 	});
 
-items.sort((a, b) => a.id.localeCompare(b.id));
+exporteds.sort((a, b) => a.id.localeCompare(b.id));
 
 {
 	// Write index.ts
-	const lines: string[] = items.map((item) => `export * as ${item.id} from '${item.import}';`);
+	const lines: string[] = exporteds.map((item) => `export * as ${item.id} from '${item.import}';`);
 	writeIfDifferentSync('./src/index.ts', lines.join('\n') + '\n');
 }
 
 {
 	// Write deno.json
-	const manifest = JSON.parse(Deno.readTextFileSync('./deno.json'));
+	const manifest = JSON.parse(Deno.readTextFileSync(p`./deno.json`));
 
-	manifest.exports = items.reduce<Record<string, string>>((exports, item) => {
+	manifest.exports = exporteds.reduce<Record<string, string>>((exports, item) => {
 		exports[`./${item.id}`] = item.export;
 		return exports;
 	}, {});
 
 	manifest.exports['.'] = './src/index.ts';
-	writeIfDifferentSync('./deno.json', JSON.stringify(manifest, null, '\t') + '\n');
+	writeIfDifferentSync(p`./deno.json`, JSON.stringify(manifest, null, '\t') + '\n');
 }

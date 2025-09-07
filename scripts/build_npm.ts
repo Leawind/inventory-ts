@@ -1,7 +1,9 @@
 import { build, emptyDir } from '@deno/dnt';
+import { p } from 'jsr:@leawind/inventory@0.12.0/tstr';
+
 import META from '../deno.json' with { type: 'json' };
 
-const OUTPUT_DIR = './npm';
+const OUTPUT_DIR = p`./npm`;
 
 await emptyDir(OUTPUT_DIR);
 
@@ -61,4 +63,4 @@ await build({
 [
 	'README.md',
 	'LICENSE',
-].forEach((file) => Deno.copyFileSync(`./${file}`, `./${OUTPUT_DIR}/${file}`));
+].forEach((file) => Deno.copyFileSync(p`./${file}`, p`./${OUTPUT_DIR}/${file}`));
