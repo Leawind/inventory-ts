@@ -1,6 +1,7 @@
 import * as std_fs from 'jsr:@std/fs@1';
 import * as std_path from 'jsr:@std/path@1';
 import { r } from '@/tstr/index.ts';
+import { EnvManager } from '@/env-manager/index.ts';
 import { cmd, collectStream, Uint8ArrayCollector } from './utils.ts';
 export * from './utils.ts';
 
@@ -12,15 +13,39 @@ type WashCommand = (
 	stderr: WritableStream<Uint8Array>,
 ) => Promise<number>;
 
+type Executable = {
+	execute(): Promise<WashOutput>;
+	toString(): string;
+};
+
 export class Wash {
 	private static readonly encoder = new TextEncoder();
 	private static readonly decoder = new TextDecoder();
 
+	/**
+	 * Current working directory for command execution
+	 */
 	public cwd: string = Deno.cwd();
-	public env: Map<string, string> = new Map();
-	public commands: Map<string, WashCommand> = new Map();
+
+	/**
+	 * Environment variables manager
+	 */
+	public readonly env: EnvManager = EnvManager.platform();
+
+	/**
+	 * Custom registered commands
+	 */
+	public readonly commands: Map<string, WashCommand> = new Map();
 
 	#omitExtutableExt: boolean = false;
+
+	/**
+	 * Set whether to omit executable file extensions on Windows
+	 *
+	 * ### Params
+	 *
+	 * - `v` Whether to omit executable extensions
+	 */
 	public omitExecutableExtOnWindows(v: boolean): this {
 		this.#omitExtutableExt = v && Deno.build.os === 'windows';
 		return this;
@@ -29,38 +54,94 @@ export class Wash {
 	public constructor() {}
 
 	/**
-	 * Execute a executable file
+	 * Create a executable object
+	 *
+	 * Throws an error if the specified executable file is not found.
 	 *
 	 * ### Params
 	 *
-	 * - `name` The name of the executable file
+	 * - `name` Name of executable file
+	 * - `args` The arguments to pass to the executable file
+	 *
+	 * ### Example
+	 *
+	 * ```ts
+	 * const wash = Wash.default();
+	 * const exe = wash.executable('node', '--version');
+	 * const output = await exe.execute();
+	 * console.log(output.stdout.utf8);
+	 * ```
+	 */
+	public executable(exe: string, ...args: string[]): Executable {
+		const exePath = this.findExecutableFile(exe);
+		if (exePath === null) {
+			throw new Error(r`Executable not found: ${exe}`);
+		}
+
+		return {
+			execute: async () => {
+				const child = new Deno.Command(exePath, {
+					args,
+					cwd: this.cwd,
+					env: this.getEnvObject(),
+					stdout: 'piped',
+					stderr: 'piped',
+				}).spawn();
+
+				const [stdout, stderr] = await Promise.all([
+					collectStream(child.stdout, (chunk) => Deno.stdout.write(chunk)),
+					collectStream(child.stderr, (chunk) => Deno.stderr.write(chunk)),
+				]);
+
+				const { success, code, signal } = await child.status;
+				return new WashOutput(success, code, signal, stdout, stderr);
+			},
+			toString: () => `${exePath} ${args.map(wrapArg).join(' ')}`,
+		};
+
+		function wrapArg(arg: string): string {
+			if (arg.includes(' ') || arg.includes('"')) {
+				arg = arg.replaceAll('"', '"');
+				arg = `"${arg}"`;
+			}
+			return arg;
+		}
+	}
+
+	/**
+	 * Execute an executable file
+	 *
+	 * ### Params
+	 *
+	 * - `name` Name of executable file
 	 * - `args` The arguments to pass to the executable file
 	 *
 	 * ### Returns
 	 *
 	 * An object represents the output of the execution
 	 */
-	public async exec(name: string, ...args: string[]): Promise<WashOutput> {
-		const executable = this.findExecutableFile(name);
-		if (executable === null) {
-			throw new Error(r`Executable not found: ${name}`);
-		}
+	public exec(exe: string, ...args: string[]): Promise<WashOutput> {
+		return this.executable(exe, ...args).execute();
+	}
 
-		const child = new Deno.Command(executable, {
-			args,
-			cwd: this.cwd,
-			env: this.getEnvObject(),
-			stdout: 'piped',
-			stderr: 'piped',
-		}).spawn();
-
-		const [stdout, stderr] = await Promise.all([
-			collectStream(child.stdout, (chunk) => Deno.stdout.write(chunk)),
-			collectStream(child.stderr, (chunk) => Deno.stderr.write(chunk)),
-		]);
-
-		const { success, code, signal } = await child.status;
-		return new WashOutput(success, code, signal, stdout, stderr);
+	/**
+	 * Generates a shell command string for the given executable and arguments.
+	 *
+	 * ### Params
+	 *
+	 * - `name` Name of executable file
+	 * - `args` The arguments to pass to the command
+	 *
+	 * ### Example
+	 *
+	 * ```ts
+	 * const wash = Wash.default();
+	 * const commandString = wash.generateShellCommand('ls', '-la', '/home/user');
+	 * // Returns something like: "/bin/ls -la /home/user"
+	 * ```
+	 */
+	public generateShellCommand(exe: string, ...args: string[]): string {
+		return this.executable(exe, ...args).toString();
 	}
 
 	/**
@@ -68,14 +149,17 @@ export class Wash {
 	 *
 	 * ### Params
 	 *
-	 * - `name` The name of the command
+	 * - `name` The name of the command, can be:
+	 *   - executable file
+	 *   - custom command
+	 *   - built-in command
 	 * - `args` The arguments to pass to the command
 	 *
 	 * ### Returns
 	 *
 	 * An object represents the output of the command
 	 */
-	public async run(commandName: string, ...args: string[]): Promise<WashOutput> {
+	public async run(cmd: string, ...args: string[]): Promise<WashOutput> {
 		const stdout = new Uint8ArrayCollector();
 		stdout.ondata = (chunk) => Deno.stdout.write(chunk);
 
@@ -83,12 +167,12 @@ export class Wash {
 		stderr.ondata = (chunk) => Deno.stderr.write(chunk);
 
 		try {
-			return await this.exec(commandName, ...args);
+			return await this.exec(cmd, ...args);
 		} catch (_err) {
-			const command = this.commands.get(commandName);
+			const command = this.commands.get(cmd);
 			let code: number;
 			if (command === undefined) {
-				stderr.writable.getWriter().write(Wash.encoder.encode(r`Unrecognized command: ${commandName}`));
+				stderr.writable.getWriter().write(Wash.encoder.encode(r`Unrecognized command: ${cmd}`));
 				code = 1;
 			} else {
 				code = await command(args, stdout.writable, stderr.writable);
@@ -97,7 +181,20 @@ export class Wash {
 		}
 	}
 
+	/**
+	 * Register custom commands
+	 *
+	 * ### Params
+	 *
+	 * - `commands` Record mapping command names to functions
+	 */
 	public registerCommand(commands: Record<string, WashCommand>): this;
+	/**
+	 * Register custom command
+	 *
+	 * - `name` Single command name
+	 * - `command` Single command function
+	 */
 	public registerCommand(name: string, command: WashCommand): this;
 	public registerCommand(
 		...args:
@@ -116,7 +213,10 @@ export class Wash {
 		return this;
 	}
 
-	public registerDefaultCommand(): this {
+	/**
+	 * Register default built-in commands (cd, pwd, echo)
+	 */
+	public registerDefaultCommands(): this {
 		const self = this as Wash;
 		return this.registerCommand({
 			cd(args, _stdout, stderr) {
@@ -148,12 +248,22 @@ export class Wash {
 		});
 	}
 
+	/**
+	 * Convert environment variables to a record object, with PATH properly formatted for the current OS
+	 *
+	 * ### Returns
+	 *
+	 * Record of environment variables
+	 */
 	public getEnvObject(): Record<string, string> {
-		const obj = Object.fromEntries(this.env);
-		obj.PATH = this.env.get('PATH')?.split(';').join(ENV_PATH_SEPARATOR) ?? '';
-		return obj;
+		const records = this.env.toRecords();
+		records.PATH = this.env.get('PATH')?.split(';').join(ENV_PATH_SEPARATOR) ?? '';
+		return records;
 	}
 
+	/**
+	 * Import environment variables from the parent process
+	 */
 	public importParentEnvs(): this {
 		for (const [key, value] of Object.entries(Deno.env.toObject())) {
 			this.env.set(key.toUpperCase(), value);
@@ -164,12 +274,39 @@ export class Wash {
 		return this;
 	}
 
+	/**
+	 * Get the list of paths in the PATH environment variable
+	 *
+	 * ### Returns
+	 *
+	 * Array of path strings
+	 */
 	public getPaths(): string[] {
 		return this.env.get('PATH')?.split(';') ?? [];
 	}
+
+	/**
+	 * Get the list of executable file extensions from PATHEXT environment variable
+	 *
+	 * ### Returns
+	 *
+	 * Array of file extension strings
+	 */
 	public getPathExts(): string[] {
 		return this.env.get('PATHEXT')?.split(';') ?? [];
 	}
+
+	/**
+	 * Find an executable file in the current directory or PATH directories
+	 *
+	 * ### Params
+	 *
+	 * - `name` Name of the executable to find
+	 *
+	 * ### Returns
+	 *
+	 * Full path to the executable file, or null if not found
+	 */
 	public findExecutableFile(name: string): string | null {
 		try {
 			if (std_fs.existsSync(name)) {
@@ -202,14 +339,42 @@ export class Wash {
 		return null;
 	}
 
+	/**
+	 * Execute a command using template string syntax
+	 *
+	 * ### Params
+	 *
+	 * - `strs` Template strings array
+	 * - `intercepts` Template values
+	 *
+	 * ### Returns
+	 *
+	 * Promise resolving to command output
+	 *
+	 * ### Example
+	 *
+	 * ```ts
+	 * const e = Wash.default().e;
+	 * await e`echo Hello World`;
+	 * ```
+	 */
 	public e(strs: TemplateStringsArray, ...intercepts: unknown[]): Promise<WashOutput> {
 		const [command, ...args] = cmd(strs, ...intercepts);
 		return this.run(command, ...args);
 	}
 
+	/**
+	 * Create a Wash instance with default configuration
+	 *
+	 * Includes default commands, parent environment variables, and Windows executable extension handling
+	 *
+	 * ### Returns
+	 *
+	 * Configured Wash instance
+	 */
 	public static default(): Wash {
 		return new Wash()
-			.registerDefaultCommand()
+			.registerDefaultCommands()
 			.importParentEnvs()
 			.omitExecutableExtOnWindows(true);
 	}
