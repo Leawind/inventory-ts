@@ -7,8 +7,17 @@ type ExportedItem = {
 	import: string;
 };
 
+type BinItem = {
+	id: string;
+	path: string;
+};
+
 function normalizeName(name: string) {
 	return name.replace(/[^a-zA-Z0-9_$]/g, '_');
+}
+
+function isValidBinName(name: string): boolean {
+	return /^\p{ID_Start}\p{ID_Continue}*$/u.test(name);
 }
 
 function writeIfDifferentSync(path: string, content: string) {
@@ -22,6 +31,7 @@ function writeIfDifferentSync(path: string, content: string) {
 }
 
 const exporteds: ExportedItem[] = [];
+const bins: BinItem[] = [];
 
 Deno.readDirSync(p`./src`)
 	.forEach((entry) => {
@@ -45,23 +55,34 @@ Deno.readDirSync(p`./src`)
 			const name = entry.name;
 
 			if (name === 'bin') {
-				return;
+				Deno.readDirSync(p`./src/bin`).forEach((entry) => {
+					if (entry.isFile) {
+						const name = entry.name.replace(/\.ts$/, '');
+						if (!isValidBinName(name)) {
+							throw new Error(`Invalid bin name '${name}'`);
+						}
+						bins.push({
+							id: name,
+							path: `./src/bin/${entry.name}`,
+						});
+					}
+				});
+			} else {
+				const hasIndex = fs.existsSync(`./src/${name}/index.ts`);
+				const hasMod = fs.existsSync(`./src/${name}/mod.ts`);
+
+				if (hasIndex && hasMod) {
+					throw new Error(`Both 'index.ts' and 'mod.ts' exist in '${name}'`);
+				}
+
+				const main = hasIndex ? 'index' : 'mod';
+
+				exporteds.push({
+					id: normalizeName(name),
+					import: `@/${name}/${main}.ts`,
+					export: `./src/${name}/${main}.ts`,
+				});
 			}
-
-			const hasIndex = fs.existsSync(`./src/${name}/index.ts`);
-			const hasMod = fs.existsSync(`./src/${name}/mod.ts`);
-
-			if (hasIndex && hasMod) {
-				throw new Error(`Both 'index.ts' and 'mod.ts' exist in '${name}'`);
-			}
-
-			const main = hasIndex ? 'index' : 'mod';
-
-			exporteds.push({
-				id: normalizeName(name),
-				import: `@/${name}/${main}.ts`,
-				export: `./src/${name}/${main}.ts`,
-			});
 		}
 	});
 
@@ -77,11 +98,25 @@ exporteds.sort((a, b) => a.id.localeCompare(b.id));
 	// Write deno.json
 	const manifest = JSON.parse(Deno.readTextFileSync(p`./deno.json`));
 
-	manifest.exports = exporteds.reduce<Record<string, string>>((exports, item) => {
-		exports[`./${item.id}`] = item.export;
-		return exports;
-	}, {});
+	// Exports
+	{
+		manifest.exports = exporteds.reduce<Record<string, string>>((exports, item) => {
+			exports[`./${item.id}`] = item.export;
+			return exports;
+		}, {});
 
-	manifest.exports['.'] = './src/index.ts';
+		manifest.exports['.'] = './src/index.ts';
+	}
+
+	// Install bins
+	{
+		if (!('tasks' in manifest)) {
+			manifest.tasks = {};
+		}
+		for (const bin of bins) {
+			delete manifest.tasks[bin.id];
+			manifest.tasks[`install-${bin.id}`] = `deno install -g -A -n ${bin.id} ${bin.path}`;
+		}
+	}
 	writeIfDifferentSync(p`./deno.json`, JSON.stringify(manifest, null, '\t') + '\n');
 }
