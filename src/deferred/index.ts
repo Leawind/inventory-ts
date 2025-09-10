@@ -1,34 +1,86 @@
 type ResolveFn<T> = (value: T | PromiseLike<T>) => void;
-type RejectFn = (reason?: unknown) => void;
+type RejectFn<E = unknown> = (reason?: E) => void;
 
-export class Deferred<T> extends Promise<T> {
+type State = 'pending' | 'resolved' | 'rejected';
+
+export class Deferred<T, E = unknown> extends Promise<T> {
+	#state: State = 'pending';
+
 	/**
 	 * Resolve the promise with a value or the result of another promise
 	 */
-	public resolve!: ResolveFn<T>;
+	resolve!: ResolveFn<T>;
 
 	/**
 	 * Reject the promise with a provided reason or error.
 	 */
-	public reject!: RejectFn;
+	reject!: RejectFn<E>;
+
+	public get state(): 'pending' | 'resolved' | 'rejected' {
+		return this.#state;
+	}
+
+	public get isPending(): boolean {
+		return this.#state === 'pending';
+	}
+
+	public get isFulfilled(): boolean {
+		return this.#state !== 'pending';
+	}
+
+	public get isResolved(): boolean {
+		return this.#state === 'resolved';
+	}
+
+	public get isRejected(): boolean {
+		return this.#state === 'rejected';
+	}
 
 	/**
-	 * @param executor A callback used to initialize the promise. This callback is passed two arguments: a resolve callback used to resolve the promise with a value or the result of another promise, and a reject callback used to reject the promise with a provided reason or error.
+	 * ### Params
+	 *
+	 * - `executor` A callback used to initialize the promise. This callback is passed two arguments: a resolve callback used to resolve the promise with a value or the result of another promise, and a reject callback used to reject the promise with a provided reason or error.
 	 */
-	public constructor(executor?: (resolve: ResolveFn<T>, reject: RejectFn) => void) {
+	public constructor(executor?: (resolve: ResolveFn<T>, reject: RejectFn<E>) => void) {
 		let tempResolve: ResolveFn<T>;
-		let tempReject: RejectFn;
+		let tempReject: RejectFn<E>;
+		let tempState: State = 'pending';
 
 		super((resolve, reject) => {
 			tempResolve = resolve;
 			tempReject = reject;
 
 			if (executor) {
-				executor(resolve, reject);
+				executor(
+					(value: T | PromiseLike<T>) => {
+						if (tempState !== 'pending') return;
+						tempState = 'resolved';
+						resolve(value);
+					},
+					(reason?: E) => {
+						if (tempState !== 'pending') return;
+						tempState = 'rejected';
+						reject(reason);
+					},
+				);
 			}
 		});
 
-		this.reject = tempReject!;
-		this.resolve = tempResolve!;
+		// Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+		this.#state = tempState;
+		this.resolve = (value: T | PromiseLike<T>) => {
+			if (this.#state !== 'pending') {
+				throw new Error(`Deferred already ${this.#state}`);
+			}
+			this.#state = 'resolved';
+			tempResolve(value);
+		};
+		this.reject = (reason?: E) => {
+			if (this.#state !== 'pending') {
+				throw new Error(`Deferred already ${this.#state}`);
+			}
+			this.#state = 'rejected';
+			tempReject(reason);
+		};
 	}
 }
