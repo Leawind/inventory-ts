@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert/equals';
 import { interleave, p, r } from './index.ts';
-import * as std_path from 'jsr:@std/path@1';
+import * as std_path from '@std/path';
 
 Deno.test('xjoin', () => {
 	assertEquals(interleave([], []), []);

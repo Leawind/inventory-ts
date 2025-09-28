@@ -1,6 +1,6 @@
 //! Template Strings
 
-import * as std_path from 'jsr:@std/path@1';
+import * as std_path from '@std/path@1';
 
 /**
  * Interleaves two arrays by alternating their elements.
