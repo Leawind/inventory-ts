@@ -1,5 +1,5 @@
-import * as std_fs from 'jsr:@std/fs@1';
-import * as std_path from 'jsr:@std/path@1';
+import * as std_fs from '@std/fs@1';
+import * as std_path from '@std/path@1';
 import { r } from '@/tstr/index.ts';
 import { EnvManager } from '@/env-manager/index.ts';
 import { cmd, collectStream, Uint8ArrayCollector } from './utils.ts';
