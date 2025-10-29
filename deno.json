@@ -55,6 +55,11 @@
 		"@std": "jsr:@std",
 		"@/": "./src/"
 	},
+	"lint": {
+		"include": [
+			"src/**/*.ts"
+		]
+	},
 	"fmt": {
 		"useTabs": true,
 		"lineWidth": 120,
