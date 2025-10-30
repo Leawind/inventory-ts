@@ -8,6 +8,7 @@
     "jsr:@leawind/delegate@*": "0.4.1",
     "jsr:@leawind/delegate@0.4": "0.4.1",
     "jsr:@leawind/delegate@0.6": "0.6.0",
+    "jsr:@leawind/inventory@0.12.0": "0.12.0",
     "jsr:@leawind/inventory@0.4.6": "0.4.6",
     "jsr:@std/assert@*": "1.0.11",
     "jsr:@std/assert@0.223": "0.223.0",
@@ -76,6 +77,12 @@
     },
     "@leawind/inventory@0.4.6": {
       "integrity": "a6841d4c33e864da5e6d6b70208572c4c499c1a2420552ea20191c4c78000eb1"
+    },
+    "@leawind/inventory@0.12.0": {
+      "integrity": "75aa1e5d5867bf4e518dc2f6ccfef03d722ce7197c6456c9847ad7320ab7a8d6",
+      "dependencies": [
+        "jsr:@std/path@1"
+      ]
     },
     "@std/assert@0.223.0": {
       "integrity": "eb8d6d879d76e1cc431205bd346ed4d88dc051c6366365b1af47034b0670be24"
