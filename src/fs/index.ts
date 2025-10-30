@@ -109,13 +109,12 @@ export async function* walk(dirPath: string, depth: number = Infinity): AsyncIte
 	const symlinks: string[] = [];
 
 	for await (const entry of Deno.readDir(dirPath)) {
-		const entryPath = p`${dirPath}/${entry.name}`;
 		if (entry.isFile) {
-			files.push(entryPath);
+			files.push(entry.name);
 		} else if (entry.isDirectory) {
-			dirs.push(entryPath);
+			dirs.push(entry.name);
 		} else if (entry.isSymlink) {
-			symlinks.push(entryPath);
+			symlinks.push(entry.name);
 		}
 	}
 
