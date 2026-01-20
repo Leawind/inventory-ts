@@ -23,3 +23,4 @@ export * as tstr from '@/tstr/index.ts';
 export * as types from '@/types.ts';
 export * as waited from '@/waited/index.ts';
 export * as wash from '@/wash/index.ts';
+export * as xtype from '@/xtype/index.ts';

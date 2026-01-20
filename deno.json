@@ -28,6 +28,7 @@
 		"./types": "./src/types.ts",
 		"./waited": "./src/waited/index.ts",
 		"./wash": "./src/wash/index.ts",
+		"./xtype": "./src/xtype/index.ts",
 		".": "./src/index.ts"
 	},
 	"tasks": {
