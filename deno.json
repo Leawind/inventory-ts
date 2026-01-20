@@ -1,6 +1,6 @@
 {
 	"name": "@leawind/inventory",
-	"version": "0.13.1",
+	"version": "0.14.0",
 	"license": "MIT",
 	"exports": {
 		"./algorithm": "./src/algorithm/index.ts",
