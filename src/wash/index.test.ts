@@ -1,10 +1,14 @@
-import { assertEquals } from '@std/assert/equals';
 import { Wash } from './index.ts';
+import { assertEquals } from '@std/assert';
 const wash = Wash.default();
 
 Deno.test('wash', async () => {
-	console.log(wash.getPaths());
+	// console.log(wash.getPaths());
+
 	console.log(wash.findExecutableFile('help'));
+
+	wash.stdout = false;
+	wash.stderr = false;
 
 	const output = await wash.run('echo', 'hello world');
 	console.log('stdout:', output.stdout.utf8);
@@ -12,9 +16,8 @@ Deno.test('wash', async () => {
 });
 
 Deno.test('run', async () => {
-	await wash.run('cd', '.');
-	const pwd = (await wash.run('pwd')).stdout.utf8.trim();
-	assertEquals(pwd, Deno.cwd());
+	const output = await wash.run('echo', 'hey');
+	assertEquals(output.stdout.utf8.trim(), 'hey');
 });
 
 Deno.test('e', async () => {

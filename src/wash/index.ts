@@ -27,6 +27,9 @@ export class Wash {
 	 */
 	public cwd: string = Deno.cwd();
 
+	public stdout: boolean = true;
+	public stderr: boolean = true;
+
 	/**
 	 * Environment variables manager
 	 */
@@ -84,8 +87,8 @@ export class Wash {
 					args,
 					cwd: this.cwd,
 					env: this.getEnvObject(),
-					stdout: 'piped',
-					stderr: 'piped',
+					stdout: this.stdout ? 'piped' : 'null',
+					stderr: this.stderr ? 'piped' : 'null',
 				}).spawn();
 
 				const [stdout, stderr] = await Promise.all([
@@ -161,10 +164,14 @@ export class Wash {
 	 */
 	public async run(cmd: string, ...args: string[]): Promise<WashOutput> {
 		const stdout = new Uint8ArrayCollector();
-		stdout.ondata = (chunk) => Deno.stdout.write(chunk);
+		if (this.stdout) {
+			stdout.ondata = (chunk) => Deno.stdout.write(chunk);
+		}
 
 		const stderr = new Uint8ArrayCollector();
-		stderr.ondata = (chunk) => Deno.stderr.write(chunk);
+		if (this.stderr) {
+			stderr.ondata = (chunk) => Deno.stderr.write(chunk);
+		}
 
 		try {
 			return await this.exec(cmd, ...args);
