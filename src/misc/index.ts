@@ -191,3 +191,9 @@ export function sortObjectKeys<T extends JsonValue>(
 	}
 	return obj;
 }
+
+export function byPlatform<T>(value: Partial<Record<typeof Deno.build.os, T>>): T | undefined;
+export function byPlatform<T>(value: { _: T } & Partial<Record<typeof Deno.build.os, T>>): T;
+export function byPlatform<T>(value: Partial<Record<'_' | typeof Deno.build.os, T>>): T | undefined {
+	return value[Deno.build.os] ?? value._;
+}
