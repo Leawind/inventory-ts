@@ -175,10 +175,10 @@ export class Timestamp {
 		return Timestamp.from(ms);
 	}
 
-	public static END = Timestamp.from(Timestamp.MS_MAX * 2);
-	public static LIMIT_POS = Timestamp.from(Timestamp.MS_MAX);
-	public static LIMIT_NEG = Timestamp.from(1 - Timestamp.MS_MAX);
-	public static BEGIN = Timestamp.from(0);
+	public static END: Timestamp = Timestamp.from(Timestamp.MS_MAX * 2);
+	public static LIMIT_POS: Timestamp = Timestamp.from(Timestamp.MS_MAX);
+	public static LIMIT_NEG: Timestamp = Timestamp.from(1 - Timestamp.MS_MAX);
+	public static BEGIN: Timestamp = Timestamp.from(0);
 }
 
 export class TimeSpan {
@@ -277,7 +277,7 @@ export class TimeSpan {
 		}
 	}
 
-	public static FULL = new TimeSpan(Timestamp.BEGIN, Timestamp.END);
+	public static FULL: TimeSpan = new TimeSpan(Timestamp.BEGIN, Timestamp.END);
 
 	public static head(ts: TimestampLike): TimeSpan {
 		return TimeSpan.from([Timestamp.BEGIN, ts]);
@@ -381,5 +381,5 @@ export class TimeSpans {
 		}
 	}
 
-	public static FULL = new TimeSpans([TimeSpan.FULL]);
+	public static FULL: TimeSpans = new TimeSpans([TimeSpan.FULL]);
 }
