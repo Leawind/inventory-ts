@@ -103,3 +103,21 @@ export async function exists(path: string): Promise<boolean> {
 		return false;
 	}
 }
+
+/**
+ * Get the file info of a path synchronously
+ * @param path - The path to get the info of
+ * @returns The file info
+ */
+export function statSync(path: string): Deno.FileInfo {
+	return Deno.statSync(path);
+}
+
+/**
+ * Get the file info of a path
+ * @param path - The path to get the info of
+ * @returns The file info
+ */
+export function stat(path: string): Promise<Deno.FileInfo> {
+	return Deno.stat(path);
+}

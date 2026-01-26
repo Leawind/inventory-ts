@@ -30,6 +30,9 @@ export async function* walk(dirPath: string, depth: number = Infinity): AsyncIte
 	}
 
 	yield { path: dirPath, files, dirs, symlinks };
+	if (depth <= 1) {
+		return;
+	}
 	for (const subdir of dirs) {
 		const subdirPath = std_path.join(dirPath, subdir);
 		for await (const x of walk(subdirPath, depth - 1)) {
