@@ -92,8 +92,8 @@ export class Wash {
 				}).spawn();
 
 				const [stdout, stderr] = await Promise.all([
-					collectStream(child.stdout, (chunk) => Deno.stdout.write(chunk)),
-					collectStream(child.stderr, (chunk) => Deno.stderr.write(chunk)),
+					collectStream(child.stdout, this.stdout ? (chunk) => Deno.stdout.write(chunk) : undefined),
+					collectStream(child.stderr, this.stderr ? (chunk) => Deno.stderr.write(chunk) : undefined),
 				]);
 
 				const { success, code, signal } = await child.status;

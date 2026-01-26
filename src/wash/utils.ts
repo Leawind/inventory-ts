@@ -71,10 +71,10 @@ export class Uint8ArrayCollector {
 
 export async function collectStream(
 	input: ReadableStream<Uint8Array>,
-	onwrite: (chunk: Uint8Array) => void,
+	onwrite?: (chunk: Uint8Array) => void,
 ): Promise<Uint8Array> {
 	const collector = new Uint8ArrayCollector();
-	collector.ondata = onwrite;
+	if (onwrite) collector.ondata = onwrite;
 	await input.pipeTo(collector.writable);
 	return collector.collect();
 }
