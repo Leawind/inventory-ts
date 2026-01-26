@@ -1,3 +1,6 @@
+// deno-lint-ignore no-explicit-any
+export type Constructor<Inst, Params extends any[] = any[]> = new (...args: Params) => Inst;
+
 export type Awaitable<T> = Promise<T> | T;
 
 export type DeepPartial<T> = {
