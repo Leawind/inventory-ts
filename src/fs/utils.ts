@@ -1,5 +1,6 @@
 import * as std_path from '@std/path@1';
 import { r } from '@/tstr/index.ts';
+import { Path } from './path/index.ts';
 
 /**
  * Path string template
@@ -13,4 +14,8 @@ import { r } from '@/tstr/index.ts';
  */
 export function p(strs: TemplateStringsArray, ...args: unknown[]): string {
 	return std_path.normalize(r(strs, ...args));
+}
+
+export function P(strs: TemplateStringsArray, ...args: unknown[]): Path {
+	return new Path(std_path.normalize(r(strs, ...args)));
 }

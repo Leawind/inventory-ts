@@ -57,7 +57,7 @@ export async function isDirectory(path: string): Promise<boolean> {
  */
 export function isSymlinkSync(path: string): boolean {
 	try {
-		return Deno.statSync(path).isSymlink;
+		return Deno.lstatSync(path).isSymlink;
 	} catch {
 		return false;
 	}
@@ -70,7 +70,7 @@ export function isSymlinkSync(path: string): boolean {
  */
 export async function isSymlink(path: string): Promise<boolean> {
 	try {
-		return (await Deno.stat(path)).isSymlink;
+		return (await Deno.lstat(path)).isSymlink;
 	} catch {
 		return false;
 	}
@@ -83,7 +83,7 @@ export async function isSymlink(path: string): Promise<boolean> {
  */
 export function existsSync(path: string): boolean {
 	try {
-		Deno.statSync(path);
+		Deno.lstatSync(path);
 		return true;
 	} catch {
 		return false;
@@ -97,11 +97,19 @@ export function existsSync(path: string): boolean {
  */
 export async function exists(path: string): Promise<boolean> {
 	try {
-		await Deno.stat(path);
+		await Deno.lstat(path);
 		return true;
 	} catch {
 		return false;
 	}
+}
+
+export function lstatSync(path: string): Deno.FileInfo {
+	return Deno.lstatSync(path);
+}
+
+export function lstat(path: string): Promise<Deno.FileInfo> {
+	return Deno.lstat(path);
 }
 
 /**

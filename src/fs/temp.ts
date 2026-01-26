@@ -1,4 +1,4 @@
-import type { Awaitable } from '@leawind/inventory/types';
+import type { Awaitable } from '@/types.ts';
 import { existsSync } from './basic.ts';
 import { mkdir, mkdirSync, remove, removeSync, touch, touchSync } from './operate.ts';
 import { p } from './utils.ts';
