@@ -35,7 +35,7 @@ const DEFAULT_OPTIONS: TempOptions = {
 };
 
 function findTempPath(options: Partial<TempOptions> | undefined, message: string = 'Failed to find temp path'): string {
-	const { parent, prefix, suffix, maxTries } = Object.assign(DEFAULT_OPTIONS, options);
+	const { parent, prefix, suffix, maxTries } = Object.assign({}, DEFAULT_OPTIONS, options);
 
 	let tempPath: string | null = null;
 	for (let i = 0; i < maxTries; i++) {
