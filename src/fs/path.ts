@@ -207,7 +207,7 @@ export class Path {
 	 */
 	public constructor(public readonly path: string) {}
 
-	public get str() {
+	public get str(): string {
 		return this.path;
 	}
 
