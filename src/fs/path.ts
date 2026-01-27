@@ -45,6 +45,10 @@ export class Path {
 
 	public constructor(public readonly path: string) {}
 
+	public get str() {
+		return this.path;
+	}
+
 	public toString(): string {
 		return this.path;
 	}
