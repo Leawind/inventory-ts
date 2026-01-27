@@ -1,9 +1,9 @@
 import { assertEquals } from '@std/assert';
-import { IdSequencer } from './index.ts';
+import { IdGenerator } from './index.ts';
 
 Deno.test('IDGenerator - Basic Functionality', async (t) => {
 	await t.step('should generate the next value using nextGetter', () => {
-		const generator = new IdSequencer(
+		const generator = new IdGenerator(
 			0,
 			(last) => last + 10, // nextGetter: 加10
 			Infinity,
@@ -16,7 +16,7 @@ Deno.test('IDGenerator - Basic Functionality', async (t) => {
 	});
 
 	await t.step('should respect the available condition', () => {
-		const generator = new IdSequencer(
+		const generator = new IdGenerator(
 			0,
 			(last) => last + 1, // nextGetter: 递增1
 			Infinity,
@@ -30,7 +30,7 @@ Deno.test('IDGenerator - Basic Functionality', async (t) => {
 
 	await t.step('should handle complex available conditions', () => {
 		const usedIds = new Set([5, 8, 12]);
-		const generator = new IdSequencer(
+		const generator = new IdGenerator(
 			0,
 			(last) => last + 1,
 			Infinity,
@@ -59,7 +59,7 @@ Deno.test('IDGenerator - Basic Functionality', async (t) => {
 
 Deno.test('IDGenerator - State Management', async (t) => {
 	await t.step('should maintain state between calls to next', () => {
-		const generator = new IdSequencer(
+		const generator = new IdGenerator(
 			'A',
 			(last) => String.fromCharCode(last.charCodeAt(0) + 1), // A -> B -> C ...
 			Infinity,
@@ -74,7 +74,7 @@ Deno.test('IDGenerator - State Management', async (t) => {
 
 Deno.test('IDGenerator - Static ranged method', async (t) => {
 	await t.step('should create a cyclic ID generator within the specified range', () => {
-		const generator = IdSequencer.createRanged(1, 5); // low=1, high=5 -> range [1, 4] (high excluded in modulo)
+		const generator = IdGenerator.ranged(1, 5); // low=1, high=5 -> range [1, 4] (high excluded in modulo)
 
 		// The logic in ranged: ((i - low + 1) % (high - low)) + low
 		// (high - low) = 4
@@ -90,7 +90,7 @@ Deno.test('IDGenerator - Static ranged method', async (t) => {
 	});
 
 	await t.step('should respect the condition in ranged generator', () => {
-		const generator = IdSequencer.createRanged(
+		const generator = IdGenerator.ranged(
 			1,
 			5,
 			Infinity,
@@ -113,7 +113,7 @@ Deno.test('IDGenerator - Static ranged method', async (t) => {
 		// The current implementation would cause a divide-by-zero error in modulo.
 		// A robust implementation might handle this, but the current code doesn't.
 		// This test expects it to work for ranges where high > low.
-		const generator = IdSequencer.createRanged(5, 6); // Effectively only value 5
+		const generator = IdGenerator.ranged(5, 6); // Effectively only value 5
 		assertEquals(generator.next(), 5);
 		assertEquals(generator.next(), 5); // Should stay at 5
 	});
@@ -121,7 +121,7 @@ Deno.test('IDGenerator - Static ranged method', async (t) => {
 
 Deno.test('IDGenerator - Edge Cases', async (t) => {
 	await t.step('should work with string IDs', () => {
-		const generator = new IdSequencer(
+		const generator = new IdGenerator(
 			'id-0',
 			(last) => `id-${parseInt(last.split('-')[1]) + 1}`,
 			Infinity,
@@ -135,7 +135,7 @@ Deno.test('IDGenerator - Edge Cases', async (t) => {
 	});
 
 	await t.step('should work with object IDs (though unusual)', () => {
-		const generator = new IdSequencer(
+		const generator = new IdGenerator(
 			{ val: 0 },
 			(last) => ({ val: last.val + 1 }),
 			Infinity,
