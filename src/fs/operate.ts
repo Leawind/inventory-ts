@@ -1,5 +1,6 @@
 import * as std_path from '@std/path@1';
 import { walk } from './walk.ts';
+import { exists, existsSync } from './basic.ts';
 
 /**
  * Synchronously create a directory recursively
@@ -39,6 +40,7 @@ export async function makeParentDir(path: string): Promise<void> {
  * @param createParent - Whether to create the parent directory of the file
  */
 export async function touch(path: string, createParent: boolean = true): Promise<void> {
+	if (await exists(path)) return;
 	if (createParent) {
 		await makeParentDir(path);
 	}
@@ -51,6 +53,7 @@ export async function touch(path: string, createParent: boolean = true): Promise
  * @param createParent - Whether to create the parent directory of the file
  */
 export function touchSync(path: string, createParent: boolean = true): void {
+	if (existsSync(path)) return;
 	if (createParent) {
 		makeParentDirSync(path);
 	}
