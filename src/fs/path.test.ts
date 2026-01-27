@@ -97,7 +97,7 @@ Deno.test('fs/path: Path properties and methods', async (t) => {
 
 		await t.step('getparent returns parent directory', () => {
 			const path = new Path('/some/path/file.txt');
-			const parent = path.getparent();
+			const parent = path.getParent();
 			assertEquals(p`${parent}`, p`/some/path`);
 		});
 

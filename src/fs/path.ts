@@ -85,7 +85,18 @@ export class Path {
 		return new Path(std_path.relative(Path.str(to), this.path));
 	}
 
-	public getparent(): Path {
+	/**
+	 * Gets the parent directory of the current path.
+	 *
+	 * @returns A new Path instance representing the parent directory
+	 *
+	 * @example
+	 * ```ts
+	 * const path = new Path("/path/to/file.txt");
+	 * const parent = path.getParent(); // "/path/to"
+	 * ```
+	 */
+	public getParent(): Path {
 		return new Path(std_path.dirname(this.path));
 	}
 
