@@ -9,6 +9,7 @@
     "jsr:@leawind/delegate@0.4": "0.4.1",
     "jsr:@leawind/delegate@0.6": "0.6.0",
     "jsr:@leawind/inventory@0.12.0": "0.12.0",
+    "jsr:@leawind/inventory@0.15.0": "0.15.0",
     "jsr:@leawind/inventory@0.4.6": "0.4.6",
     "jsr:@std/assert@*": "1.0.11",
     "jsr:@std/assert@0.223": "0.223.0",
@@ -34,7 +35,9 @@
     "jsr:@std/path@~0.225.2": "0.225.2",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
-    "jsr:@webview/webview@*": "0.9.0"
+    "jsr:@webview/webview@*": "0.9.0",
+    "npm:@resvg/resvg-wasm@^2.6.2": "2.6.2",
+    "npm:commander@*": "14.0.0"
   },
   "jsr": {
     "@david/code-block-writer@13.0.3": {
@@ -80,6 +83,12 @@
     },
     "@leawind/inventory@0.12.0": {
       "integrity": "75aa1e5d5867bf4e518dc2f6ccfef03d722ce7197c6456c9847ad7320ab7a8d6",
+      "dependencies": [
+        "jsr:@std/path@1"
+      ]
+    },
+    "@leawind/inventory@0.15.0": {
+      "integrity": "ffd7c1fc0b8d5fb4c9169fa51cd10bfe7e2f61ec9869e18dcbba74262693ed3b",
       "dependencies": [
         "jsr:@std/path@1"
       ]
@@ -178,6 +187,14 @@
       "dependencies": [
         "jsr:@denosaurs/plug"
       ]
+    }
+  },
+  "npm": {
+    "@resvg/resvg-wasm@2.6.2": {
+      "integrity": "sha512-FqALmHI8D4o6lk/LRWDnhw95z5eO+eAa6ORjVg09YRR7BkcM6oPHU9uyC0gtQG5vpFLvgpeU4+zEAz2H8APHNw=="
+    },
+    "commander@14.0.0": {
+      "integrity": "sha512-2uM9rYjPvyq39NwLRqaiLtWHyDC1FvryJDa2ATTVims5YAS4PupsEQsDvP14FqhFr0P49CYDugi59xaxJlTXRA=="
     }
   },
   "remote": {

@@ -28,8 +28,11 @@ jobs:
         with:
           deno-version: v2.5.x
 
-      - name: Verify formatting
+      - name: Check formatting
         run: deno fmt --check
+
+      - name: Check index files
+        run: deno task index -- --check
 
       - name: Run linter
         run: deno lint
