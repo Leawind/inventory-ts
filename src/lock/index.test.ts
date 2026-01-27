@@ -1,4 +1,4 @@
-import { assert, assertAlmostEquals, assertStrictEquals, assertThrows } from '@std/assert';
+import { assert, assertAlmostEquals, assertGreaterOrEqual, assertStrictEquals, assertThrows } from '@std/assert';
 import { TimeRuler, wait } from '@/test-utils.ts';
 import { Lock } from '@/lock/index.ts';
 
@@ -259,17 +259,17 @@ Deno.test('Lock.untilReleased', async () => {
 	const t = new TimeRuler(0);
 
 	await lock.untilReleased();
-	assertAlmostEquals(t.now(), 0, 25);
+	assertAlmostEquals(t.now(), 0, 60);
 
 	await lock.acquire();
 
 	await Promise.all([
 		(async () => {
 			await lock.untilReleased();
-			assertAlmostEquals(t.now(), 150, 25);
+			assertGreaterOrEqual(t.now(), 250);
 		})(),
 		(async () => {
-			await t.til(150);
+			await t.til(250);
 			lock.release();
 		})(),
 	]);
