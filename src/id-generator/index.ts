@@ -4,6 +4,8 @@
  * filtering results through a predicate, and respecting a maximum iteration limit.
  */
 export class IdGenerator<T> {
+	private lastLastValue?: T;
+
 	/**
 	 * Constructs an IdSequencer instance.
 	 * @param lastValue - The initial last value (will not be returned as the first next()).
@@ -32,10 +34,13 @@ export class IdGenerator<T> {
 			count++;
 
 			if (count > this.maxTries) {
-				throw new Error('IdSequencer limit exceeded');
+				throw new Error(
+					`ID Generator exceeded maximum tries (${this.maxTries}). This may indicate that no valid ID can be generated with the current filter.`,
+				);
 			}
 		} while (!this.filter(i));
 
+		this.lastLastValue = this.lastValue;
 		this.lastValue = i;
 		return i;
 	}
@@ -65,20 +70,28 @@ export class IdGenerator<T> {
 	/**
 	 * Creates a number sequencer that cycles through a numeric range [low, high).
 	 * The range is exclusive of the high value.
+	 * @param low - The lower bound of the range (inclusive).
+	 * @param high - The upper bound of the range (exclusive).
 	 */
 	public static ranged(low: number, high: number): IdGenerator<number>;
 	/**
 	 * Creates a number sequencer with a numeric range and an attempt limit.
+	 * @param low - The lower bound of the range (inclusive).
+	 * @param high - The upper bound of the range (exclusive).
 	 * @param maxTries - Maximum attempts before throwing an error.
 	 */
 	public static ranged(low: number, high: number, maxTries: number): IdGenerator<number>;
 	/**
 	 * Creates a number sequencer with a numeric range and a custom filter.
+	 * @param low - The lower bound of the range (inclusive).
+	 * @param high - The upper bound of the range (exclusive).
 	 * @param filter - A predicate to validate candidate IDs.
 	 */
 	public static ranged(low: number, high: number, filter: (i: number) => boolean): IdGenerator<number>;
 	/**
 	 * Creates a number sequencer with a numeric range, limit, and filter.
+	 * @param low - The lower bound of the range (inclusive).
+	 * @param high - The upper bound of the range (exclusive).
 	 * @param maxTries - Maximum attempts before throwing an error.
 	 * @param filter - A predicate to validate candidate IDs.
 	 */
@@ -88,19 +101,12 @@ export class IdGenerator<T> {
 		maxTries: number,
 		filter: (i: number) => boolean,
 	): IdGenerator<number>;
-	/**
-	 * Implementation of the ranged factory method.
-	 * Handles all overload signatures by examining the number and types of arguments.
-	 * @param args - Arguments corresponding to one of the overload signatures.
-	 * @returns An IdSequencer instance configured for numeric ranges.
-	 * @throws {Error} If the arguments are invalid.
-	 */
 	public static ranged(
 		...args:
 			| [low: number, high: number]
-			| [low: number, high: number, limit: number]
+			| [low: number, high: number, maxTries: number]
 			| [low: number, high: number, filter: (i: number) => boolean]
-			| [low: number, high: number, limit: number, filter: (i: number) => boolean]
+			| [low: number, high: number, maxTries: number, filter: (i: number) => boolean]
 	) {
 		const [low, high] = args;
 		// Generates the next number in the range, wrapping around to low when reaching high.
@@ -116,7 +122,9 @@ export class IdGenerator<T> {
 					case 'function':
 						return new IdGenerator(low, nextValueGetter, undefined, args[2]);
 					default:
-						throw new Error('Invalid argument');
+						throw new Error(
+							'Invalid argument provided to IdGenerator.ranged(). Expected a number or function for the third parameter.',
+						);
 				}
 			case 4:
 				return new IdGenerator(low, nextValueGetter, args[2], args[3]);
