@@ -50,6 +50,19 @@ export class IdGenerator<T> {
 	}
 
 	/**
+	 * Reverts the last call to next(), restoring the previous value.
+	 * @throws {Error} If there is no previous value to revert to.
+	 */
+	public revoke(): void {
+		if (this.lastLastValue === undefined) {
+			throw new Error(
+				'Cannot revoke ID Generator to previous state because no previous value exists. At least one ID must be generated before revoking.',
+			);
+		}
+		this.lastValue = this.lastLastValue;
+	}
+
+	/**
 	 * Creates a number sequencer that cycles through a numeric range [low, high).
 	 * The range is exclusive of the high value.
 	 */
