@@ -17,15 +17,6 @@ jobs:
       - name: Setup repo
         uses: actions/checkout@v4
 
-      - name: Install Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-          
       - name: Install Deno
         uses: denoland/setup-deno@v1
         with:
@@ -45,6 +36,15 @@ jobs:
 
       - name: Publish to JSR
         run: deno publish
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Build NPM
         run: deno run -A scripts/build_npm.ts
