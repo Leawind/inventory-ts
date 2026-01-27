@@ -48,11 +48,11 @@ export class Options<T> {
 	});
 
 	//Readonly properties representing the options type, partial options, deep partial options, and required options.
-	public readonly Type: T = null!;
-	public readonly Partial: Partial<T> = null!;
-	public readonly DeepPartial: DeepPartial<T> = null!;
-	public readonly Require: Required<T> = null!;
-	public readonly DeepRequire: DeepRequire<T> = null!;
+	public readonly Type!: T;
+	public readonly Partial!: Partial<T>;
+	public readonly DeepPartial!: DeepPartial<T>;
+	public readonly Require!: Required<T>;
+	public readonly DeepRequire!: DeepRequire<T>;
 
 	public readonly Default: T;
 
