@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert';
+import { assertEquals, assertThrows } from '@std/assert';
 import { IdGenerator } from './index.ts';
 
 Deno.test('IDGenerator - Basic Functionality', async (t) => {
@@ -70,6 +70,55 @@ Deno.test('IDGenerator - State Management', async (t) => {
 		assertEquals(generator.next(), 'C');
 		assertEquals(generator.next(), 'D');
 	});
+
+	await t.step('should allow setting the last value with setLast', () => {
+		const generator = new IdGenerator(
+			0,
+			(last) => last + 1,
+			Infinity,
+			() => true,
+		);
+
+		assertEquals(generator.next(), 1);
+		assertEquals(generator.next(), 2);
+
+		generator.setLast(10);
+		assertEquals(generator.next(), 11);
+		assertEquals(generator.next(), 12);
+	});
+
+	await t.step('should revoke to the previous value', () => {
+		const generator = new IdGenerator(
+			0,
+			(last) => last + 1,
+			Infinity,
+			() => true,
+		);
+
+		assertEquals(generator.next(), 1);
+		assertEquals(generator.next(), 2);
+
+		assertEquals(generator.next(), 3);
+
+		generator.revoke();
+		assertEquals(generator.next(), 3); // Should return to the previous value
+	});
+
+	await t.step('should throw error when revoking without previous value', () => {
+		const generator = new IdGenerator(
+			0,
+			(last) => last + 1,
+			Infinity,
+			() => true,
+		);
+
+		assertThrows(
+			() => {
+				generator.revoke();
+			},
+			Error,
+		);
+	});
 });
 
 Deno.test('IDGenerator - Static ranged method', async (t) => {
@@ -117,6 +166,31 @@ Deno.test('IDGenerator - Static ranged method', async (t) => {
 		assertEquals(generator.next(), 5);
 		assertEquals(generator.next(), 5); // Should stay at 5
 	});
+
+	await t.step('should create a ranged generator with maxTries', () => {
+		const generator = IdGenerator.ranged(1, 3, 5); // low=1, high=3, maxTries=5
+
+		assertEquals(generator.next(), 2);
+		assertEquals(generator.next(), 1); // Cycles back to 1
+		assertEquals(generator.next(), 2);
+	});
+
+	await t.step('should create a ranged generator with filter', () => {
+		const generator = IdGenerator.ranged(1, 5, (id) => id !== 2); // low=1, high=5, exclude 2
+
+		assertEquals(generator.next(), 3); // 2 is filtered out, so 3 comes first
+		assertEquals(generator.next(), 4);
+		assertEquals(generator.next(), 1); // Cycles back but skips 2
+		assertEquals(generator.next(), 3); // Goes to 2, filtered, then 3
+	});
+
+	await t.step('should create a ranged generator with maxTries and filter', () => {
+		const generator = IdGenerator.ranged(1, 3, 10, (id) => id !== 2); // low=1, high=3, maxTries=10, exclude 2
+
+		assertEquals(generator.next(), 1);
+		assertEquals(generator.next(), 1);
+		assertEquals(generator.next(), 1);
+	});
 });
 
 Deno.test('IDGenerator - Edge Cases', async (t) => {
@@ -147,5 +221,31 @@ Deno.test('IDGenerator - Edge Cases', async (t) => {
 
 		const result2 = generator.next();
 		assertEquals(result2.val, 3);
+	});
+
+	await t.step('should throw error when maxTries exceeded', () => {
+		const generator = new IdGenerator(
+			0,
+			(last) => last + 1,
+			3, // maxTries = 3
+			() => false, // Filter that never passes, forcing maxTries to be exceeded
+		);
+
+		assertThrows(
+			() => {
+				generator.next();
+			},
+			Error,
+		);
+	});
+
+	await t.step('should handle invalid argument in ranged method', () => {
+		assertThrows(
+			() => {
+				// @ts-ignore - Testing invalid input intentionally
+				IdGenerator.ranged(1, 5, 'invalid');
+			},
+			Error,
+		);
 	});
 });
