@@ -1,6 +1,6 @@
 import * as std_path from '@std/path@1';
 import { r } from '@/tstr/index.ts';
-import { Path } from './path/index.ts';
+import { Path } from './path.ts';
 
 /**
  * Path string template

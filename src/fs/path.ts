@@ -1,7 +1,7 @@
 import * as std_path from '@std/path@1';
 import type { Constructor } from '@/types.ts';
-import * as fs_basic from '../basic.ts';
-import * as fs_operate from '../operate.ts';
+import * as fs_basic from './basic.ts';
+import * as fs_operate from './operate.ts';
 
 export type PathLike = string | Path;
 export type CollapsedPath = EmptyPath | DirPath | FilePath | SymlinkPath;
