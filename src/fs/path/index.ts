@@ -11,6 +11,31 @@ export class Path {
 	public static from(path: PathLike): Path {
 		return path instanceof Path ? path : new Path(path);
 	}
+	public static emptySync(path: PathLike): EmptyPath {
+		return Path.from(path).asSync(EmptyPath);
+	}
+	public static fileSync(path: PathLike): FilePath {
+		return Path.from(path).asSync(FilePath);
+	}
+	public static dirSync(path: PathLike): DirPath {
+		return Path.from(path).asSync(DirPath);
+	}
+	public static symlinkSync(path: PathLike): SymlinkPath {
+		return Path.from(path).asSync(SymlinkPath);
+	}
+	public static empty(path: PathLike): Promise<EmptyPath> {
+		return Path.from(path).as(EmptyPath);
+	}
+	public static file(path: PathLike): Promise<FilePath> {
+		return Path.from(path).as(FilePath);
+	}
+	public static dir(path: PathLike): Promise<DirPath> {
+		return Path.from(path).as(DirPath);
+	}
+	public static symlink(path: PathLike): Promise<SymlinkPath> {
+		return Path.from(path).as(SymlinkPath);
+	}
+
 	public static str(path: PathLike): string {
 		return Path.from(path).path;
 	}
