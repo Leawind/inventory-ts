@@ -173,6 +173,9 @@ export class Path {
 				throw new Error('Unreachable code');
 		}
 	}
+	/**
+	 * @throws Error if the path is not expected type
+	 */
 	public asSync<T extends CollapsedPath>(type: Constructor<T>): T {
 		const actualType = this.typeSync();
 		if (actualType !== type) {
@@ -180,6 +183,9 @@ export class Path {
 		}
 		return this._as(type) as T;
 	}
+	/**
+	 * @throws Error if the path is not expected type
+	 */
 	public async as<T extends CollapsedPath>(type: Constructor<T>): Promise<T> {
 		const actualType = await this.type();
 		if (actualType !== type) {
