@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertStrictEquals, assertThrows } from '@std/assert';
-import { DirPath, VoidPath, FilePath, Path, SymlinkPath } from './path.ts';
+import { DirPath, FilePath, Path, SymlinkPath, VoidPath } from './path.ts';
 import { existsSync } from './basic.ts';
 import { p } from './utils.ts';
 
