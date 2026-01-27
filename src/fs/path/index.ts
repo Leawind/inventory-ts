@@ -201,9 +201,28 @@ export class EmptyPath extends Path {
 			await Deno.writeFile(this.path, data, options);
 		}
 	}
+
+	public linkSync(target: PathLike): SymlinkPath {
+		Deno.linkSync(this.path, Path.str(target));
+		return new SymlinkPath(this.path);
+	}
+	public async link(target: PathLike): Promise<SymlinkPath> {
+		await Deno.link(this.path, Path.str(target));
+		return new SymlinkPath(this.path);
+	}
 }
 
-export class FilePath extends Path {
+abstract class NonEmptyPath extends Path {
+	public removeSync(options?: { recursive?: boolean }): void {
+		Deno.removeSync(this.path, options);
+	}
+
+	public async remove(options?: { recursive?: boolean }): Promise<void> {
+		await Deno.remove(this.path, options);
+	}
+}
+
+export class FilePath extends NonEmptyPath {
 	public readSync(): Uint8Array {
 		return Deno.readFileSync(this.path);
 	}
@@ -235,55 +254,32 @@ export class FilePath extends Path {
 		await fs_operate.makeParentDir(this.path);
 		await Deno.writeFile(this.path, data as Uint8Array, options);
 	}
-
-	public removeSync(options?: { recursive?: boolean }): void {
-		Deno.removeSync(this.path, options);
-	}
-
-	public async remove(options?: { recursive?: boolean }): Promise<void> {
-		await Deno.remove(this.path, options);
-	}
 }
 
-export class DirPath extends Path {
-	public readSync(): Path[] {
+export class DirPath extends NonEmptyPath {
+	public listSync(): Path[] {
 		const entries: Path[] = [];
 		for (const entry of Deno.readDirSync(this.path)) {
-			entries.push(new Path(std_path.join(this.path, entry.name!)));
+			entries.push(new Path(std_path.join(this.path, entry.name)));
 		}
 		return entries;
 	}
 
-	public async read(): Promise<Path[]> {
+	public async list(): Promise<Path[]> {
 		const entries: Path[] = [];
 		for await (const entry of Deno.readDir(this.path)) {
-			entries.push(new Path(std_path.join(this.path, entry.name!)));
+			entries.push(new Path(std_path.join(this.path, entry.name)));
 		}
 		return entries;
-	}
-
-	public removeSync(options?: { recursive?: boolean }): void {
-		Deno.removeSync(this.path, options);
-	}
-
-	public async remove(options?: { recursive?: boolean }): Promise<void> {
-		await Deno.remove(this.path, options);
 	}
 }
 
-export class SymlinkPath extends Path {
+export class SymlinkPath extends NonEmptyPath {
 	public targetSync(): Path {
 		return new Path(Deno.readLinkSync(this.path));
 	}
 
 	public async target(): Promise<Path> {
 		return new Path(await Deno.readLink(this.path));
-	}
-
-	public removeSync(options?: { recursive?: boolean }): void {
-		Deno.removeSync(this.path, options);
-	}
-	public async remove(options?: { recursive?: boolean }): Promise<void> {
-		await Deno.remove(this.path, options);
 	}
 }
