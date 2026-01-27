@@ -40,8 +40,12 @@ export class Path {
 		return this.path.replace(/.*\.([^.]+)$/, '$1');
 	}
 
-	public get parent(): Path {
-		return new Path(std_path.dirname(this.path));
+	public get isAbsolute(): boolean {
+		return /^(\/|[a-zA-Z]+:).*/.test(this.path);
+	}
+
+	public get isRelative(): boolean {
+		return !this.isAbsolute;
 	}
 
 	public absolute(): Path {
@@ -50,6 +54,10 @@ export class Path {
 
 	public relative(to: PathLike = Deno.cwd()): Path {
 		return new Path(std_path.relative(Path.str(to), this.path));
+	}
+
+	public getparent(): Path {
+		return new Path(std_path.dirname(this.path));
 	}
 
 	public join(...paths: string[]): Path {
