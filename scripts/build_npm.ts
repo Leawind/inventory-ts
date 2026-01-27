@@ -31,6 +31,10 @@ await build({
 		version: META.version,
 		license: META.license,
 		description: '',
+		repository: {
+			type: 'git',
+			url: 'https://github.com/Leawind/inventory-ts.git',
+		},
 		private: false,
 		exports: Object.fromEntries(
 			Object.entries(META.exports)
