@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertStrictEquals, assertThrows } from '@std/assert';
-import { DirPath, EmptyPath, FilePath, Path, SymlinkPath } from './path.ts';
+import { DirPath, VoidPath, FilePath, Path, SymlinkPath } from './path.ts';
 import { existsSync } from './basic.ts';
 import { p } from './utils.ts';
 
@@ -209,55 +209,55 @@ Deno.test('fs/path: Type conversion methods', async (t) => {
 	}
 });
 
-Deno.test('fs/path: EmptyPath methods', async (t) => {
+Deno.test('fs/path: VoidPath methods', async (t) => {
 	const tempDir = await Deno.makeTempDir({ prefix: 'test-inventory-ts-' });
 
 	try {
-		await t.step('EmptyPath mkdir creates directory', async () => {
-			const emptyPath = new EmptyPath(`${tempDir}/new-dir`);
-			const dirPath = await emptyPath.mkdir();
+		await t.step('VoidPath mkdir creates directory', async () => {
+			const voidPath = new VoidPath(`${tempDir}/new-dir`);
+			const dirPath = await voidPath.mkdir();
 
 			assertEquals(dirPath.constructor, DirPath);
 			assert(existsSync(dirPath.path));
 		});
 
-		await t.step('EmptyPath mkdirSync creates directory synchronously', () => {
-			const emptyPath = new EmptyPath(`${tempDir}/new-dir-sync`);
-			const dirPath = emptyPath.mkdirSync();
+		await t.step('VoidPath mkdirSync creates directory synchronously', () => {
+			const voidPath = new VoidPath(`${tempDir}/new-dir-sync`);
+			const dirPath = voidPath.mkdirSync();
 
 			assertEquals(dirPath.constructor, DirPath);
 			assert(existsSync(dirPath.path));
 		});
 
-		await t.step('EmptyPath touch creates file', async () => {
-			const emptyPath = new EmptyPath(`${tempDir}/new-file.txt`);
-			const filePath = await emptyPath.touch();
+		await t.step('VoidPath touch creates file', async () => {
+			const voidPath = new VoidPath(`${tempDir}/new-file.txt`);
+			const filePath = await voidPath.touch();
 
 			assertEquals(filePath.constructor, FilePath);
 			assert(existsSync(filePath.path));
 		});
 
-		await t.step('EmptyPath touchSync creates file synchronously', () => {
-			const emptyPath = new EmptyPath(`${tempDir}/new-file-sync.txt`);
-			const filePath = emptyPath.touchSync();
+		await t.step('VoidPath touchSync creates file synchronously', () => {
+			const voidPath = new VoidPath(`${tempDir}/new-file-sync.txt`);
+			const filePath = voidPath.touchSync();
 
 			assertEquals(filePath.constructor, FilePath);
 			assert(existsSync(filePath.path));
 		});
 
-		await t.step('EmptyPath write creates and writes to file', async () => {
-			const emptyPath = new EmptyPath(`${tempDir}/write-test.txt`);
-			await emptyPath.write('Hello, World!');
+		await t.step('VoidPath write creates and writes to file', async () => {
+			const voidPath = new VoidPath(`${tempDir}/write-test.txt`);
+			await voidPath.write('Hello, World!');
 
-			const content = await Deno.readTextFile(emptyPath.path);
+			const content = await Deno.readTextFile(voidPath.path);
 			assertEquals(content, 'Hello, World!');
 		});
 
-		await t.step('EmptyPath writeSync creates and writes to file synchronously', () => {
-			const emptyPath = new EmptyPath(`${tempDir}/write-test-sync.txt`);
-			emptyPath.writeSync('Hello, Sync World!');
+		await t.step('VoidPath writeSync creates and writes to file synchronously', () => {
+			const voidPath = new VoidPath(`${tempDir}/write-test-sync.txt`);
+			voidPath.writeSync('Hello, Sync World!');
 
-			const content = Deno.readTextFileSync(emptyPath.path);
+			const content = Deno.readTextFileSync(voidPath.path);
 			assertEquals(content, 'Hello, Sync World!');
 		});
 	} finally {

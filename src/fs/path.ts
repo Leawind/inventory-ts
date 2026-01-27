@@ -4,7 +4,7 @@ import * as fs_basic from './basic.ts';
 import * as fs_operate from './operate.ts';
 
 export type PathLike = string | Path;
-export type CollapsedPath = EmptyPath | DirPath | FilePath | SymlinkPath;
+export type CollapsedPath = VoidPath | DirPath | FilePath | SymlinkPath;
 export type PathType = Constructor<CollapsedPath>;
 
 /**
@@ -14,8 +14,8 @@ export type PathType = Constructor<CollapsedPath>;
  *
  * 1. Path manipulation: joining paths, getting parent directories, resolving relative/absolute paths
  * 2. Path introspection: checking if a path is absolute/relative, getting basename/extension
- * 3. Type determination: identifying whether a path represents a file, directory, symlink, or empty location
- * 4. Conversion to specialized path types: EmptyPath, FilePath, DirPath, SymlinkPath
+ * 3. Type determination: identifying whether a path represents a file, directory, symlink, or void location
+ * 4. Conversion to specialized path types: VoidPath, FilePath, DirPath, SymlinkPath
  *
  * The class follows a factory pattern with static methods for creating typed path instances,
  * and provides both synchronous and asynchronous APIs for filesystem operations.
@@ -52,18 +52,18 @@ export class Path {
 	}
 
 	/**
-	 * Creates an EmptyPath instance synchronously.
+	 * Creates an VoidPath instance synchronously.
 	 *
 	 * @param path A path string or Path instance
-	 * @returns An EmptyPath instance
+	 * @returns An VoidPath instance
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = Path.emptySync("/path/to/empty/location");
+	 * const voidPath = Path.voidSync("/path/to/void/location");
 	 * ```
 	 */
-	public static emptySync(path: PathLike): EmptyPath {
-		return Path.from(path).asSync(EmptyPath);
+	public static voidSync(path: PathLike): VoidPath {
+		return Path.from(path).asSync(VoidPath);
 	}
 
 	/**
@@ -112,18 +112,18 @@ export class Path {
 	}
 
 	/**
-	 * Creates an EmptyPath instance asynchronously.
+	 * Creates an VoidPath instance asynchronously.
 	 *
 	 * @param path A path string or Path instance
-	 * @returns A promise that resolves to an EmptyPath instance
+	 * @returns A promise that resolves to an VoidPath instance
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = await Path.empty("/path/to/empty/location");
+	 * const voidPath = await Path.void("/path/to/void/location");
 	 * ```
 	 */
-	public static empty(path: PathLike): Promise<EmptyPath> {
-		return Path.from(path).as(EmptyPath);
+	public static void(path: PathLike): Promise<VoidPath> {
+		return Path.from(path).as(VoidPath);
 	}
 
 	/**
@@ -398,7 +398,7 @@ export class Path {
 	/**
 	 * Determines the type of the path synchronously.
 	 *
-	 * @returns The type of the path (FilePath, DirPath, SymlinkPath, or EmptyPath)
+	 * @returns The type of the path (FilePath, DirPath, SymlinkPath, or VoidPath)
 	 *
 	 * @example
 	 * ```ts
@@ -410,14 +410,14 @@ export class Path {
 		try {
 			return this._type(Deno.lstatSync(this.path));
 		} catch {
-			return EmptyPath;
+			return VoidPath;
 		}
 	}
 
 	/**
 	 * Determines the type of the path asynchronously.
 	 *
-	 * @returns A promise that resolves to the type of the path (FilePath, DirPath, SymlinkPath, or EmptyPath)
+	 * @returns A promise that resolves to the type of the path (FilePath, DirPath, SymlinkPath, or VoidPath)
 	 *
 	 * @example
 	 * ```ts
@@ -429,7 +429,7 @@ export class Path {
 		try {
 			return this._type(await Deno.lstat(this.path));
 		} catch {
-			return EmptyPath;
+			return VoidPath;
 		}
 	}
 
@@ -619,8 +619,8 @@ export class Path {
 
 	private _as(type: PathType): Path {
 		switch (type) {
-			case EmptyPath:
-				return new EmptyPath(this.path);
+			case VoidPath:
+				return new VoidPath(this.path);
 			case FilePath:
 				return new FilePath(this.path);
 			case DirPath:
@@ -680,10 +680,10 @@ export class Path {
 }
 
 /**
- * Represents an empty path (a path that doesn't exist yet).
+ * Represents an void path (a path that doesn't exist yet).
  * Provides methods for creating files and directories.
  */
-export class EmptyPath extends Path {
+export class VoidPath extends Path {
 	/**
 	 * Creates a directory at the path synchronously.
 	 *
@@ -692,8 +692,8 @@ export class EmptyPath extends Path {
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = new EmptyPath("/path/to/new/directory");
-	 * const dirPath = emptyPath.mkdirSync(); // Creates directory and returns DirPath
+	 * const voidPath = new VoidPath("/path/to/new/directory");
+	 * const dirPath = voidPath.mkdirSync(); // Creates directory and returns DirPath
 	 * ```
 	 */
 	public mkdirSync(options?: { recursive?: boolean }): DirPath {
@@ -709,8 +709,8 @@ export class EmptyPath extends Path {
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = new EmptyPath("/path/to/new/directory");
-	 * const dirPath = await emptyPath.mkdir(); // Creates directory and returns DirPath
+	 * const voidPath = new VoidPath("/path/to/new/directory");
+	 * const dirPath = await voidPath.mkdir(); // Creates directory and returns DirPath
 	 * ```
 	 */
 	public async mkdir(options?: { recursive?: boolean }): Promise<DirPath> {
@@ -719,14 +719,14 @@ export class EmptyPath extends Path {
 	}
 
 	/**
-	 * Creates an empty file at the path synchronously.
+	 * Creates an void file at the path synchronously.
 	 *
 	 * @returns A FilePath instance representing the created file
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = new EmptyPath("/path/to/new/file.txt");
-	 * const filePath = emptyPath.touchSync(); // Creates file and returns FilePath
+	 * const voidPath = new VoidPath("/path/to/new/file.txt");
+	 * const filePath = voidPath.touchSync(); // Creates file and returns FilePath
 	 * ```
 	 */
 	public touchSync(): FilePath {
@@ -735,14 +735,14 @@ export class EmptyPath extends Path {
 	}
 
 	/**
-	 * Creates an empty file at the path asynchronously.
+	 * Creates an void file at the path asynchronously.
 	 *
 	 * @returns A promise that resolves to a FilePath instance representing the created file
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = new EmptyPath("/path/to/new/file.txt");
-	 * const filePath = await emptyPath.touch(); // Creates file and returns FilePath
+	 * const voidPath = new VoidPath("/path/to/new/file.txt");
+	 * const filePath = await voidPath.touch(); // Creates file and returns FilePath
 	 * ```
 	 */
 	public async touch(): Promise<FilePath> {
@@ -758,8 +758,8 @@ export class EmptyPath extends Path {
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = new EmptyPath("/path/to/new/file.txt");
-	 * emptyPath.writeSync("Hello, world!"); // Creates and writes to file
+	 * const voidPath = new VoidPath("/path/to/new/file.txt");
+	 * voidPath.writeSync("Hello, world!"); // Creates and writes to file
 	 * ```
 	 */
 	public writeSync(data: Uint8Array | string, options?: Deno.WriteFileOptions): void {
@@ -780,8 +780,8 @@ export class EmptyPath extends Path {
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = new EmptyPath("/path/to/new/file.txt");
-	 * await emptyPath.write("Hello, world!"); // Creates and writes to file
+	 * const voidPath = new VoidPath("/path/to/new/file.txt");
+	 * await voidPath.write("Hello, world!"); // Creates and writes to file
 	 * ```
 	 */
 	public async write(data: Uint8Array | string, options?: Deno.WriteFileOptions): Promise<void> {
@@ -801,8 +801,8 @@ export class EmptyPath extends Path {
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = new EmptyPath("/path/to/link");
-	 * const symlinkPath = emptyPath.linkSync("/path/to/target"); // Creates hard link
+	 * const voidPath = new VoidPath("/path/to/link");
+	 * const symlinkPath = voidPath.linkSync("/path/to/target"); // Creates hard link
 	 * ```
 	 */
 	public linkSync(target: PathLike): SymlinkPath {
@@ -818,8 +818,8 @@ export class EmptyPath extends Path {
 	 *
 	 * @example
 	 * ```ts
-	 * const emptyPath = new EmptyPath("/path/to/link");
-	 * const symlinkPath = await emptyPath.link("/path/to/target"); // Creates hard link
+	 * const voidPath = new VoidPath("/path/to/link");
+	 * const symlinkPath = await voidPath.link("/path/to/target"); // Creates hard link
 	 * ```
 	 */
 	public async link(target: PathLike): Promise<SymlinkPath> {
@@ -829,10 +829,10 @@ export class EmptyPath extends Path {
 }
 
 /**
- * Abstract base class for non-empty paths (existing files, directories, or symlinks).
+ * Abstract base class for non-void paths (existing files, directories, or symlinks).
  * Provides methods for removing paths.
  */
-abstract class NonEmptyPath extends Path {
+abstract class NonVoidPath extends Path {
 	/**
 	 * Removes the path synchronously.
 	 *
@@ -869,7 +869,7 @@ abstract class NonEmptyPath extends Path {
  * Represents a file path.
  * Provides methods for reading and writing file contents.
  */
-export class FilePath extends NonEmptyPath {
+export class FilePath extends NonVoidPath {
 	/**
 	 * Reads the file contents as bytes synchronously.
 	 *
@@ -978,7 +978,7 @@ export class FilePath extends NonEmptyPath {
  * Represents a directory path.
  * Provides methods for listing directory contents.
  */
-export class DirPath extends NonEmptyPath {
+export class DirPath extends NonVoidPath {
 	/**
 	 * Lists the contents of the directory synchronously.
 	 *
@@ -1022,7 +1022,7 @@ export class DirPath extends NonEmptyPath {
  * Represents a symbolic link path.
  * Provides methods for getting the target of the symlink.
  */
-export class SymlinkPath extends NonEmptyPath {
+export class SymlinkPath extends NonVoidPath {
 	/**
 	 * Gets the target of the symbolic link synchronously.
 	 *
