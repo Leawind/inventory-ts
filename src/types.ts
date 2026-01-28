@@ -14,6 +14,9 @@ export type DeepRequire<T> = {
 export type Keys<T, U extends (keyof T)[]> = Exclude<keyof T, U[number]> extends never ? U
 	: U & ['Missing key: ', Exclude<keyof T, U[number]>];
 
+// deno-lint-ignore no-explicit-any
+export type AnyFunction = (...args: any[]) => any;
+
 /**
  * List all keys in the give type
  *
