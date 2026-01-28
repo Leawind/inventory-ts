@@ -1,160 +1,214 @@
-import type { DeepPartial, DeepRequire } from '@/types.ts';
+import type { AnyFunction, Case, Same, SwitchExtends } from '@/types.ts';
 
-/**
- * Options for configuring object and array filling strategies.
- */
-type FillOptionsType = {
+type AsIs = AnyFunction | string | number | boolean | bigint | symbol;
+enum ValueType {
+	Undefined = 'undefined',
+	AsIs = 'as-is',
+	Array = 'array',
+	Object = 'object',
+}
+
+type TypeOf<T> = T extends undefined ? ValueType.Undefined
+	: T extends AsIs ? ValueType.AsIs
+	: T extends readonly unknown[] ? ValueType.Array
+	: ValueType.Object;
+function typeOf<T>(value: T): TypeOf<T> {
+	type Returned = TypeOf<T>;
+	if (value === undefined) {
+		return ValueType.Undefined as Returned;
+	}
+	if (Array.isArray(value)) {
+		return ValueType.Array as Returned;
+	}
+	if (typeof value === 'object') {
+		if (value === null) {
+			return ValueType.AsIs as Returned;
+		} else {
+			return ValueType.Object as Returned;
+		}
+	}
+	if (typeof value === 'function') {
+		return ValueType.AsIs as Returned;
+	}
+	return ValueType.AsIs as Returned;
+}
+
+type UndefinedOptions = 'replace' | 'ignore';
+type ObjectOptions = 'merge' | 'replace';
+type ArrayOptions = 'concat-tail' | 'concat-head' | 'replace' | 'union';
+
+type OverwriteOptions<
+	Ou extends UndefinedOptions = UndefinedOptions,
+	Oo extends ObjectOptions = ObjectOptions,
+	Oa extends ArrayOptions = ArrayOptions,
+> = {
 	/**
-	 * - `replace` **(Default)** Replace the object with the new object
-	 * - `merge` Merge the objects
+	 * - **replace**: If `source.key` is `undefined`, set `target.value` to `undefined` too
+	 * - **ignore**: Ignore `undefined` values in source
+	 *
+	 * Default: `replace`
 	 */
-	objects: 'replace' | 'merge';
+	undefined: Ou;
+
 	/**
-	 * - `concat` **(Default)** Concatenate the arrays
-	 * - `replace` Replace the array with the new array
-	 * - `merge` Merge the arrays, excluding duplicates
+	 * - **merge** Merge the objects
+	 * - **replace** Replace with new object
+	 *
+	 * Default: `merge`
 	 */
-	arrays: 'concat' | 'replace' | 'merge';
+	object: Oo;
+
+	/**
+	 * - **concat-tail**: append to array tail
+	 * - **concat-head**: append to array head
+	 * - **replace**: replace with new array
+	 * - **union**: like set union
+	 *
+	 * Default: `concat-tail`
+	 */
+	array: Oa;
 };
 
-/**
- * Defines an Options class with a generic type T representing the options type.
- *
- * @template T - The options type.
- *
- * @example
- * ```ts
- * const ListenOptions = Options.define({
- *     host: '0.0.0.0',
- *     port: 25565,
- * });
- *
- * function listen(options?: typeof ListenOptions.Partial) {
- *     const opts = ListenOptions.fill(options);
- *     console.log(`Host: ${opts.host}`);
- *     console.log(`Port: ${opts.port}`);
- * }
- *
- * listen({
- *     host: 'localhost',
- *     port: 51120,
- * });
- * ```
- */
-export class Options<T> {
-	public static FillOptions: Options<FillOptionsType> = Options.define<FillOptionsType>({
-		objects: 'merge',
-		arrays: 'concat',
-	});
+const DEFAULT_OPTIONS: OverwriteOptions<'replace', 'merge', 'concat-tail'> = {
+	undefined: 'replace',
+	object: 'merge',
+	array: 'concat-tail',
+};
 
-	//Readonly properties representing the options type, partial options, deep partial options, and required options.
-	public readonly Type!: T;
-	public readonly Partial!: Partial<T>;
-	public readonly DeepPartial!: DeepPartial<T>;
-	public readonly Require!: Required<T>;
-	public readonly DeepRequire!: DeepRequire<T>;
+type AssertExtends<T, A> = T extends A ? T : never;
 
-	public readonly Default: T;
+type ConcatArray<A, B> = A extends readonly unknown[] ? B extends readonly unknown[] ? [...A, ...B] : never
+	: never;
 
-	protected constructor(defaults: T) {
-		this.Default = defaults;
-	}
+type Includes<Tuple extends readonly unknown[], Element> = Tuple extends readonly [infer First, ...infer Rest]
+	? (Same<Element, First> extends true ? true : Includes<Rest, Element>)
+	: false;
+type PushIfNotExists<Tuple extends readonly unknown[], Element> = Includes<Tuple, Element> extends true ? Tuple
+	: [...Tuple, Element];
+type UnionArray<
+	A,
+	B,
+	R extends readonly unknown[] = AssertExtends<A, readonly unknown[]>,
+> = B extends readonly [infer First, ...infer Rest] ? UnionArray<A, Rest, PushIfNotExists<R, First>>
+	: R;
 
-	/**
-	 * Fill options with defaults, accepting partial options and fill strategies as parameters.
-	 *
-	 * @param options - Partial options to fill.
-	 * @param fillOptions - Fill strategies for objects and arrays.
-	 * @returns The filled options.
-	 */
-	public fill(options?: DeepPartial<T>, fillOptions?: typeof Options.FillOptions.Partial): T {
-		return Options.fillRecursive({} as T, this.Default, options, fillOptions);
-	}
+export type Overwrite<
+	T,
+	S,
+	Opts extends OverwriteOptions,
+	Ou extends UndefinedOptions = Opts extends OverwriteOptions<infer X> ? X : never,
+	Oo extends ObjectOptions = Opts extends OverwriteOptions<infer _X, infer Y> ? Y : never,
+	Oa extends ArrayOptions = Opts extends OverwriteOptions<infer _X, infer _Y, infer Z> ? Z : never,
+> = S extends undefined ? (SwitchExtends<Ou, [
+		Case<'replace', S>,
+		Case<'ignore', T>,
+	]>)
+	: TypeOf<T> extends TypeOf<S> ? (
+			SwitchExtends<TypeOf<S>, [
+				Case<ValueType.AsIs, S>,
+				Case<
+					ValueType.Array,
+					SwitchExtends<Oa, [
+						Case<'replace', S>,
+						Case<'concat-tail', ConcatArray<T, S>>,
+						Case<'concat-head', ConcatArray<S, T>>,
+						Case<'union', UnionArray<T, S>>,
+					]>
+				>,
+				Case<
+					ValueType.Object,
+					SwitchExtends<Oo, [
+						Case<'replace', S>,
+						Case<
+							'merge',
+							{
+								[k in keyof T | keyof S]: k extends keyof S
+									? (k extends keyof T ? Overwrite<T[k], S[k], Opts> : S[k])
+									: T[AssertExtends<k, keyof T>];
+							}
+						>,
+					]>
+				>,
+			]>
+		)
+	: S;
 
-	/**
-	 * Create an Options instance.
-	 *
-	 * @template T - The options type.
-	 * @param defaults - The default options.
-	 * @returns An Options instance.
-	 */
-	public static define<T>(defaults: T): Options<T> {
-		return new Options(defaults);
-	}
-
-	/**
-	 * Recursively fill options.
-	 *
-	 * @param result - The result object to fill.
-	 * @param defaults - The default options.
-	 * @param filledOptions - The partial options to fill.
-	 * @param options - Fill strategies for objects and arrays.
-	 * @returns The filled result object.
-	 */
-	private static fillRecursive<T>(
-		result: T,
-		defaults: T,
-		filledOptions: DeepPartial<T> = {},
-		options?: typeof Options.FillOptions.Partial,
-	): T {
-		const opts: typeof Options.FillOptions.Require = options ? Options.FillOptions.fill(options) : {
-			objects: 'merge',
-			arrays: 'concat',
-		};
-
-		for (const key in defaults) {
-			const defaultValue = defaults[key];
-			const optionValue = filledOptions[key];
-
-			if (optionValue === undefined) {
-				result[key] = defaultValue;
-			} else if (typeof optionValue === 'object' && optionValue !== null) {
-				if (Array.isArray(defaultValue) && Array.isArray(optionValue)) {
-					switch (opts.arrays) {
-						case 'replace': {
-							result[key] = optionValue as T[Extract<keyof T, string>];
-							break;
-						}
-						case 'concat': {
-							result[key] = [
-								...(defaultValue as unknown[]),
-								...(optionValue as unknown[]),
-							] as T[Extract<keyof T, string>];
-							break;
-						}
-						case 'merge': {
-							const merged = new Set([
-								...defaultValue as unknown[],
-								...optionValue as unknown[],
-							]);
-							result[key] = Array.from(merged) as T[Extract<keyof T, string>];
-							break;
-						}
-					}
-				} else if (typeof defaultValue === 'object' && defaultValue !== null) {
-					switch (opts.objects) {
-						case 'replace': {
-							result[key] = optionValue as T[Extract<keyof T, string>];
-							break;
-						}
-						case 'merge': {
-							result[key] = {} as T[Extract<keyof T, string>];
-							this.fillRecursive(
-								result[key],
-								defaultValue,
-								optionValue as DeepPartial<T[Extract<keyof T, string>]>,
-								options,
-							);
-							break;
-						}
-					}
-				} else {
-					result[key] = optionValue as T[Extract<keyof T, string>];
-				}
-			} else {
-				result[key] = optionValue as T[Extract<keyof T, string>];
-			}
+export function overwrite<
+	T,
+	S,
+	Ou extends UndefinedOptions = typeof DEFAULT_OPTIONS['undefined'],
+	Oo extends ObjectOptions = typeof DEFAULT_OPTIONS['object'],
+	Oa extends ArrayOptions = typeof DEFAULT_OPTIONS['array'],
+	Opts extends OverwriteOptions = OverwriteOptions<Ou, Oo, Oa>,
+>(target: T, source: S, options?: { undefined?: Ou; object?: Oo; array?: Oa }): Overwrite<T, S, Opts> {
+	type Returned = Overwrite<T, S, Opts>;
+	const opts: OverwriteOptions = Object.assign({}, DEFAULT_OPTIONS, options);
+	if (source === undefined) {
+		switch (opts.undefined) {
+			case 'ignore':
+				return target as Returned;
+			default:
+				return undefined as Returned;
 		}
-		return result;
+	}
+
+	const targetType = typeOf(target);
+	const sourceType = typeOf(source);
+
+	if (targetType === sourceType) {
+		// targetType == sourceType != undefined
+
+		switch (sourceType) {
+			case ValueType.AsIs:
+				return source as Returned;
+			case ValueType.Array: {
+				const targetArray = target as unknown[];
+				switch (opts.array) {
+					case 'replace':
+						return source as Returned;
+					case 'concat-tail':
+						targetArray.push(...(source as unknown[]));
+						break;
+					case 'concat-head':
+						targetArray.unshift(...(source as unknown[]));
+						break;
+					case 'union': {
+						const set = new Set(targetArray);
+						for (const value of source as unknown[]) {
+							if (!set.has(value)) {
+								set.add(value);
+								targetArray.push(value);
+							}
+						}
+						break;
+					}
+					default:
+						throw new Error(`Unreachable`);
+				}
+				return target as Returned;
+			}
+			case ValueType.Object: {
+				// deno-lint-ignore no-explicit-any
+				const anyTarget = target as any;
+				switch (opts.object) {
+					case 'replace': {
+						return source as Returned;
+					}
+					case 'merge': {
+						// iter_source_keys:
+						for (const key in source) {
+							anyTarget[key] = overwrite(anyTarget[key], source[key], options);
+						}
+						return target as Returned;
+					}
+					default:
+						throw new Error(`Unreachable`);
+				}
+			}
+			default:
+				throw new Error(`Unreachable`);
+		}
+	} else {
+		return source as Returned;
 	}
 }
