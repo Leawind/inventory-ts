@@ -59,6 +59,16 @@ export type Switch<T, Cases extends readonly [unknown, unknown][], Default = nev
 	)
 	: Default;
 
+export type SwitchExtends<T, Cases extends readonly [unknown, unknown][], Default = never> = Cases extends
+	[infer First, ...infer Rest] ? (
+		First extends [infer C, infer R] ? (
+				[T] extends [C] ? R
+					: SwitchExtends<T, (Rest extends readonly [unknown, unknown][] ? Rest : never), Default>
+			)
+			: never
+	)
+	: Default;
+
 // deno-lint-ignore no-explicit-any
 export type AnyFunction<R = any, Params extends any[] = any[]> = (...args: Params) => R;
 
