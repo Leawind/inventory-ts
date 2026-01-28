@@ -36,19 +36,26 @@ function typeOf<T>(value: T): TypeOf<T> {
 type UndefinedOptions = 'replace' | 'ignore';
 type ArrayOptions = 'concat-tail' | 'concat-head' | 'replace' | 'union';
 
+/**
+ * Options for controlling how objects are overwritten during merge operations
+ */
 type OverwriteOptions<
 	Ou extends UndefinedOptions = UndefinedOptions,
 	Oa extends ArrayOptions = ArrayOptions,
 > = {
 	/**
-	 * - **replace**: If `source.key` is `undefined`, set `target.value` to `undefined` too
-	 * - **ignore**: Ignore `undefined` values in source
+	 * Controls how undefined values are handled during overwrite operations:
+	 *
+	 * - **replace**: If `source.attr` is `undefined`, set `target.attr` to `undefined`
+	 * - **ignore**: Ignore `undefined` values in `source`
 	 *
 	 * Default: `replace`
 	 */
 	undefined: Ou;
 
 	/**
+	 * Controls how array values are merged during overwrite operations:
+	 *
 	 * - **concat-tail**: append to array tail
 	 * - **concat-head**: append to array head
 	 * - **replace**: replace with new array
@@ -81,6 +88,14 @@ type UnionArray<
 > = B extends readonly [infer First, ...infer Rest] ? UnionArray<A, Rest, PushIfNotExists<R, First>>
 	: R;
 
+/**
+ * Type definition for the result of an overwrite operation.
+ * This type describes how the target and source objects are merged based on the options provided.
+ *
+ * @template T The type of the target object
+ * @template S The type of the source object
+ * @template Opts The options for overwriting
+ */
 export type Overwrite<
 	T,
 	S,
@@ -115,6 +130,53 @@ export type Overwrite<
 		)
 	: S;
 
+/**
+ * Merges two objects with configurable behavior for handling special cases like undefined values and arrays.
+ *
+ * The function mutates the target object in place and returns it.
+ *
+ * ### Examples
+ *
+ * Basic object merging
+ * ```ts
+ * const target = { a: 1, b: 2 };
+ * const source = { b: 3, c: 4 };
+ * const result = overwrite(target, source);
+ * // Result: { a: 1, b: 3, c: 4 }
+ * ```
+ *
+ * Array concatenation (default behavior)
+ *
+ * ```ts
+ * const target = { arr: [1, 2] };
+ * const source = { arr: [3, 4] };
+ * const result = overwrite(target, source);
+ * // Result: { arr: [1, 2, 3, 4] }
+ * ```
+ *
+ * Array replacement
+ *
+ * ```ts
+ * const target = { arr: [1, 2] };
+ * const source = { arr: [3, 4] };
+ * const result = overwrite(target, source, { array: 'replace' });
+ * // Result: { arr: [3, 4] }
+ * ```
+ *
+ * Ignoring undefined values
+ *
+ * ```ts
+ * const target = { a: 1, b: 2 };
+ * const source = { a: undefined, c: 3 };
+ * const result = overwrite(target, source, { undefined: 'ignore' });
+ * // Result: { a: 1, b: 2, c: 3 }
+ * ```
+ *
+ * @param target The object to merge into (will be mutated)
+ * @param source The object to merge from
+ * @param options Options for controlling the overwrite behavior
+ * @returns The mutated target object with properties from source merged in
+ */
 export function overwrite<
 	T,
 	S,
