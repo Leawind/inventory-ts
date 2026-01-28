@@ -34,6 +34,31 @@
  */
 export type Same<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false;
 
+/**
+ * Use with {@link SwitchExtends}
+ */
+export type Case<T, Return> = [T, Return];
+/**
+ * ### Example
+ *
+ * ```ts
+ * const _: boolean = any as SwitchExact<4, [
+ *   Case<3, string>,
+ *   Case<4, boolean>,
+ *   Case<5, number>,
+ * ], `Error: fail to match any condition`>;
+ * ```
+ */
+export type SwitchExtends<T, Cases extends readonly [unknown, unknown][], Default = never> = Cases extends
+	[infer First, ...infer Rest] ? (
+		First extends [infer C, infer R] ? (
+				Same<T, C> extends true ? R
+					: SwitchExtends<T, (Rest extends readonly [unknown, unknown][] ? Rest : never), Default>
+			)
+			: never
+	)
+	: Default;
+
 // deno-lint-ignore no-explicit-any
 export type Constructor<Inst, Params extends any[] = any[]> = new (...args: Params) => Inst;
 
