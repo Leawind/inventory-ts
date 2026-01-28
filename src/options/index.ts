@@ -1,4 +1,4 @@
-import type { AnyFunction, Case, Same, SwitchExtends } from '../types/index.ts';
+import type { AnyFunction, Case, Same, Switch } from '../types/index.ts';
 
 type AsIs = AnyFunction | string | number | boolean | bigint | symbol;
 enum ValueType {
@@ -102,16 +102,16 @@ export type Overwrite<
 	Opts extends OverwriteOptions,
 	Ou extends UndefinedOptions = Opts extends OverwriteOptions<infer X> ? X : never,
 	Oa extends ArrayOptions = Opts extends OverwriteOptions<infer _X, infer Y> ? Y : never,
-> = S extends undefined ? (SwitchExtends<Ou, [
+> = S extends undefined ? (Switch<Ou, [
 		Case<'replace', S>,
 		Case<'ignore', T>,
 	]>)
 	: TypeOf<T> extends TypeOf<S> ? (
-			SwitchExtends<TypeOf<S>, [
+			Switch<TypeOf<S>, [
 				Case<ValueType.AsIs, S>,
 				Case<
 					ValueType.Array,
-					SwitchExtends<Oa, [
+					Switch<Oa, [
 						Case<'replace', S>,
 						Case<'concat-tail', ConcatArray<T, S>>,
 						Case<'concat-head', ConcatArray<S, T>>,
