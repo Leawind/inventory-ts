@@ -34,12 +34,10 @@ function typeOf<T>(value: T): TypeOf<T> {
 }
 
 type UndefinedOptions = 'replace' | 'ignore';
-type ObjectOptions = 'merge' | 'replace';
 type ArrayOptions = 'concat-tail' | 'concat-head' | 'replace' | 'union';
 
 type OverwriteOptions<
 	Ou extends UndefinedOptions = UndefinedOptions,
-	Oo extends ObjectOptions = ObjectOptions,
 	Oa extends ArrayOptions = ArrayOptions,
 > = {
 	/**
@@ -49,14 +47,6 @@ type OverwriteOptions<
 	 * Default: `replace`
 	 */
 	undefined: Ou;
-
-	/**
-	 * - **merge** Merge the objects
-	 * - **replace** Replace with new object
-	 *
-	 * Default: `merge`
-	 */
-	object: Oo;
 
 	/**
 	 * - **concat-tail**: append to array tail
@@ -69,9 +59,8 @@ type OverwriteOptions<
 	array: Oa;
 };
 
-const DEFAULT_OPTIONS: OverwriteOptions<'replace', 'merge', 'concat-tail'> = {
+const DEFAULT_OPTIONS: OverwriteOptions<'replace', 'concat-tail'> = {
 	undefined: 'replace',
-	object: 'merge',
 	array: 'concat-tail',
 };
 
@@ -97,8 +86,7 @@ export type Overwrite<
 	S,
 	Opts extends OverwriteOptions,
 	Ou extends UndefinedOptions = Opts extends OverwriteOptions<infer X> ? X : never,
-	Oo extends ObjectOptions = Opts extends OverwriteOptions<infer _X, infer Y> ? Y : never,
-	Oa extends ArrayOptions = Opts extends OverwriteOptions<infer _X, infer _Y, infer Z> ? Z : never,
+	Oa extends ArrayOptions = Opts extends OverwriteOptions<infer _X, infer Y> ? Y : never,
 > = S extends undefined ? (SwitchExtends<Ou, [
 		Case<'replace', S>,
 		Case<'ignore', T>,
@@ -117,17 +105,11 @@ export type Overwrite<
 				>,
 				Case<
 					ValueType.Object,
-					SwitchExtends<Oo, [
-						Case<'replace', S>,
-						Case<
-							'merge',
-							{
-								[k in keyof T | keyof S]: k extends keyof S
-									? (k extends keyof T ? Overwrite<T[k], S[k], Opts> : S[k])
-									: T[AssertExtends<k, keyof T>];
-							}
-						>,
-					]>
+					{
+						[k in keyof T | keyof S]: k extends keyof S ? (k extends keyof T ? Overwrite<T[k], S[k], Opts>
+								: S[k])
+							: T[AssertExtends<k, keyof T>];
+					}
 				>,
 			]>
 		)
@@ -137,10 +119,9 @@ export function overwrite<
 	T,
 	S,
 	Ou extends UndefinedOptions = typeof DEFAULT_OPTIONS['undefined'],
-	Oo extends ObjectOptions = typeof DEFAULT_OPTIONS['object'],
 	Oa extends ArrayOptions = typeof DEFAULT_OPTIONS['array'],
-	Opts extends OverwriteOptions = OverwriteOptions<Ou, Oo, Oa>,
->(target: T, source: S, options?: { undefined?: Ou; object?: Oo; array?: Oa }): Overwrite<T, S, Opts> {
+	Opts extends OverwriteOptions = OverwriteOptions<Ou, Oa>,
+>(target: T, source: S, options?: { undefined?: Ou; array?: Oa }): Overwrite<T, S, Opts> {
 	type Returned = Overwrite<T, S, Opts>;
 	const opts: OverwriteOptions = Object.assign({}, DEFAULT_OPTIONS, options);
 	if (source === undefined) {
@@ -190,20 +171,10 @@ export function overwrite<
 			case ValueType.Object: {
 				// deno-lint-ignore no-explicit-any
 				const anyTarget = target as any;
-				switch (opts.object) {
-					case 'replace': {
-						return source as Returned;
-					}
-					case 'merge': {
-						// iter_source_keys:
-						for (const key in source) {
-							anyTarget[key] = overwrite(anyTarget[key], source[key], options);
-						}
-						return target as Returned;
-					}
-					default:
-						throw new Error(`Unreachable`);
+				for (const key in source) {
+					anyTarget[key] = overwrite(anyTarget[key], source[key], options);
 				}
+				return target as Returned;
 			}
 			default:
 				throw new Error(`Unreachable`);

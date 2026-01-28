@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import { overwrite } from './index.ts';
 import { assert, assertEquals, assertStrictEquals } from '@std/assert';
 
@@ -6,11 +5,7 @@ Deno.test('overwrite - primitive values', () => {
 	const target = { a: 1, c: true };
 	const source = { a: 2, d: 'new' };
 
-	const result = overwrite(
-		target,
-		source,
-		{ object: 'merge' },
-	);
+	const result = overwrite(target, source);
 
 	assert(result === target);
 
@@ -23,18 +18,7 @@ Deno.test('overwrite - undefined handling - replace', () => {
 	const target = { a: 1, b: 2, c: 3 };
 	const source = { a: undefined, b: 20 };
 
-	const result = overwrite(target, source, { undefined: 'replace', object: 'replace' });
-
-	assertEquals(Object.keys(result).length, 2);
-	assertEquals(result.b, 20);
-	assertStrictEquals(result.a, undefined);
-});
-
-Deno.test('overwrite - undefined handling - replace (default behavior)', () => {
-	const target = { a: 1, b: 2, c: 3 };
-	const source = { a: undefined, b: 20 };
-
-	const result = overwrite(target, source); // Using defaults
+	const result = overwrite(target, source, { undefined: 'replace' });
 
 	assertEquals(Object.keys(result).length, 3);
 	assertEquals(result.a, undefined);
@@ -76,7 +60,7 @@ Deno.test('overwrite - object handling - merge', () => {
 	const target = { obj: { a: 1, b: 2 }, x: 10 };
 	const source = { obj: { c: 3 }, y: 20 };
 
-	const result = overwrite(target, source, { object: 'merge' });
+	const result = overwrite(target, source);
 
 	assertEquals(Object.keys(result).length, 3); // obj, x, y
 	assertEquals(Object.keys(result.obj).length, 3); // only a, b, c
@@ -85,22 +69,6 @@ Deno.test('overwrite - object handling - merge', () => {
 	assertStrictEquals(result.obj.b, 2);
 	assertEquals(result.x, 10);
 	assertEquals(result.y, 20);
-});
-
-Deno.test('overwrite - object handling - replace', () => {
-	const target = { obj: { a: 1, b: 2 }, x: 10 };
-	const source = { obj: { c: 3, d: 4 }, y: 20 };
-
-	const result = overwrite(target, source, { object: 'replace' });
-
-	// With 'replace' mode, the entire target object is replaced by the source object
-	// This means only properties from the source object are present in the result
-	assertEquals(Object.keys(result).length, 2); // obj, y (x is not preserved)
-	assertEquals(Object.keys(result.obj).length, 2); // c, d only
-	assertEquals(result.obj.c, 3);
-	assertEquals(result.obj.d, 4);
-	assertEquals((result as any).y, 20);
-	// Note: x is not in the result because the entire object was replaced with source
 });
 
 Deno.test('overwrite - array handling - concat-tail (default)', () => {
@@ -269,7 +237,7 @@ Deno.test('overwrite - deeply nested objects with different options', () => {
 		},
 	};
 
-	const result = overwrite(target, source, { array: 'concat-tail', object: 'merge' });
+	const result = overwrite(target, source, { array: 'concat-tail' });
 
 	assertEquals(result.a.b.c.d, [1, 2, 3, 4]);
 	assertEquals(result.a.b.c.e.f, 'new');
@@ -290,7 +258,7 @@ Deno.test('overwrite - array of objects with merge', () => {
 		],
 	};
 
-	const result = overwrite(target, source, { array: 'concat-tail', object: 'merge' });
+	const result = overwrite(target, source, { array: 'concat-tail' });
 
 	assertEquals(result.items.length, 4);
 	assertEquals(result.items[0].id, 1);
@@ -303,7 +271,7 @@ Deno.test('overwrite - objects with same keys but different values', () => {
 	const target = { shared: 'target_value', target_only: 'data' };
 	const source = { shared: 'source_value', source_only: 'info' };
 
-	const result = overwrite(target, source, { object: 'merge' });
+	const result = overwrite(target, source);
 
 	assertEquals(result.shared, 'source_value');
 	assertEquals(result.target_only, 'data');
@@ -359,23 +327,23 @@ Deno.test('overwrite - deep merge scenario', () => {
 		top2: 200,
 	};
 
-	const result = overwrite(target, source, { object: 'merge', array: 'concat-tail' });
+	const result = overwrite(target, source, { array: 'concat-tail' });
 
 	// Check merged top level
 	assertEquals(result.top, 100);
-	assertEquals((result as any).top2, 200);
+	assertEquals(result.top2, 200);
 
 	// Check merged level1
-	const level1 = (result as any).level1;
-	assertEquals((level1 as any).m, 5);
-	assertEquals((level1 as any).n, 6);
+	const level1 = result.level1;
+	assertEquals(level1.m, 5);
+	assertEquals(level1.n, 6);
 
 	// Check merged level2 (with merge option)
 	const level2 = level1.level2;
 	assertEquals(level2.a, 2); // from source
 	assertEquals(level2.b, [1, 2, 3, 4]); // concatenated
-	assertEquals((level2.c as any).x, 10); // from target
-	assertEquals((level2.c as any).y, 20); // from source
+	assertEquals(level2.c.x, 10); // from target
+	assertEquals(level2.c.y, 20); // from source
 });
 
 Deno.test('overwrite - mixed types replacement', () => {
@@ -401,5 +369,5 @@ Deno.test('overwrite - mixed types replacement', () => {
 	assertEquals(result.num, { now: 'an object' });
 	assertEquals(result.arr, 'now string');
 	assertEquals(result.obj, 123);
-	assertStrictEquals(typeof (result as any).bool, 'object'); // Date is an object
+	assertStrictEquals(typeof result.bool, 'object'); // Date is an object
 });
