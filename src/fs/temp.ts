@@ -1,4 +1,4 @@
-import type { Awaitable } from '@/types.ts';
+import type { Awaitable } from '../types/index.ts';
 import { existsSync } from './basic.ts';
 import { mkdir, mkdirSync, remove, removeSync, touch, touchSync } from './operate.ts';
 import { p } from './utils.ts';

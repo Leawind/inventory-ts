@@ -1,5 +1,5 @@
 import * as posix_path from '@std/path@1/posix';
-import type { JsonValue } from '@/types.ts';
+import type { JsonValue } from '../types/index.ts';
 
 export * from '@/misc/zone.ts';
 export * from '@/misc/parsing.ts';

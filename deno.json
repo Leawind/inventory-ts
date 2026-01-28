@@ -28,7 +28,7 @@
 		"./timestamps": "./src/timestamps/index.ts",
 		"./tree": "./src/tree.ts",
 		"./tstr": "./src/tstr/index.ts",
-		"./types": "./src/types.ts",
+		"./types": "./src/types/index.ts",
 		"./waited": "./src/waited/index.ts",
 		"./wash": "./src/wash/index.ts",
 		"./xtype": "./src/xtype/index.ts",

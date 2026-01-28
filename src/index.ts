@@ -23,7 +23,7 @@ export * as throttled_action from '@/throttled-action/index.ts';
 export * as timestamps from '@/timestamps/index.ts';
 export * as tree from '@/tree.ts';
 export * as tstr from '@/tstr/index.ts';
-export * as types from '@/types.ts';
+export * as types from '@/types/index.ts';
 export * as waited from '@/waited/index.ts';
 export * as wash from '@/wash/index.ts';
 export * as xtype from '@/xtype/index.ts';

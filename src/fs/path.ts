@@ -1,5 +1,5 @@
 import * as std_path from '@std/path@1';
-import type { Constructor } from '@/types.ts';
+import type { Constructor } from '../types/index.ts';
 import * as fs_basic from './basic.ts';
 import * as fs_operate from './operate.ts';
 

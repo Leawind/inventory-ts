@@ -1,4 +1,4 @@
-import type { AnyFunction, Constructor } from '@leawind/inventory/types';
+import type { AnyFunction, Constructor } from '../types/index.ts';
 
 /**
  * Three types of function:

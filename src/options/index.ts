@@ -1,4 +1,4 @@
-import type { AnyFunction, Case, Same, SwitchExtends } from '@/types.ts';
+import type { AnyFunction, Case, Same, SwitchExtends } from '../types/index.ts';
 
 type AsIs = AnyFunction | string | number | boolean | bigint | symbol;
 enum ValueType {
