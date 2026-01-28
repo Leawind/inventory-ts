@@ -1,3 +1,5 @@
+import type { AnyFunction, Constructor } from '@leawind/inventory/types';
+
 /**
  * Three types of function:
  *
@@ -7,8 +9,7 @@
  */
 export type FunctionType = 'normal' | 'arrow' | 'method';
 
-// deno-lint-ignore no-explicit-any
-export function detectFunctionType(fn: (...args: any[]) => void): FunctionType {
+export function detectFunctionType<F extends AnyFunction | Constructor>(fn: F): FunctionType {
 	if (Object.prototype.hasOwnProperty.call(fn, 'prototype')) {
 		return 'normal';
 	}
