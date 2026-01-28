@@ -121,7 +121,7 @@ export function overwrite<
 	Ou extends UndefinedOptions = typeof DEFAULT_OPTIONS['undefined'],
 	Oa extends ArrayOptions = typeof DEFAULT_OPTIONS['array'],
 	Opts extends OverwriteOptions = OverwriteOptions<Ou, Oa>,
->(target: T, source: S, options?: { undefined?: Ou; array?: Oa }): Overwrite<T, S, Opts> {
+>(target: T, source: S, options?: Partial<OverwriteOptions<Ou, Oa>>): Overwrite<T, S, Opts> {
 	type Returned = Overwrite<T, S, Opts>;
 	const opts: OverwriteOptions = Object.assign({}, DEFAULT_OPTIONS, options);
 	if (source === undefined) {
