@@ -22,17 +22,8 @@ jobs:
         with:
           deno-version: v2.5.x
 
-      - name: Check formatting
-        run: deno fmt --check
-
-      - name: Check index files
-        run: deno task index -- --check
-
-      - name: Run linter
-        run: deno lint
-
-      - name: Run tests
-        run: deno task test
+      - name: Verify
+        run: deno task verify
 
       - name: Publish to JSR
         run: deno publish
