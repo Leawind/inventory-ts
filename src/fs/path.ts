@@ -677,6 +677,96 @@ export class Path {
 		}
 		return this._as(type) as T;
 	}
+
+	/**
+	 * Converts the current path to a FilePath instance asynchronously.
+	 *
+	 * @returns A promise that resolves to a FilePath instance
+	 *
+	 * @example
+	 * ```ts
+	 * const path = new Path("/path/to/possibly/existing/file.txt");
+	 * const filePath = await path.asFile();
+	 * ```
+	 */
+	public asFile(): Promise<FilePath> {
+		return this.as(FilePath);
+	}
+
+	/**
+	 * Converts the current path to a DirPath instance asynchronously.
+	 *
+	 * @returns A promise that resolves to a DirPath instance
+	 *
+	 * @example
+	 * ```ts
+	 * const path = new Path("/path/to/possibly/existing/directory");
+	 * const dirPath = await path.asDir();
+	 * ```
+	 */
+	public asDir(): Promise<DirPath> {
+		return this.as(DirPath);
+	}
+
+	/**
+	 * Converts the current path to a SymlinkPath instance asynchronously.
+	 *
+	 * @returns A promise that resolves to a SymlinkPath instance
+	 *
+	 * @example
+	 * ```ts
+	 * const path = new Path("/path/to/possibly/existing/symlink");
+	 * const symlinkPath = await path.asSymlink();
+	 * ```
+	 */
+	public asSymlink(): Promise<SymlinkPath> {
+		return this.as(SymlinkPath);
+	}
+
+	/**
+	 * Converts the current path to a FilePath instance synchronously.
+	 *
+	 * @returns A FilePath instance
+	 *
+	 * @example
+	 * ```ts
+	 * const path = new Path("/path/to/possibly/existing/file.txt");
+	 * const filePath = path.asFileSync();
+	 * ```
+	 */
+	public asFileSync(): FilePath {
+		return this.asSync(FilePath);
+	}
+
+	/**
+	 * Converts the current path to a DirPath instance synchronously.
+	 *
+	 * @returns A DirPath instance
+	 *
+	 * @example
+	 * ```ts
+	 * const path = new Path("/path/to/possibly/existing/directory");
+	 * const dirPath = path.asDirSync();
+	 * ```
+	 */
+	public asDirSync(): DirPath {
+		return this.asSync(DirPath);
+	}
+
+	/**
+	 * Converts the current path to a SymlinkPath instance synchronously.
+	 *
+	 * @returns A SymlinkPath instance
+	 *
+	 * @example
+	 * ```ts
+	 * const path = new Path("/path/to/possibly/existing/symlink");
+	 * const symlinkPath = path.asSymlinkSync();
+	 * ```
+	 */
+	public asSymlinkSync(): SymlinkPath {
+		return this.asSync(SymlinkPath);
+	}
 }
 
 /**
