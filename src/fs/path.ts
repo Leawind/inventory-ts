@@ -55,6 +55,7 @@ export class Path {
 	 * Creates an VoidPath instance synchronously.
 	 *
 	 * @param path A path string or Path instance
+	 * @param check Whether to check the path type (default: true)
 	 * @returns An VoidPath instance
 	 *
 	 * @example
@@ -62,14 +63,15 @@ export class Path {
 	 * const voidPath = Path.voidSync("/path/to/void/location");
 	 * ```
 	 */
-	public static voidSync(path: PathLike): VoidPath {
-		return Path.from(path).asSync(VoidPath);
+	public static voidSync(path: PathLike, check: boolean = true): VoidPath {
+		return Path.from(path).asSync(VoidPath, check);
 	}
 
 	/**
 	 * Creates a FilePath instance synchronously.
 	 *
 	 * @param path A path string or Path instance
+	 * @param check Whether to check the path type (default: true)
 	 * @returns A FilePath instance
 	 *
 	 * @example
@@ -77,14 +79,15 @@ export class Path {
 	 * const filePath = Path.fileSync("/path/to/file.txt");
 	 * ```
 	 */
-	public static fileSync(path: PathLike): FilePath {
-		return Path.from(path).asSync(FilePath);
+	public static fileSync(path: PathLike, check: boolean = true): FilePath {
+		return Path.from(path).asSync(FilePath, check);
 	}
 
 	/**
 	 * Creates a DirPath instance synchronously.
 	 *
 	 * @param path A path string or Path instance
+	 * @param check Whether to check the path type (default: true)
 	 * @returns A DirPath instance
 	 *
 	 * @example
@@ -92,14 +95,15 @@ export class Path {
 	 * const dirPath = Path.dirSync("/path/to/directory");
 	 * ```
 	 */
-	public static dirSync(path: PathLike): DirPath {
-		return Path.from(path).asSync(DirPath);
+	public static dirSync(path: PathLike, check: boolean = true): DirPath {
+		return Path.from(path).asSync(DirPath, check);
 	}
 
 	/**
 	 * Creates a SymlinkPath instance synchronously.
 	 *
 	 * @param path A path string or Path instance
+	 * @param check Whether to check the path type (default: true)
 	 * @returns A SymlinkPath instance
 	 *
 	 * @example
@@ -107,14 +111,15 @@ export class Path {
 	 * const symlinkPath = Path.symlinkSync("/path/to/symlink");
 	 * ```
 	 */
-	public static symlinkSync(path: PathLike): SymlinkPath {
-		return Path.from(path).asSync(SymlinkPath);
+	public static symlinkSync(path: PathLike, check: boolean = true): SymlinkPath {
+		return Path.from(path).asSync(SymlinkPath, check);
 	}
 
 	/**
 	 * Creates an VoidPath instance asynchronously.
 	 *
 	 * @param path A path string or Path instance
+	 * @param check Whether to check the path type (default: true)
 	 * @returns A promise that resolves to an VoidPath instance
 	 *
 	 * @example
@@ -122,14 +127,15 @@ export class Path {
 	 * const voidPath = await Path.void("/path/to/void/location");
 	 * ```
 	 */
-	public static void(path: PathLike): Promise<VoidPath> {
-		return Path.from(path).as(VoidPath);
+	public static void(path: PathLike, check: boolean = true): Promise<VoidPath> {
+		return Path.from(path).as(VoidPath, check);
 	}
 
 	/**
 	 * Creates a FilePath instance asynchronously.
 	 *
 	 * @param path A path string or Path instance
+	 * @param check Whether to check the path type (default: true)
 	 * @returns A promise that resolves to a FilePath instance
 	 *
 	 * @example
@@ -137,14 +143,15 @@ export class Path {
 	 * const filePath = await Path.file("/path/to/file.txt");
 	 * ```
 	 */
-	public static file(path: PathLike): Promise<FilePath> {
-		return Path.from(path).as(FilePath);
+	public static file(path: PathLike, check: boolean = true): Promise<FilePath> {
+		return Path.from(path).as(FilePath, check);
 	}
 
 	/**
 	 * Creates a DirPath instance asynchronously.
 	 *
 	 * @param path A path string or Path instance
+	 * @param check Whether to check the path type (default: true)
 	 * @returns A promise that resolves to a DirPath instance
 	 *
 	 * @example
@@ -152,14 +159,15 @@ export class Path {
 	 * const dirPath = await Path.dir("/path/to/directory");
 	 * ```
 	 */
-	public static dir(path: PathLike): Promise<DirPath> {
-		return Path.from(path).as(DirPath);
+	public static dir(path: PathLike, check: boolean = true): Promise<DirPath> {
+		return Path.from(path).as(DirPath, check);
 	}
 
 	/**
 	 * Creates a SymlinkPath instance asynchronously.
 	 *
 	 * @param path A path string or Path instance
+	 * @param check Whether to check the path type (default: true)
 	 * @returns A promise that resolves to a SymlinkPath instance
 	 *
 	 * @example
@@ -167,8 +175,8 @@ export class Path {
 	 * const symlinkPath = await Path.symlink("/path/to/symlink");
 	 * ```
 	 */
-	public static symlink(path: PathLike): Promise<SymlinkPath> {
-		return Path.from(path).as(SymlinkPath);
+	public static symlink(path: PathLike, check: boolean = true): Promise<SymlinkPath> {
+		return Path.from(path).as(SymlinkPath, check);
 	}
 
 	/**
@@ -647,9 +655,8 @@ export class Path {
 	 * const filePath = path.asSync(FilePath); // Returns FilePath instance
 	 * ```
 	 */
-	public asSync<T extends CollapsedPath>(type: Constructor<T>): T {
-		const actualType = this.typeSync();
-		if (actualType !== type) {
+	public asSync<T extends CollapsedPath>(type: Constructor<T>, check: boolean = true): T {
+		if (check && type !== this.typeSync()) {
 			throw new Error(`Path ${this.path} is not a ${type.name}`);
 		}
 		return this._as(type) as T;
@@ -670,9 +677,8 @@ export class Path {
 	 * const filePath = await path.as(FilePath); // Returns FilePath instance
 	 * ```
 	 */
-	public async as<T extends CollapsedPath>(type: Constructor<T>): Promise<T> {
-		const actualType = await this.type();
-		if (actualType !== type) {
+	public async as<T extends CollapsedPath>(type: Constructor<T>, check: boolean = true): Promise<T> {
+		if (check && type !== await this.type()) {
 			throw new Error(`Path ${this.path} is not a ${type.name}`);
 		}
 		return this._as(type) as T;
@@ -689,8 +695,8 @@ export class Path {
 	 * const filePath = await path.asFile();
 	 * ```
 	 */
-	public asFile(): Promise<FilePath> {
-		return this.as(FilePath);
+	public asFile(check: boolean = true): Promise<FilePath> {
+		return this.as(FilePath, check);
 	}
 
 	/**
@@ -704,8 +710,8 @@ export class Path {
 	 * const dirPath = await path.asDir();
 	 * ```
 	 */
-	public asDir(): Promise<DirPath> {
-		return this.as(DirPath);
+	public asDir(check: boolean = true): Promise<DirPath> {
+		return this.as(DirPath, check);
 	}
 
 	/**
@@ -719,8 +725,8 @@ export class Path {
 	 * const symlinkPath = await path.asSymlink();
 	 * ```
 	 */
-	public asSymlink(): Promise<SymlinkPath> {
-		return this.as(SymlinkPath);
+	public asSymlink(check: boolean = true): Promise<SymlinkPath> {
+		return this.as(SymlinkPath, check);
 	}
 
 	/**
@@ -734,8 +740,8 @@ export class Path {
 	 * const filePath = path.asFileSync();
 	 * ```
 	 */
-	public asFileSync(): FilePath {
-		return this.asSync(FilePath);
+	public asFileSync(check: boolean = true): FilePath {
+		return this.asSync(FilePath, check);
 	}
 
 	/**
@@ -749,8 +755,8 @@ export class Path {
 	 * const dirPath = path.asDirSync();
 	 * ```
 	 */
-	public asDirSync(): DirPath {
-		return this.asSync(DirPath);
+	public asDirSync(check: boolean = true): DirPath {
+		return this.asSync(DirPath, check);
 	}
 
 	/**
@@ -764,8 +770,8 @@ export class Path {
 	 * const symlinkPath = path.asSymlinkSync();
 	 * ```
 	 */
-	public asSymlinkSync(): SymlinkPath {
-		return this.asSync(SymlinkPath);
+	public asSymlinkSync(check: boolean = true): SymlinkPath {
+		return this.asSync(SymlinkPath, check);
 	}
 }
 
