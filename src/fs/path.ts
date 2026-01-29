@@ -794,6 +794,37 @@ export class Path {
 	public asSymlinkSync(check: boolean = true): SymlinkPath {
 		return this.asSync(SymlinkPath, check);
 	}
+
+	/**
+	 * Executes the corresponding callback function based on the actual type of the path.
+	 *
+	 * This method asynchronously detects the path type and then executes the appropriate
+	 * callback function based on the type. If the path does not exist or does not belong
+	 * to any specific type, no callback will be executed.
+	 *
+	 * @param callbacks An object containing callback functions for different path types
+	 * @param callbacks.file Optional callback function for file type, receives FilePath parameter
+	 * @param callbacks.dir Optional callback function for directory type, receives DirPath parameter
+	 * @param callbacks.symlink Optional callback function for symbolic link type, receives SymlinkPath parameter
+	 */
+	public async match<R>(callbacks: {
+		file?(path: FilePath): Promise<R>;
+		dir?(path: DirPath): Promise<R>;
+		symlink?(path: SymlinkPath): Promise<R>;
+	}): Promise<void> {
+		const type = await this.type();
+		switch (type) {
+			case FilePath:
+				callbacks.file && callbacks.file(this.asFileSync(false));
+				return;
+			case DirPath:
+				callbacks.dir && callbacks.dir(this.asDirSync(false));
+				return;
+			case SymlinkPath:
+				callbacks.symlink && callbacks.symlink(this.asSymlinkSync(false));
+				return;
+		}
+	}
 }
 
 /**
