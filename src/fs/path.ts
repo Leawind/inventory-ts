@@ -960,6 +960,13 @@ abstract class NonVoidPath extends Path {
  * Provides methods for reading and writing file contents.
  */
 export class FilePath extends NonVoidPath {
+	override type(): Promise<PathType> {
+		return Promise.resolve(FilePath);
+	}
+	override typeSync(): PathType {
+		return FilePath;
+	}
+
 	/**
 	 * Reads the file contents as bytes synchronously.
 	 *
@@ -1069,6 +1076,13 @@ export class FilePath extends NonVoidPath {
  * Provides methods for listing directory contents.
  */
 export class DirPath extends NonVoidPath {
+	override type(): Promise<PathType> {
+		return Promise.resolve(DirPath);
+	}
+	override typeSync(): PathType {
+		return DirPath;
+	}
+
 	/**
 	 * Lists the contents of the directory synchronously.
 	 *
@@ -1113,6 +1127,13 @@ export class DirPath extends NonVoidPath {
  * Provides methods for getting the target of the symlink.
  */
 export class SymlinkPath extends NonVoidPath {
+	override type(): Promise<PathType> {
+		return Promise.resolve(SymlinkPath);
+	}
+	override typeSync(): PathType {
+		return SymlinkPath;
+	}
+
 	/**
 	 * Gets the target of the symbolic link synchronously.
 	 *
