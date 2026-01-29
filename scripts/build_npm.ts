@@ -1,60 +1,44 @@
 import { build, emptyDir } from '@deno/dnt';
-import { p } from 'jsr:@leawind/inventory@0.12.0/tstr';
+import * as std_path from 'jsr:@std/path@^1';
 
-import META from '../deno.json' with { type: 'json' };
+import DENO_JSON from '../deno.json' with { type: 'json' };
 
-const OUTPUT_DIR = p`./npm`;
-
+const OUTPUT_DIR = `npm`;
+const COPIED_FILES = [
+	`README.md`,
+	`LICENSE`,
+];
 await emptyDir(OUTPUT_DIR);
 
 await build({
-	packageManager: 'pnpm',
+	packageManager: 'npm',
 	importMap: 'deno.json',
-	entryPoints: [
-		'./src/index.ts',
-	],
+	entryPoints: Object.entries(DENO_JSON.exports).map(([name, path]) => ({ name, path })),
 	outDir: OUTPUT_DIR,
-	shims: {
-		// deno: true,
-		// timers: true,
-	},
+	shims: {},
 	esModule: true,
 	typeCheck: false,
 	test: false,
 	declaration: 'inline',
-	declarationMap: false,
-	scriptModule: false,
-	// `package.json` properties
+	declarationMap: true,
+	scriptModule: 'cjs',
 	package: {
 		type: 'module',
-		name: META.name,
-		version: META.version,
-		license: META.license,
-		description: '',
-		repository: {
-			type: 'git',
-			url: 'https://github.com/Leawind/inventory-ts.git',
-		},
+		name: DENO_JSON.name,
+		version: DENO_JSON.version,
+		license: DENO_JSON.license,
+		description: DENO_JSON.description,
+		repository: DENO_JSON.repository,
+		main: './esm/index.js',
+		module: './esm/index.js',
 		private: false,
-		exports: Object.fromEntries(
-			Object.entries(META.exports)
-				.map(([key, value]) => [
-					key,
-					value
-						.replace(/^\.\/src/, './esm')
-						.replace(/\.ts$/, '.js'),
-				]),
-		),
-		files: [
-			'esm',
-		],
 		publishConfig: {
 			access: 'public',
 		},
 	},
 	compilerOptions: {
-		target: 'ES2023',
-		lib: ['ES2023'],
+		target: 'Latest',
+		lib: ['ESNext'],
 		inlineSources: true,
 		sourceMap: true,
 		strictFunctionTypes: false,
@@ -62,9 +46,7 @@ await build({
 		noImplicitReturns: false,
 		noImplicitAny: false,
 	},
+	postBuild() {
+		COPIED_FILES.forEach((file) => Deno.copyFileSync(file, std_path.join(OUTPUT_DIR, file)));
+	},
 });
-
-[
-	'README.md',
-	'LICENSE',
-].forEach((file) => Deno.copyFileSync(p`./${file}`, p`./${OUTPUT_DIR}/${file}`));

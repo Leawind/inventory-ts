@@ -1,6 +1,11 @@
 {
 	"name": "@leawind/inventory",
 	"version": "0.16.0",
+	"description": "",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Leawind/inventory-ts.git"
+	},
 	"license": "MIT",
 	"exports": {
 		"./algorithm": "./src/algorithm/index.ts",
