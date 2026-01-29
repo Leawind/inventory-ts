@@ -265,6 +265,27 @@ export class Path {
 	}
 
 	/**
+	 * Gets the name of the file without extension.
+	 *
+	 * @returns The basename of the path without its extension
+	 *
+	 * @example
+	 * ```ts
+	 * const path = new Path("/path/to/file.txt");
+	 * console.log(path.nameNoExt); // "file"
+	 *
+	 * const path2 = new Path("/path/to/file");
+	 * console.log(path2.nameNoExt); // "file"
+	 *
+	 * const path3 = new Path("/path/to/file.tar.gz");
+	 * console.log(path3.nameNoExt); // "file"
+	 * ```
+	 */
+	public get nameNoExt(): string {
+		return this.name.split('.', 2)[0];
+	}
+
+	/**
 	 * Gets the extension of the path including the dot.
 	 *
 	 * @returns The extension of the path including the dot
