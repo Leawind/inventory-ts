@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert/equals';
+import { assertEquals } from '@std/assert';
 import { cmd } from './utils.ts';
 
 Deno.test('cmd', () => {

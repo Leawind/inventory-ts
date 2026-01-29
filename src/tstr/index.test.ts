@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert/equals';
+import { assertEquals } from '@std/assert';
 import { interleave, p, r } from './index.ts';
 import * as std_path from '@std/path';
 

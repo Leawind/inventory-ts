@@ -1,5 +1,5 @@
 import { StaticResourceManager } from '@/static-resource/index.ts';
-import { assertStrictEquals } from '@std/assert/strict-equals';
+import { assertStrictEquals } from '@std/assert';
 
 Deno.test('Test static resource', async () => {
 	const srm = StaticResourceManager.at(import.meta.dirname!);

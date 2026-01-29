@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert/equals';
+import { assertEquals } from '@std/assert';
 import * as xtype from './index.ts';
 
 class Cat {

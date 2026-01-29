@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert/equals';
+import { assertEquals } from '@std/assert';
 import { detectFunctionType } from './index.ts';
 
 Deno.test('test detect function type', () => {

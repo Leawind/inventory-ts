@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert/equals';
+import { assertEquals } from '@std/assert';
 import { EnvManager } from './index.ts';
 
 Deno.test('EnvManager caseSensitive', () => {
