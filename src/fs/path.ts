@@ -902,7 +902,7 @@ export class VoidPath extends Path {
 	 * ```
 	 */
 	public linkSync(target: PathLike): SymlinkPath {
-		Deno.linkSync(this.path, Path.str(target));
+		Deno.linkSync(Path.str(target), this.path);
 		return new SymlinkPath(this.path);
 	}
 
@@ -919,7 +919,7 @@ export class VoidPath extends Path {
 	 * ```
 	 */
 	public async link(target: PathLike): Promise<SymlinkPath> {
-		await Deno.link(this.path, Path.str(target));
+		await Deno.link(Path.str(target), this.path);
 		return new SymlinkPath(this.path);
 	}
 }
