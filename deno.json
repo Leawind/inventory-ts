@@ -53,6 +53,7 @@
 		"exclude": [
 			"examples/",
 			"**/*.test.ts",
+			"test/",
 			"scripts",
 			".github/",
 			".vscode/"
