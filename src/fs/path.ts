@@ -953,6 +953,50 @@ abstract class NonVoidPath extends Path {
 	public async remove(options?: { recursive?: boolean }): Promise<void> {
 		await Deno.remove(this.path, options);
 	}
+
+	/**
+	 * Moves the path to a destination path asynchronously.
+	 *
+	 * @param dest The destination path to move to
+	 * @returns A promise that resolves to a Path instance of the same type as the caller
+	 *
+	 * @example
+	 * ```ts
+	 * const filePath = new FilePath("/path/to/file.txt");
+	 * const movedPath = await filePath.moveTo("/new/path/file.txt"); // Returns FilePath
+	 *
+	 * const dirPath = new DirPath("/path/to/dir");
+	 * const movedDirPath = await dirPath.moveTo("/new/path/dir"); // Returns DirPath
+	 * ```
+	 */
+	public async moveTo(dest: PathLike): Promise<this> {
+		const destPath = Path.from(dest);
+		await Deno.rename(this.path, destPath.path);
+		// Return the destination path casted to the same type as this instance
+		return destPath.as(await this.type()) as unknown as this;
+	}
+
+	/**
+	 * Moves the path to a destination path synchronously.
+	 *
+	 * @param dest The destination path to move to
+	 * @returns A Path instance of the same type as the caller
+	 *
+	 * @example
+	 * ```ts
+	 * const filePath = new FilePath("/path/to/file.txt");
+	 * const movedPath = filePath.moveToSync("/new/path/file.txt"); // Returns FilePath
+	 *
+	 * const dirPath = new DirPath("/path/to/dir");
+	 * const movedDirPath = dirPath.moveToSync("/new/path/dir"); // Returns DirPath
+	 * ```
+	 */
+	public moveToSync(dest: PathLike): this {
+		const destPath = Path.from(dest);
+		Deno.renameSync(this.path, destPath.path);
+		// Return the destination path casted to the same type as this instance
+		return destPath.asSync(this.typeSync()) as unknown as this;
+	}
 }
 
 /**
