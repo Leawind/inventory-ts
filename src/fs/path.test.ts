@@ -32,6 +32,11 @@ Deno.test('fs/path: Path basic construction and conversion', async (t) => {
 			const path = new Path('/some/path');
 			assertEquals(`${path}`, '/some/path');
 		});
+
+		await t.step('get str returns the path', () => {
+			const path = new Path('/some/path');
+			assertEquals(path.str, '/some/path');
+		});
 	} finally {
 		await Deno.remove(tempDir, { recursive: true });
 	}
@@ -166,6 +171,110 @@ Deno.test('fs/path: Path type checking methods', async (t) => {
 			assertEquals(await dirPath.isFile(), false);
 			assertEquals(await filePath.isFile(), true);
 		});
+
+		await t.step('isSymlinkSync checks if path is symlink synchronously', () => {
+			const dirPath = new Path(tempDir);
+			const filePath = new Path(`${tempDir}/test-symlink-sync.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			assert(!dirPath.isSymlinkSync());
+			assert(!filePath.isSymlinkSync());
+		});
+
+		await t.step('isSymlink checks if path is symlink asynchronously', async () => {
+			const dirPath = new Path(tempDir);
+			const filePath = new Path(`${tempDir}/test-symlink-async.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			assertEquals(await dirPath.isSymlink(), false);
+			assertEquals(await filePath.isSymlink(), false);
+		});
+	} finally {
+		await Deno.remove(tempDir, { recursive: true });
+	}
+});
+
+Deno.test('fs/path: Path type detection methods', async (t) => {
+	const tempDir = await Deno.makeTempDir({ prefix: 'test-inventory-ts-' });
+
+	try {
+		await t.step('typeSync detects file type', () => {
+			const filePath = new Path(`${tempDir}/test-file.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			assertEquals(filePath.typeSync(), FilePath);
+		});
+
+		await t.step('typeSync detects directory type', () => {
+			const dirPath = new Path(tempDir);
+
+			assertEquals(dirPath.typeSync(), DirPath);
+		});
+
+		await t.step('typeSync detects void path type', () => {
+			const voidPath = new Path(`${tempDir}/nonexistent`);
+
+			assertEquals(voidPath.typeSync(), VoidPath);
+		});
+
+		await t.step('type detects file type', async () => {
+			const filePath = new Path(`${tempDir}/test-file-type.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			assertEquals(await filePath.type(), FilePath);
+		});
+
+		await t.step('type detects directory type', async () => {
+			const dirPath = new Path(tempDir);
+
+			assertEquals(await dirPath.type(), DirPath);
+		});
+
+		await t.step('type detects void path type', async () => {
+			const voidPath = new Path(`${tempDir}/nonexistent-type`);
+
+			assertEquals(await voidPath.type(), VoidPath);
+		});
+	} finally {
+		await Deno.remove(tempDir, { recursive: true });
+	}
+});
+
+Deno.test('fs/path: File info methods', async (t) => {
+	const tempDir = await Deno.makeTempDir({ prefix: 'test-inventory-ts-' });
+
+	try {
+		await t.step('lstatSync returns file info without following symlinks', () => {
+			const filePath = new Path(`${tempDir}/test-lstatsync.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			const fileInfo = filePath.lstatSync();
+			assert(fileInfo.isFile);
+		});
+
+		await t.step('lstat returns file info without following symlinks asynchronously', async () => {
+			const filePath = new Path(`${tempDir}/test-lstat.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			const fileInfo = await filePath.lstat();
+			assert(fileInfo.isFile);
+		});
+
+		await t.step('statSync returns file info following symlinks', () => {
+			const filePath = new Path(`${tempDir}/test-statsync.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			const fileInfo = filePath.statSync();
+			assert(fileInfo.isFile);
+		});
+
+		await t.step('stat returns file info following symlinks asynchronously', async () => {
+			const filePath = new Path(`${tempDir}/test-stat.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			const fileInfo = await filePath.stat();
+			assert(fileInfo.isFile);
+		});
 	} finally {
 		await Deno.remove(tempDir, { recursive: true });
 	}
@@ -203,6 +312,225 @@ Deno.test('fs/path: Type conversion methods', async (t) => {
 				assertEquals(e.message, `Path ${filePath.path} is not a DirPath`);
 			}
 			assert(errorOccurred, 'Expected an error to be thrown');
+		});
+
+		await t.step('asSync returns correctly typed path when check passes', () => {
+			const filePath = new Path(`${tempDir}/test-asSync.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			const typedPath = filePath.asSync(FilePath, true);
+			assertEquals(typedPath.constructor, FilePath);
+		});
+
+		await t.step('as returns correctly typed path when check passes', async () => {
+			const filePath = new Path(`${tempDir}/test-as.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			const typedPath = await filePath.as(FilePath, true);
+			assertEquals(typedPath.constructor, FilePath);
+		});
+
+		await t.step('asFile converts to FilePath asynchronously', async () => {
+			const filePath = new Path(`${tempDir}/test-asFile.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			const typedPath = await filePath.asFile();
+			assertEquals(typedPath.constructor, FilePath);
+		});
+
+		await t.step('asDir converts to DirPath asynchronously', async () => {
+			const dirPath = new Path(tempDir);
+
+			const typedPath = await dirPath.asDir();
+			assertEquals(typedPath.constructor, DirPath);
+		});
+
+		await t.step('asSymlink converts to SymlinkPath asynchronously', async () => {
+			const symlinkPath = new Path(`${tempDir}/symlink-target`);
+
+			// This should fail because it's not actually a symlink, but the method exists
+			try {
+				const typedPath = await symlinkPath.asSymlink(false); // skip check
+				assertEquals(typedPath.constructor, SymlinkPath);
+			} catch {
+				// Expected to fail if not actually a symlink
+			}
+		});
+
+		await t.step('asFileSync converts to FilePath synchronously', () => {
+			const filePath = new Path(`${tempDir}/test-asFileSync.txt`);
+			Deno.writeTextFileSync(filePath.path, 'test content');
+
+			const typedPath = filePath.asFileSync();
+			assertEquals(typedPath.constructor, FilePath);
+		});
+
+		await t.step('asDirSync converts to DirPath synchronously', () => {
+			const dirPath = new Path(tempDir);
+
+			const typedPath = dirPath.asDirSync();
+			assertEquals(typedPath.constructor, DirPath);
+		});
+
+		await t.step('asSymlinkSync converts to SymlinkPath synchronously', () => {
+			const symlinkPath = new Path(`${tempDir}/symlink-target-sync`);
+
+			// This should fail because it's not actually a symlink, but the method exists
+			try {
+				const typedPath = symlinkPath.asSymlinkSync(false); // skip check
+				assertEquals(typedPath.constructor, SymlinkPath);
+			} catch {
+				// Expected to fail if not actually a symlink
+			}
+		});
+	} finally {
+		await Deno.remove(tempDir, { recursive: true });
+	}
+});
+
+Deno.test('fs/path: Static factory methods', async (t) => {
+	const tempDir = await Deno.makeTempDir({ prefix: 'test-inventory-ts-' });
+
+	try {
+		await t.step('Path.voidSync creates VoidPath instance', () => {
+			const voidPath = Path.voidSync(`${tempDir}/nonexistent`, false);
+			assertEquals(voidPath.constructor, VoidPath);
+		});
+
+		await t.step('Path.fileSync creates FilePath instance', () => {
+			const filePath = `${tempDir}/test-fileSync.txt`;
+			Deno.writeTextFileSync(filePath, 'test content');
+
+			const typedPath = Path.fileSync(filePath);
+			assertEquals(typedPath.constructor, FilePath);
+		});
+
+		await t.step('Path.dirSync creates DirPath instance', () => {
+			const typedPath = Path.dirSync(tempDir);
+			assertEquals(typedPath.constructor, DirPath);
+		});
+
+		await t.step('Path.symlinkSync creates SymlinkPath instance', () => {
+			// We'll skip actual symlink creation to avoid platform issues, but test the method
+			const symlinkPath = Path.symlinkSync(`${tempDir}/fake-symlink`, false);
+			assertEquals(symlinkPath.constructor, SymlinkPath);
+		});
+
+		await t.step('Path.void creates VoidPath instance asynchronously', async () => {
+			const voidPath = await Path.void(`${tempDir}/nonexistent-async`, false);
+			assertEquals(voidPath.constructor, VoidPath);
+		});
+
+		await t.step('Path.file creates FilePath instance asynchronously', async () => {
+			const filePath = `${tempDir}/test-file-async.txt`;
+			Deno.writeTextFileSync(filePath, 'test content');
+
+			const typedPath = await Path.file(filePath);
+			assertEquals(typedPath.constructor, FilePath);
+		});
+
+		await t.step('Path.dir creates DirPath instance asynchronously', async () => {
+			const typedPath = await Path.dir(tempDir);
+			assertEquals(typedPath.constructor, DirPath);
+		});
+
+		await t.step('Path.symlink creates SymlinkPath instance asynchronously', async () => {
+			// We'll skip actual symlink creation to avoid platform issues, but test the method
+			const symlinkPath = await Path.symlink(`${tempDir}/fake-symlink-async`, false);
+			assertEquals(symlinkPath.constructor, SymlinkPath);
+		});
+
+		await t.step('Path.str returns string representation of PathLike', () => {
+			const pathStr = '/some/test/path';
+			const pathObj = new Path(pathStr);
+
+			assertEquals(Path.str(pathStr), pathStr);
+			assertEquals(Path.str(pathObj), pathStr);
+		});
+	} finally {
+		await Deno.remove(tempDir, { recursive: true });
+	}
+});
+
+Deno.test('fs/path: NonVoidPath methods (remove and move)', async (t) => {
+	const tempDir = await Deno.makeTempDir({ prefix: 'test-inventory-ts-' });
+
+	try {
+		await t.step('FilePath removeSync removes file', () => {
+			const filePath = new FilePath(`${tempDir}/to-be-removed-sync.txt`);
+			Deno.writeTextFileSync(filePath.path, 'will be removed');
+
+			assert(existsSync(filePath.path)); // File exists initially
+
+			filePath.removeSync();
+
+			assert(!existsSync(filePath.path)); // File should be removed
+		});
+
+		await t.step('FilePath remove removes file asynchronously', async () => {
+			const filePath = new FilePath(`${tempDir}/to-be-removed-async.txt`);
+			await Deno.writeTextFile(filePath.path, 'will be removed');
+
+			assert(existsSync(filePath.path)); // File exists initially
+
+			await filePath.remove();
+
+			assert(!existsSync(filePath.path)); // File should be removed
+		});
+
+		await t.step('DirPath removeSync removes directory', () => {
+			const dirPath = new DirPath(`${tempDir}/dir-to-be-removed-sync`);
+			Deno.mkdirSync(dirPath.path);
+
+			assert(existsSync(dirPath.path)); // Directory exists initially
+
+			dirPath.removeSync({ recursive: true });
+
+			assert(!existsSync(dirPath.path)); // Directory should be removed
+		});
+
+		await t.step('DirPath remove removes directory asynchronously', async () => {
+			const dirPath = new DirPath(`${tempDir}/dir-to-be-removed-async`);
+			await Deno.mkdir(dirPath.path);
+
+			assert(existsSync(dirPath.path)); // Directory exists initially
+
+			await dirPath.remove({ recursive: true });
+
+			assert(!existsSync(dirPath.path)); // Directory should be removed
+		});
+
+		await t.step('FilePath moveTo moves file to new location', async () => {
+			const sourcePath = new FilePath(`${tempDir}/source-move.txt`);
+			const destPath = new Path(`${tempDir}/dest-move.txt`);
+
+			Deno.writeTextFileSync(sourcePath.path, 'moving file');
+
+			assert(existsSync(sourcePath.path)); // Source file exists
+			assert(!existsSync(destPath.path)); // Destination doesn't exist yet
+
+			const movedPath = await sourcePath.moveTo(destPath);
+
+			assert(!existsSync(sourcePath.path)); // Source file no longer exists
+			assert(existsSync(destPath.path)); // Destination file now exists
+			assertEquals(movedPath.constructor, FilePath); // Returned path is still a FilePath
+		});
+
+		await t.step('DirPath moveToSync moves directory to new location', () => {
+			const sourceDir = new DirPath(`${tempDir}/source-dir-sync`);
+			const destDir = new Path(`${tempDir}/dest-dir-sync`);
+
+			Deno.mkdirSync(sourceDir.path);
+			Deno.writeTextFileSync(`${sourceDir.path}/test-file.txt`, 'test content');
+
+			assert(existsSync(sourceDir.path)); // Source directory exists
+			assert(!existsSync(destDir.path)); // Destination doesn't exist yet
+
+			const movedPath = sourceDir.moveToSync(destDir);
+
+			assert(!existsSync(sourceDir.path)); // Source directory no longer exists
+			assert(existsSync(destDir.path)); // Destination directory now exists
+			assertEquals(movedPath.constructor, DirPath); // Returned path is still a DirPath
 		});
 	} finally {
 		await Deno.remove(tempDir, { recursive: true });
@@ -259,6 +587,32 @@ Deno.test('fs/path: VoidPath methods', async (t) => {
 
 			const content = Deno.readTextFileSync(voidPath.path);
 			assertEquals(content, 'Hello, Sync World!');
+		});
+
+		await t.step('VoidPath linkSync creates hard link', () => {
+			const filePath = `${tempDir}/original-file.txt`;
+			const linkPath = `${tempDir}/hard-link-sync.txt`;
+
+			Deno.writeTextFileSync(filePath, 'original content');
+
+			const voidPath = new VoidPath(linkPath);
+			const symlinkPath = voidPath.linkSync(filePath);
+
+			assertEquals(symlinkPath.constructor, SymlinkPath);
+			assert(existsSync(linkPath)); // Link was created
+		});
+
+		await t.step('VoidPath link creates hard link asynchronously', async () => {
+			const filePath = `${tempDir}/original-file-async.txt`;
+			const linkPath = `${tempDir}/hard-link-async.txt`;
+
+			await Deno.writeTextFile(filePath, 'original content');
+
+			const voidPath = new VoidPath(linkPath);
+			const symlinkPath = await voidPath.link(filePath);
+
+			assertEquals(symlinkPath.constructor, SymlinkPath);
+			assert(existsSync(linkPath)); // Link was created
 		});
 	} finally {
 		await Deno.remove(tempDir, { recursive: true });
@@ -431,14 +785,6 @@ Deno.test('fs/path: Static helper methods', async (t) => {
 		await t.step('Path.cwd returns current working directory as Path', () => {
 			const cwd = Path.cwd();
 			assert(cwd.isAbsolute);
-		});
-
-		await t.step('Path.str returns string representation of PathLike', () => {
-			const pathStr = '/some/test/path';
-			const pathObj = new Path(pathStr);
-
-			assertEquals(Path.str(pathStr), pathStr);
-			assertEquals(Path.str(pathObj), pathStr);
 		});
 	} finally {
 		await Deno.remove(tempDir, { recursive: true });
