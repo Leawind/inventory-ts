@@ -808,21 +808,18 @@ export class Path {
 	 * @param callbacks.symlink Optional callback function for symbolic link type, receives SymlinkPath parameter
 	 */
 	public async match<R>(callbacks: {
-		file?(path: FilePath): Promise<R>;
-		dir?(path: DirPath): Promise<R>;
-		symlink?(path: SymlinkPath): Promise<R>;
-	}): Promise<void> {
+		file?(path: FilePath): Promise<R> | R;
+		dir?(path: DirPath): Promise<R> | R;
+		symlink?(path: SymlinkPath): Promise<R> | R;
+	}): Promise<R | undefined> {
 		const type = await this.type();
 		switch (type) {
 			case FilePath:
-				callbacks.file && callbacks.file(this.asFileSync(false));
-				return;
+				return callbacks.file && callbacks.file(this.asFileSync(false));
 			case DirPath:
-				callbacks.dir && callbacks.dir(this.asDirSync(false));
-				return;
+				return callbacks.dir && callbacks.dir(this.asDirSync(false));
 			case SymlinkPath:
-				callbacks.symlink && callbacks.symlink(this.asSymlinkSync(false));
-				return;
+				return callbacks.symlink && callbacks.symlink(this.asSymlinkSync(false));
 		}
 	}
 }
