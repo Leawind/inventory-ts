@@ -1,29 +1,4 @@
-/**
- * ### Example
- *
- * ```ts
- * type A = { a: string, b: number };
- * type B = { a: number, c: boolean };
- *
- * type Result = Intersect<[A, B]>;
- * type Result = { a: never, b: number, c: boolean }
- * ```
- */
-export type Intersect<T extends unknown[]> = T extends [infer First, ...infer Rest] ? First & Intersect<Rest>
-	: unknown;
-/**
- * ### Example
- *
- * ```ts
- * type A = { a: string, b: number };
- * type B = { a: number, c: boolean };
- *
- * type Result = Union<[A, B]>;
- * type Result = { a: string | number }
- * ```
- */
-export type Union<T extends unknown[]> = T extends [infer First, ...infer Rest] ? First | Union<Rest>
-	: never;
+import type { IntersectOf, UnionOf } from '@leawind/lay-sing';
 
 /**
  * ### Example
@@ -36,7 +11,7 @@ export type Union<T extends unknown[]> = T extends [infer First, ...infer Rest] 
  * type Result = { b: number, c: boolean }
  * ```
  */
-export type DiffProps<T extends unknown[]> = Omit<Intersect<T>, keyof Union<T>>;
+export type DiffProps<T extends unknown[]> = Omit<IntersectOf<T>, keyof UnionOf<T>>;
 
 export function xorMerge<T extends object[]>(...objs: T): DiffProps<T> {
 	return new Proxy({}, {

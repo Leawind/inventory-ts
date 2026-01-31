@@ -43,6 +43,7 @@
 		"dev": "deno test --watch --parallel -R",
 		"test": "deno test --parallel -A",
 		"index": "deno -A ./scripts/index.ts",
+		"check": "deno check src test",
 		"build-npm": "deno run -A scripts/build_npm.ts",
 		"verify": "deno task index -- --check && deno fmt --check && deno lint && deno task test",
 		"prepare-deno": "deno task verify && deno publish --dry-run",
@@ -69,6 +70,7 @@
 	"imports": {
 		"@deno/dnt": "jsr:@deno/dnt@^0.41.3",
 		"@leawind/delegate": "jsr:@leawind/delegate@^0.6.0",
+		"@leawind/lay-sing": "jsr:@leawind/lay-sing@^0.1.2",
 		"@std": "jsr:@std",
 		"@/": "./src/"
 	},
