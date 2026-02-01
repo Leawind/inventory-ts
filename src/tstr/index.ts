@@ -60,6 +60,14 @@ export function r(strs: TemplateStringsArray, ...args: unknown[]): string {
 	return interleave(strs.raw, args.map(String)).join('');
 }
 
+export function simple(strs: TemplateStringsArray, ...args: unknown[]): string {
+	return interleave(strs, args.map(String)).join('');
+}
+
+export function I(strs: TemplateStringsArray, ...args: unknown[]): string {
+	return simple(strs, args).replace(/\n\s+/msg, '\n').trim();
+}
+
 /**
  * Path string template
  *

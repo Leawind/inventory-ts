@@ -1,5 +1,5 @@
 import { assertEquals } from '@std/assert';
-import { interleave, p, r } from './index.ts';
+import { I, interleave, p, r } from './index.ts';
 import * as std_path from '@std/path';
 
 Deno.test('xjoin', () => {
@@ -24,6 +24,31 @@ Deno.test('r', () => {
 
 	assertEquals(r`ab${12}${'cd'}`, 'ab12cd');
 	assertEquals(r`\${a}\${b}`, '\\${a}\\${b}');
+});
+
+Deno.test('I', () => {
+	assertEquals(I``, ``);
+	assertEquals(
+		I`
+		`,
+		``,
+	);
+	assertEquals(
+		I`
+		Hello, World!
+		This is a string
+		`,
+		`Hello, World!\nThis is a string`,
+	);
+	assertEquals(
+		I`
+		Hello, World!
+		This is a string`,
+		`Hello, World!\nThis is a string`,
+	);
+	assertEquals(I`a \t\rb`, `a \t\rb`);
+	assertEquals(I`\``, `\``);
+	assertEquals(I`\x1b`, `\x1b`);
 });
 
 Deno.test('p', () => {
