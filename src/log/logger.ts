@@ -1,4 +1,4 @@
-import type { TemplateStringArgs } from '@leawind/inventory/types'
+import type { TemplateStringArgs } from '../types/index.ts'
 import type {
   Formatter,
   LevelLike,
@@ -9,7 +9,7 @@ import type {
   Transport,
 } from './api.ts'
 import { LEVEL_REGISTRY } from './api.ts'
-import { interleave } from '@leawind/inventory/tstr'
+import { interleave } from '../tstr/index.ts'
 import type { Patch } from '../types/object.ts'
 import { ColorFormatter } from './builtin/formatter.ts'
 import { CliTransport } from './builtin/transport.ts'

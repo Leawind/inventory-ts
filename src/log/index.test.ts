@@ -1,4 +1,4 @@
-import log from '@leawind/inventory/log'
+import log from '../log/index.ts'
 import { expect } from '@leawind/lay-sing/test-utils'
 
 {

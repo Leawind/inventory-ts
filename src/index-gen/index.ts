@@ -1,6 +1,6 @@
-import log from '@leawind/inventory/log'
-import type { FilePath, Path } from '@leawind/inventory/fs'
-import { r } from '@leawind/inventory/tstr'
+import log from '../log/index.ts'
+import type { FilePath, Path } from '../fs/index.ts'
+import { r } from '../tstr/index.ts'
 
 const RGX_INDEX_EXPORTS = /((^\/\/ Index start >{16}\n)((.*)(^\/\/ <{16} {3}Index end$)?)?)/ms
 const START_LINE = `// Index start >>>>>>>>>>>>>>>>`

@@ -1,4 +1,4 @@
-import type { Awaitable } from '@leawind/inventory/types'
+import type { Awaitable } from '../types/index.ts'
 import type { InverseAccess } from '../types/object.ts'
 
 export const LEVEL_REGISTRY = {

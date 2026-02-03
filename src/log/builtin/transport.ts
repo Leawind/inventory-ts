@@ -1,4 +1,4 @@
-import type { Awaitable } from '@leawind/inventory/types'
+import type { Awaitable } from '../../types/index.ts'
 import { BaseTransport, type LogEntry } from '../api.ts'
 import { Logger } from '../logger.ts'
 
