@@ -195,18 +195,18 @@ export class Logger implements LogMethodOwner {
 		}
 		return log;
 	}
-	trace = this.defineLogMethod(this, LEVEL_REGISTRY.trace);
-	debug = this.defineLogMethod(this, LEVEL_REGISTRY.debug);
-	info = this.defineLogMethod(this, LEVEL_REGISTRY.info);
-	warn = this.defineLogMethod(this, LEVEL_REGISTRY.warn);
-	error = this.defineLogMethod(this, LEVEL_REGISTRY.error);
-	fatal = this.defineLogMethod(this, LEVEL_REGISTRY.fatal);
+	trace: FnLog = this.defineLogMethod(this, LEVEL_REGISTRY.trace);
+	debug: FnLog = this.defineLogMethod(this, LEVEL_REGISTRY.debug);
+	info: FnLog = this.defineLogMethod(this, LEVEL_REGISTRY.info);
+	warn: FnLog = this.defineLogMethod(this, LEVEL_REGISTRY.warn);
+	error: FnLog = this.defineLogMethod(this, LEVEL_REGISTRY.error);
+	fatal: FnLog = this.defineLogMethod(this, LEVEL_REGISTRY.fatal);
 
-	public static create(scope?: string) {
+	public static create(scope?: string): Logger {
 		return new Logger(scope);
 	}
 
-	public static createDefault(scope?: string) {
+	public static createDefault(scope?: string): Logger {
 		const logger = Logger.create(scope);
 		logger.setFormatter(new ColorFormatter());
 		logger.transports.push(new CliTransport());
