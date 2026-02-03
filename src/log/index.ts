@@ -14,5 +14,5 @@ export * from './logger.ts';
 /**
  * Global logger
  */
-export const log: LoggerApiMini = Logger.createDefault().mini;
+const log: LoggerApiMini = Logger.createDefault().mini;
 export default log;
