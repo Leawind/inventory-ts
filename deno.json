@@ -76,8 +76,15 @@
 	},
 	"lint": {
 		"include": [
-			"src/**/*.ts"
-		]
+			"src/",
+			"test/"
+		],
+		"rules": {
+			"exclude": [
+				"ban-types",
+				"no-explicit-any"
+			]
+		}
 	},
 	"fmt": {
 		"useTabs": true,

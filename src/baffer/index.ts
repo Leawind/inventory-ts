@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import type { BytesProvider, NumberReaderBaffer, NumberWriterBaffer } from './api.ts';
 
 export class Baffer implements NumberWriterBaffer, NumberReaderBaffer {

@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import { assert, assertEquals } from '@std/assert';
 import { Logger } from './logger.ts';
 import type { LogEntry, Transport } from './api.ts';

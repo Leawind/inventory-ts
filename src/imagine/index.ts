@@ -1,5 +1,3 @@
-// deno-lint-ignore-file ban-types no-explicit-any
-
 // Unique symbol for storing metadata about the imagined object's access chain
 export const META = Symbol('meta');
 

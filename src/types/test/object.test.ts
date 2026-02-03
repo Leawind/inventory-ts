@@ -1,4 +1,3 @@
-// deno-lint-ignore-file ban-types no-explicit-any
 import { compare, expect } from '@leawind/lay-sing/test-utils';
 import type { Access, InverseAccess, Patch } from '../object.ts';
 

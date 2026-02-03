@@ -231,7 +231,6 @@ export function overwrite<
 				return target as Returned;
 			}
 			case ValueType.Object: {
-				// deno-lint-ignore no-explicit-any
 				const anyTarget = target as any;
 				for (const key in source) {
 					anyTarget[key] = overwrite(anyTarget[key], source[key], options);

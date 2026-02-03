@@ -69,10 +69,8 @@ export type SwitchExtends<T, Cases extends readonly [unknown, unknown][], Defaul
 	)
 	: Default;
 
-// deno-lint-ignore no-explicit-any
 export type AnyFunction<R = any, Params extends any[] = any[]> = (...args: Params) => R;
 
-// deno-lint-ignore no-explicit-any
 export type Constructor<Inst = any, Params extends any[] = any[]> = new (...args: Params) => Inst;
 
 export type Awaitable<T> = Promise<T> | T;

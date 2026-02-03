@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import * as std_path from '@std/path@1';
 
 /**
