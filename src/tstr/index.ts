@@ -1,6 +1,6 @@
 //! Template Strings
 
-import * as std_path from '@std/path@1';
+import * as std_path from '@std/path@1'
 
 /**
  * Interleaves two arrays by alternating their elements.
@@ -30,19 +30,19 @@ import * as std_path from '@std/path@1';
  * ```
  */
 export function interleave<T>(a: readonly T[], b: readonly T[]): T[] {
-	const result: T[] = [];
+  const result: T[] = []
 
-	const minLength = Math.min(a.length, b.length);
-	for (let i = 0; i < minLength; i++) {
-		result[i * 2] = a[i];
-		result[i * 2 + 1] = b[i];
-	}
-	const c = a.length > minLength ? a : b;
-	for (let i = minLength; i < c.length; i++) {
-		result[minLength * 2 + i - minLength] = c[i];
-	}
+  const minLength = Math.min(a.length, b.length)
+  for (let i = 0; i < minLength; i++) {
+    result[i * 2] = a[i]
+    result[i * 2 + 1] = b[i]
+  }
+  const c = a.length > minLength ? a : b
+  for (let i = minLength; i < c.length; i++) {
+    result[minLength * 2 + i - minLength] = c[i]
+  }
 
-	return result;
+  return result
 }
 
 /**
@@ -57,15 +57,15 @@ export function interleave<T>(a: readonly T[], b: readonly T[]): T[] {
  * ```
  */
 export function r(strs: TemplateStringsArray, ...args: unknown[]): string {
-	return interleave(strs.raw, args.map(String)).join('');
+  return interleave(strs.raw, args.map(String)).join('')
 }
 
 export function simple(strs: TemplateStringsArray, ...args: unknown[]): string {
-	return interleave(strs, args.map(String)).join('');
+  return interleave(strs, args.map(String)).join('')
 }
 
 export function I(strs: TemplateStringsArray, ...args: unknown[]): string {
-	return simple(strs, args).replace(/\n\s+/msg, '\n').trim();
+  return simple(strs, args).replace(/\n\s+/msg, '\n').trim()
 }
 
 /**
@@ -79,5 +79,5 @@ export function I(strs: TemplateStringsArray, ...args: unknown[]): string {
  * ```
  */
 export function p(strs: TemplateStringsArray, ...args: unknown[]): string {
-	return std_path.normalize(r(strs, ...args));
+  return std_path.normalize(r(strs, ...args))
 }

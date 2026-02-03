@@ -1,13 +1,13 @@
-import * as std_path from '@std/path@1';
-import { walk } from './walk.ts';
-import { exists, existsSync } from './basic.ts';
+import * as std_path from '@std/path@1'
+import { walk } from './walk.ts'
+import { exists, existsSync } from './basic.ts'
 
 /**
  * Synchronously create a directory recursively
  * @param path - The directory path to create
  */
 export function mkdirSync(path: string): void {
-	Deno.mkdirSync(path, { recursive: true });
+  Deno.mkdirSync(path, { recursive: true })
 }
 
 /**
@@ -15,7 +15,7 @@ export function mkdirSync(path: string): void {
  * @param path - The directory path to create
  */
 export async function mkdir(path: string): Promise<void> {
-	await Deno.mkdir(path, { recursive: true });
+  await Deno.mkdir(path, { recursive: true })
 }
 
 /**
@@ -23,7 +23,7 @@ export async function mkdir(path: string): Promise<void> {
  * @param path - The file path whose parent directory should be created
  */
 export function makeParentDirSync(path: string): void {
-	Deno.mkdirSync(std_path.dirname(path), { recursive: true });
+  Deno.mkdirSync(std_path.dirname(path), { recursive: true })
 }
 
 /**
@@ -31,7 +31,7 @@ export function makeParentDirSync(path: string): void {
  * @param path - The file path whose parent directory should be created
  */
 export async function makeParentDir(path: string): Promise<void> {
-	await Deno.mkdir(std_path.dirname(path), { recursive: true });
+  await Deno.mkdir(std_path.dirname(path), { recursive: true })
 }
 
 /**
@@ -40,11 +40,11 @@ export async function makeParentDir(path: string): Promise<void> {
  * @param createParent - Whether to create the parent directory of the file
  */
 export async function touch(path: string, createParent: boolean = true): Promise<void> {
-	if (await exists(path)) return;
-	if (createParent) {
-		await makeParentDir(path);
-	}
-	await Deno.writeFile(path, new Uint8Array(), { create: true });
+  if (await exists(path)) { return }
+  if (createParent) {
+    await makeParentDir(path)
+  }
+  await Deno.writeFile(path, new Uint8Array(), { create: true })
 }
 
 /**
@@ -53,11 +53,11 @@ export async function touch(path: string, createParent: boolean = true): Promise
  * @param createParent - Whether to create the parent directory of the file
  */
 export function touchSync(path: string, createParent: boolean = true): void {
-	if (existsSync(path)) return;
-	if (createParent) {
-		makeParentDirSync(path);
-	}
-	Deno.writeFileSync(path, new Uint8Array(), { create: true });
+  if (existsSync(path)) { return }
+  if (createParent) {
+    makeParentDirSync(path)
+  }
+  Deno.writeFileSync(path, new Uint8Array(), { create: true })
 }
 
 /**
@@ -66,7 +66,7 @@ export function touchSync(path: string, createParent: boolean = true): void {
  * @param recursive - Whether to recursively remove the directory
  */
 export function removeSync(path: string, recursive: boolean = true): void {
-	Deno.removeSync(path, { recursive });
+  Deno.removeSync(path, { recursive })
 }
 
 /**
@@ -75,7 +75,7 @@ export function removeSync(path: string, recursive: boolean = true): void {
  * @param recursive - Whether to recursively remove the directory
  */
 export async function remove(path: string, recursive: boolean = true): Promise<void> {
-	await Deno.remove(path, { recursive });
+  await Deno.remove(path, { recursive })
 }
 
 /**
@@ -84,9 +84,9 @@ export async function remove(path: string, recursive: boolean = true): Promise<v
  * @param dest - The destination path
  */
 export async function move(src: string, dest: string): Promise<void> {
-	// TODO need to create parent dir?
-	await makeParentDir(dest);
-	await Deno.rename(src, dest);
+  // TODO need to create parent dir?
+  await makeParentDir(dest)
+  await Deno.rename(src, dest)
 }
 
 /**
@@ -95,9 +95,9 @@ export async function move(src: string, dest: string): Promise<void> {
  * @param dest - The destination path
  */
 export function moveSync(src: string, dest: string): void {
-	// TODO need to create parent dir?
-	makeParentDirSync(dest);
-	Deno.renameSync(src, dest);
+  // TODO need to create parent dir?
+  makeParentDirSync(dest)
+  Deno.renameSync(src, dest)
 }
 
 /**
@@ -106,9 +106,9 @@ export function moveSync(src: string, dest: string): void {
  * @param dest - The destination path
  */
 export async function copyFile(src: string, dest: string): Promise<void> {
-	// TODO need to create parent dir?
-	await makeParentDir(dest);
-	await Deno.copyFile(src, dest);
+  // TODO need to create parent dir?
+  await makeParentDir(dest)
+  await Deno.copyFile(src, dest)
 }
 
 /**
@@ -117,9 +117,9 @@ export async function copyFile(src: string, dest: string): Promise<void> {
  * @param dest - The destination path
  */
 export function copyFileSync(src: string, dest: string): void {
-	// TODO need to create parent dir?
-	makeParentDirSync(dest);
-	Deno.copyFileSync(src, dest);
+  // TODO need to create parent dir?
+  makeParentDirSync(dest)
+  Deno.copyFileSync(src, dest)
 }
 
 /**
@@ -128,12 +128,12 @@ export function copyFileSync(src: string, dest: string): void {
  * @param dest - The destination directory
  */
 export async function copyDirStructure(src: string, dest: string): Promise<void> {
-	for await (const entry of walk(src)) {
-		if (entry.dirs.length > 0) {
-			continue;
-		}
+  for await (const entry of walk(src)) {
+    if (entry.dirs.length > 0) {
+      continue
+    }
 
-		const destPath = std_path.join(dest, std_path.relative(src, entry.path));
-		await mkdir(destPath);
-	}
+    const destPath = std_path.join(dest, std_path.relative(src, entry.path))
+    await mkdir(destPath)
+  }
 }

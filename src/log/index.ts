@@ -8,11 +8,11 @@
  * @module log
  */
 
-import { Logger, type LoggerApiMini } from './logger.ts';
-export * from './logger.ts';
+import { Logger, type LoggerApiMini } from './logger.ts'
+export * from './logger.ts'
 
 /**
  * Global logger
  */
-const log: LoggerApiMini = Logger.createDefault().mini;
-export default log;
+const log: LoggerApiMini = Logger.createDefault().mini
+export default log

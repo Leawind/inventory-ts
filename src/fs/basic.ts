@@ -4,11 +4,11 @@
  * @returns true if the path exists and is a file, false otherwise
  */
 export function isFileSync(path: string): boolean {
-	try {
-		return Deno.statSync(path).isFile;
-	} catch {
-		return false;
-	}
+  try {
+    return Deno.statSync(path).isFile
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -17,11 +17,11 @@ export function isFileSync(path: string): boolean {
  * @returns true if the path exists and is a file, false otherwise
  */
 export async function isFile(path: string): Promise<boolean> {
-	try {
-		return (await Deno.stat(path)).isFile;
-	} catch {
-		return false;
-	}
+  try {
+    return (await Deno.stat(path)).isFile
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -30,11 +30,11 @@ export async function isFile(path: string): Promise<boolean> {
  * @returns true if the path exists and is a directory, false otherwise
  */
 export function isDirectorySync(path: string): boolean {
-	try {
-		return Deno.statSync(path).isDirectory;
-	} catch {
-		return false;
-	}
+  try {
+    return Deno.statSync(path).isDirectory
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -43,11 +43,11 @@ export function isDirectorySync(path: string): boolean {
  * @returns true if the path exists and is a directory, false otherwise
  */
 export async function isDirectory(path: string): Promise<boolean> {
-	try {
-		return (await Deno.stat(path)).isDirectory;
-	} catch {
-		return false;
-	}
+  try {
+    return (await Deno.stat(path)).isDirectory
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -56,11 +56,11 @@ export async function isDirectory(path: string): Promise<boolean> {
  * @returns true if the path exists and is a symbolic link, false otherwise
  */
 export function isSymlinkSync(path: string): boolean {
-	try {
-		return Deno.lstatSync(path).isSymlink;
-	} catch {
-		return false;
-	}
+  try {
+    return Deno.lstatSync(path).isSymlink
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -69,11 +69,11 @@ export function isSymlinkSync(path: string): boolean {
  * @returns true if the path exists and is a symbolic link, false otherwise
  */
 export async function isSymlink(path: string): Promise<boolean> {
-	try {
-		return (await Deno.lstat(path)).isSymlink;
-	} catch {
-		return false;
-	}
+  try {
+    return (await Deno.lstat(path)).isSymlink
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -82,12 +82,12 @@ export async function isSymlink(path: string): Promise<boolean> {
  * @returns true if the path exists, false otherwise
  */
 export function existsSync(path: string): boolean {
-	try {
-		Deno.lstatSync(path);
-		return true;
-	} catch {
-		return false;
-	}
+  try {
+    Deno.lstatSync(path)
+    return true
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -96,20 +96,20 @@ export function existsSync(path: string): boolean {
  * @returns true if the path exists, false otherwise
  */
 export async function exists(path: string): Promise<boolean> {
-	try {
-		await Deno.lstat(path);
-		return true;
-	} catch {
-		return false;
-	}
+  try {
+    await Deno.lstat(path)
+    return true
+  } catch {
+    return false
+  }
 }
 
 export function lstatSync(path: string): Deno.FileInfo {
-	return Deno.lstatSync(path);
+  return Deno.lstatSync(path)
 }
 
 export function lstat(path: string): Promise<Deno.FileInfo> {
-	return Deno.lstat(path);
+  return Deno.lstat(path)
 }
 
 /**
@@ -118,7 +118,7 @@ export function lstat(path: string): Promise<Deno.FileInfo> {
  * @returns The file info
  */
 export function statSync(path: string): Deno.FileInfo {
-	return Deno.statSync(path);
+  return Deno.statSync(path)
 }
 
 /**
@@ -127,5 +127,5 @@ export function statSync(path: string): Deno.FileInfo {
  * @returns The file info
  */
 export function stat(path: string): Promise<Deno.FileInfo> {
-	return Deno.stat(path);
+  return Deno.stat(path)
 }

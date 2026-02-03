@@ -1,10 +1,10 @@
-import type { Awaitable } from '../types/index.ts';
-import { existsSync } from './basic.ts';
-import { mkdir, mkdirSync, remove, removeSync, touch, touchSync } from './operate.ts';
-import { p } from './utils.ts';
+import type { Awaitable } from '../types/index.ts'
+import { existsSync } from './basic.ts'
+import { mkdir, mkdirSync, remove, removeSync, touch, touchSync } from './operate.ts'
+import { p } from './utils.ts'
 
 function generateRandomString(): string {
-	return Math.random().toString(36).slice(2);
+  return Math.random().toString(36).slice(2)
 }
 
 /**
@@ -17,41 +17,41 @@ function generateRandomString(): string {
  * ```
  */
 export type TempOptions = {
-	/** Parent directory where the temporary file/directory will be created. If not specified, uses the system default temporary directory */
-	parent?: string;
-	/** Prefix string to be added to the generated temporary name */
-	prefix: string;
-	/** Suffix string to be added to the generated temporary name */
-	suffix: string;
-	/** Maximum number of attempts to find an unused temporary path */
-	maxTries: number;
-};
+  /** Parent directory where the temporary file/directory will be created. If not specified, uses the system default temporary directory */
+  parent?: string
+  /** Prefix string to be added to the generated temporary name */
+  prefix: string
+  /** Suffix string to be added to the generated temporary name */
+  suffix: string
+  /** Maximum number of attempts to find an unused temporary path */
+  maxTries: number
+}
 
 const DEFAULT_OPTIONS: TempOptions = {
-	parent: undefined,
-	prefix: '',
-	suffix: '',
-	maxTries: 8,
-};
+  parent: undefined,
+  prefix: '',
+  suffix: '',
+  maxTries: 8,
+}
 
 function findTempPath(options: Partial<TempOptions> | undefined, message: string = 'Failed to find temp path'): string {
-	const { parent, prefix, suffix, maxTries } = Object.assign({}, DEFAULT_OPTIONS, options);
+  const { parent, prefix, suffix, maxTries } = Object.assign({}, DEFAULT_OPTIONS, options)
 
-	let tempPath: string | null = null;
-	for (let i = 0; i < maxTries; i++) {
-		const randomString = generateRandomString();
-		const name = `${prefix}${randomString}${suffix}`;
-		const path = parent ? p`${parent}/${name}` : name;
-		if (!existsSync(path)) {
-			tempPath = path;
-			break;
-		}
-	}
+  let tempPath: string | null = null
+  for (let i = 0; i < maxTries; i++) {
+    const randomString = generateRandomString()
+    const name = `${prefix}${randomString}${suffix}`
+    const path = parent ? p`${parent}/${name}` : name
+    if (!existsSync(path)) {
+      tempPath = path
+      break
+    }
+  }
 
-	if (tempPath === null) {
-		throw new Error(message);
-	}
-	return tempPath;
+  if (tempPath === null) {
+    throw new Error(message)
+  }
+  return tempPath
 }
 
 /**
@@ -78,7 +78,7 @@ function findTempPath(options: Partial<TempOptions> | undefined, message: string
  * }, { prefix: 'tmp-' });
  * ```
  */
-export function withTempDirSync(callback: (path: string) => void, options?: Partial<TempOptions>): void;
+export function withTempDirSync(callback: (path: string) => void, options?: Partial<TempOptions>): void
 /**
  * Returns a curried function that accepts a callback to work with a temporary directory.
  * The directory is automatically removed after the callback finishes executing.
@@ -94,29 +94,29 @@ export function withTempDirSync(callback: (path: string) => void, options?: Part
  * });
  * ```
  */
-export function withTempDirSync(options?: Partial<TempOptions>): (callback: (path: string) => void) => void;
+export function withTempDirSync(options?: Partial<TempOptions>): (callback: (path: string) => void) => void
 export function withTempDirSync(
-	...args:
-		| [callback: (path: string) => void, options?: Partial<TempOptions>]
-		| [options?: Partial<TempOptions>]
+  ...args:
+    | [callback: (path: string) => void, options?: Partial<TempOptions>]
+    | [options?: Partial<TempOptions>]
 ) {
-	function inner(callback: (path: string) => void, options?: Partial<TempOptions>) {
-		const path = findTempPath(options, 'Failed to create temp dir');
-		mkdirSync(path);
-		try {
-			callback(path);
-		} finally {
-			removeSync(path);
-		}
-	}
+  function inner(callback: (path: string) => void, options?: Partial<TempOptions>) {
+    const path = findTempPath(options, 'Failed to create temp dir')
+    mkdirSync(path)
+    try {
+      callback(path)
+    } finally {
+      removeSync(path)
+    }
+  }
 
-	if (typeof args[0] === 'function') {
-		const [callback, options] = args;
-		return inner(callback, options);
-	} else {
-		const options = args[0];
-		return (callback: (path: string) => void) => inner(callback, options);
-	}
+  if (typeof args[0] === 'function') {
+    const [callback, options] = args
+    return inner(callback, options)
+  } else {
+    const options = args[0]
+    return (callback: (path: string) => void) => inner(callback, options)
+  }
 }
 
 /**
@@ -143,7 +143,7 @@ export function withTempDirSync(
  * }, { prefix: 'myapp-', suffix: '-tmp' });
  * ```
  */
-export function withTempDir(callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>): Promise<void>;
+export function withTempDir(callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>): Promise<void>
 /**
  * Returns a curried function that accepts a callback to work with a temporary directory.
  * The directory is automatically removed after the callback finishes executing.
@@ -160,30 +160,30 @@ export function withTempDir(callback: (path: string) => Awaitable<void>, options
  * ```
  */
 export function withTempDir(
-	options?: Partial<TempOptions>,
-): (callback: (path: string) => Awaitable<void>) => Promise<void>;
+  options?: Partial<TempOptions>,
+): (callback: (path: string) => Awaitable<void>) => Promise<void>
 export function withTempDir(
-	...args:
-		| [callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>]
-		| [options?: Partial<TempOptions>]
+  ...args:
+    | [callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>]
+    | [options?: Partial<TempOptions>]
 ) {
-	async function inner(callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>) {
-		const path = findTempPath(options, 'Failed to create temp dir');
-		await mkdir(path);
-		try {
-			await callback(path);
-		} finally {
-			await remove(path);
-		}
-	}
+  async function inner(callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>) {
+    const path = findTempPath(options, 'Failed to create temp dir')
+    await mkdir(path)
+    try {
+      await callback(path)
+    } finally {
+      await remove(path)
+    }
+  }
 
-	if (typeof args[0] === 'function') {
-		const [callback, options] = args;
-		return inner(callback, options);
-	} else {
-		const options = args[0];
-		return (callback: (path: string) => Awaitable<void>) => inner(callback, options);
-	}
+  if (typeof args[0] === 'function') {
+    const [callback, options] = args
+    return inner(callback, options)
+  } else {
+    const options = args[0]
+    return (callback: (path: string) => Awaitable<void>) => inner(callback, options)
+  }
 }
 
 /**
@@ -210,7 +210,7 @@ export function withTempDir(
  * }, { prefix: 'myapp-', suffix: '.tmp' });
  * ```
  */
-export function withTempFileSync(callback: (path: string) => void, options?: Partial<TempOptions>): void;
+export function withTempFileSync(callback: (path: string) => void, options?: Partial<TempOptions>): void
 /**
  * Returns a curried function that accepts a callback to work with a temporary file.
  * The file is automatically removed after the callback finishes executing.
@@ -226,29 +226,29 @@ export function withTempFileSync(callback: (path: string) => void, options?: Par
  * });
  * ```
  */
-export function withTempFileSync(options?: Partial<TempOptions>): (callback: (path: string) => void) => void;
+export function withTempFileSync(options?: Partial<TempOptions>): (callback: (path: string) => void) => void
 export function withTempFileSync(
-	...args:
-		| [callback: (path: string) => void, options?: Partial<TempOptions>]
-		| [options?: Partial<TempOptions>]
+  ...args:
+    | [callback: (path: string) => void, options?: Partial<TempOptions>]
+    | [options?: Partial<TempOptions>]
 ) {
-	function inner(callback: (path: string) => void, options?: Partial<TempOptions>) {
-		const path = findTempPath(options, 'Failed to create temp file');
-		touchSync(path);
-		try {
-			callback(path);
-		} finally {
-			removeSync(path);
-		}
-	}
+  function inner(callback: (path: string) => void, options?: Partial<TempOptions>) {
+    const path = findTempPath(options, 'Failed to create temp file')
+    touchSync(path)
+    try {
+      callback(path)
+    } finally {
+      removeSync(path)
+    }
+  }
 
-	if (typeof args[0] === 'function') {
-		const [callback, options] = args;
-		return inner(callback, options);
-	} else {
-		const options = args[0];
-		return (callback: (path: string) => void) => inner(callback, options);
-	}
+  if (typeof args[0] === 'function') {
+    const [callback, options] = args
+    return inner(callback, options)
+  } else {
+    const options = args[0]
+    return (callback: (path: string) => void) => inner(callback, options)
+  }
 }
 
 /**
@@ -276,9 +276,9 @@ export function withTempFileSync(
  * ```
  */
 export function withTempFile(
-	callback: (path: string) => Awaitable<void>,
-	options?: Partial<TempOptions>,
-): Promise<void>;
+  callback: (path: string) => Awaitable<void>,
+  options?: Partial<TempOptions>,
+): Promise<void>
 /**
  * Returns a curried function that accepts a callback to work with a temporary file.
  * The file is automatically removed after the callback finishes executing.
@@ -295,28 +295,28 @@ export function withTempFile(
  * ```
  */
 export function withTempFile(
-	options?: Partial<TempOptions>,
-): (callback: (path: string) => Awaitable<void>) => Promise<void>;
+  options?: Partial<TempOptions>,
+): (callback: (path: string) => Awaitable<void>) => Promise<void>
 export function withTempFile(
-	...args:
-		| [callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>]
-		| [options?: Partial<TempOptions>]
+  ...args:
+    | [callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>]
+    | [options?: Partial<TempOptions>]
 ) {
-	async function inner(callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>) {
-		const path = findTempPath(options, 'Failed to create temp file');
-		await touch(path);
-		try {
-			await callback(path);
-		} finally {
-			await remove(path);
-		}
-	}
+  async function inner(callback: (path: string) => Awaitable<void>, options?: Partial<TempOptions>) {
+    const path = findTempPath(options, 'Failed to create temp file')
+    await touch(path)
+    try {
+      await callback(path)
+    } finally {
+      await remove(path)
+    }
+  }
 
-	if (typeof args[0] === 'function') {
-		const [callback, options] = args;
-		return inner(callback, options);
-	} else {
-		const options = args[0];
-		return (callback: (path: string) => Awaitable<void>) => inner(callback, options);
-	}
+  if (typeof args[0] === 'function') {
+    const [callback, options] = args
+    return inner(callback, options)
+  } else {
+    const options = args[0]
+    return (callback: (path: string) => Awaitable<void>) => inner(callback, options)
+  }
 }

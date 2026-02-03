@@ -1,1 +1,1 @@
-export { levenshtein } from '@/algorithm/levenshtein/index.ts';
+export { levenshtein } from '@/algorithm/levenshtein/index.ts'

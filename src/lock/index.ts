@@ -1,16 +1,16 @@
-import { Delegate } from '@leawind/delegate';
+import { Delegate } from '@leawind/delegate'
 
 interface ILock {
-	/**
-	 * Acquires the lock. Returns a Promise that resolves when the lock is obtained.
-	 * @returns {Promise<void>} Promise that resolves when lock is acquired
-	 */
-	acquire(): Promise<void>;
-	/**
-	 * Releases the lock. Must be called after acquire() to allow other callers to proceed.
-	 * @throws {Error} If called when lock is not held
-	 */
-	release(): void;
+  /**
+   * Acquires the lock. Returns a Promise that resolves when the lock is obtained.
+   * @returns {Promise<void>} Promise that resolves when lock is acquired
+   */
+  acquire(): Promise<void>
+  /**
+   * Releases the lock. Must be called after acquire() to allow other callers to proceed.
+   * @throws {Error} If called when lock is not held
+   */
+  release(): void
 }
 
 /**
@@ -18,135 +18,135 @@ interface ILock {
  * This ensures requests are granted in the order they were received, preventing starvation.
  */
 export class Lock implements ILock {
-	private owner: unknown;
-	private isLockedInternal: boolean = false;
+  private owner: unknown
+  private isLockedInternal: boolean = false
 
-	private readonly waitingQueue: (() => void)[] = [];
+  private readonly waitingQueue: (() => void)[] = []
 
-	private releasePromise?: Promise<void>;
-	private releasePromiseResolveFn?: (value: void | PromiseLike<void>) => void;
+  private releasePromise?: Promise<void>
+  private releasePromiseResolveFn?: (value: void | PromiseLike<void>) => void
 
-	public readonly onRelease: Delegate<void> = new Delegate();
+  public readonly onRelease: Delegate<void> = new Delegate()
 
-	public tryAcquire(owner?: unknown): boolean {
-		if (!this.isLockedInternal) {
-			this.isLockedInternal = true;
+  public tryAcquire(owner?: unknown): boolean {
+    if (!this.isLockedInternal) {
+      this.isLockedInternal = true
 
-			this.releasePromise = new Promise((resolve) => {
-				this.releasePromiseResolveFn = resolve;
-			});
+      this.releasePromise = new Promise((resolve) => {
+        this.releasePromiseResolveFn = resolve
+      })
 
-			if (owner) {
-				this.owner = owner;
-			}
-			return true;
-		}
-		return false;
-	}
+      if (owner) {
+        this.owner = owner
+      }
+      return true
+    }
+    return false
+  }
 
-	public acquire(owner?: unknown): Promise<void> {
-		this.releasePromise = new Promise((resolve) => {
-			this.releasePromiseResolveFn = resolve;
-		});
+  public acquire(owner?: unknown): Promise<void> {
+    this.releasePromise = new Promise((resolve) => {
+      this.releasePromiseResolveFn = resolve
+    })
 
-		return new Promise((resolve) => {
-			const attemptToAcquire = () => {
-				if (!this.isLockedInternal) {
-					this.isLockedInternal = true;
+    return new Promise((resolve) => {
+      const attemptToAcquire = () => {
+        if (!this.isLockedInternal) {
+          this.isLockedInternal = true
 
-					if (owner) {
-						this.owner = owner;
-					}
-					resolve();
-				} else {
-					this.waitingQueue.push(attemptToAcquire);
-				}
-			};
-			attemptToAcquire();
-		});
-	}
+          if (owner) {
+            this.owner = owner
+          }
+          resolve()
+        } else {
+          this.waitingQueue.push(attemptToAcquire)
+        }
+      }
+      attemptToAcquire()
+    })
+  }
 
-	public release(): void {
-		if (!this.isLockedInternal) {
-			throw new Error('Cannot release an unlocked lock');
-		}
+  public release(): void {
+    if (!this.isLockedInternal) {
+      throw new Error('Cannot release an unlocked lock')
+    }
 
-		this.owner = undefined;
-		this.isLockedInternal = false;
+    this.owner = undefined
+    this.isLockedInternal = false
 
-		const nextResolve = this.waitingQueue.shift();
-		if (nextResolve) {
-			nextResolve();
-		}
+    const nextResolve = this.waitingQueue.shift()
+    if (nextResolve) {
+      nextResolve()
+    }
 
-		this.releasePromiseResolveFn!();
-		this.onRelease.broadcast();
-	}
-	/**
-	 * Checks if the lock is currently held.
-	 * @returns `true` if lock is held, `false` otherwise
-	 */
-	public isLocked(): boolean {
-		return this.isLockedInternal;
-	}
-	/**
-	 * Gets the current owner of the lock, if one was specified during acquisition.
-	 *
-	 * @see {@link acquire}
-	 */
-	public getOwner(): unknown | undefined {
-		return this.owner;
-	}
+    this.releasePromiseResolveFn!()
+    this.onRelease.broadcast()
+  }
+  /**
+   * Checks if the lock is currently held.
+   * @returns `true` if lock is held, `false` otherwise
+   */
+  public isLocked(): boolean {
+    return this.isLockedInternal
+  }
+  /**
+   * Gets the current owner of the lock, if one was specified during acquisition.
+   *
+   * @see {@link acquire}
+   */
+  public getOwner(): unknown | undefined {
+    return this.owner
+  }
 
-	/**
-	 * Returns a Promise that resolves when the lock is released.
-	 * If the lock is not currently held, the Promise resolves immediately.
-	 */
-	public untilReleased(): Promise<void> {
-		return this.releasePromise ?? Promise.resolve();
-	}
+  /**
+   * Returns a Promise that resolves when the lock is released.
+   * If the lock is not currently held, the Promise resolves immediately.
+   */
+  public untilReleased(): Promise<void> {
+    return this.releasePromise ?? Promise.resolve()
+  }
 
-	private static locks: Map<string, Lock> = new Map();
+  private static locks: Map<string, Lock> = new Map()
 
-	/**
-	 * Get or create a named lock instance.
-	 * The lock will be automatically cleaned up when released.
-	 * @param key - Unique identifier for the lock
-	 */
-	public static of(key: string): Lock {
-		if (!this.locks.has(key)) {
-			const lock = new Lock();
-			this.locks.set(key, lock);
-			lock.onRelease.addListener(() => {
-				this.locks.delete(key);
-			});
-		}
-		return this.locks.get(key)!;
-	}
+  /**
+   * Get or create a named lock instance.
+   * The lock will be automatically cleaned up when released.
+   * @param key - Unique identifier for the lock
+   */
+  public static of(key: string): Lock {
+    if (!this.locks.has(key)) {
+      const lock = new Lock()
+      this.locks.set(key, lock)
+      lock.onRelease.addListener(() => {
+        this.locks.delete(key)
+      })
+    }
+    return this.locks.get(key)!
+  }
 }
 
 export class UnfairLock implements ILock {
-	private promise?: Promise<void>;
-	private resolveFn?: (value: void | PromiseLike<void>) => void;
+  private promise?: Promise<void>
+  private resolveFn?: (value: void | PromiseLike<void>) => void
 
-	private isLocked() {
-		return this.promise !== undefined;
-	}
+  private isLocked() {
+    return this.promise !== undefined
+  }
 
-	public acquire(): Promise<void> {
-		if (!this.isLocked()) {
-			this.promise = new Promise((resolve) => (this.resolveFn = resolve));
-		}
-		return this.promise!;
-	}
+  public acquire(): Promise<void> {
+    if (!this.isLocked()) {
+      this.promise = new Promise((resolve) => (this.resolveFn = resolve))
+    }
+    return this.promise!
+  }
 
-	public release(): void {
-		if (!this.isLocked()) {
-			throw new Error('Cannot release an unlocked lock');
-		}
-		this.resolveFn!();
+  public release(): void {
+    if (!this.isLocked()) {
+      throw new Error('Cannot release an unlocked lock')
+    }
+    this.resolveFn!()
 
-		this.promise = undefined;
-		this.resolveFn = undefined;
-	}
+    this.promise = undefined
+    this.resolveFn = undefined
+  }
 }

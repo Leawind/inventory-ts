@@ -1,105 +1,118 @@
 {
-	"name": "@leawind/inventory",
-	"version": "0.17.2",
-	"description": "",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Leawind/inventory-ts.git"
-	},
-	"license": "MIT",
-	"exports": {
-		"./algorithm": "./src/algorithm/index.ts",
-		"./baffer": "./src/baffer/index.ts",
-		"./call_stack": "./src/call-stack/index.ts",
-		"./comap": "./src/comap.ts",
-		"./communication": "./src/communication/index.ts",
-		"./csv": "./src/csv/index.ts",
-		"./deferred": "./src/deferred/index.ts",
-		"./env_manager": "./src/env-manager/index.ts",
-		"./fs": "./src/fs/index.ts",
-		"./func_type": "./src/func-type/index.ts",
-		"./id_generator": "./src/id-generator/index.ts",
-		"./imagine": "./src/imagine/index.ts",
-		"./index_gen": "./src/index-gen/index.ts",
-		"./lazy": "./src/lazy/index.ts",
-		"./list_iterator": "./src/list-iterator/index.ts",
-		"./lock": "./src/lock/index.ts",
-		"./log": "./src/log/index.ts",
-		"./misc": "./src/misc/index.ts",
-		"./monolist": "./src/monolist/index.ts",
-		"./options": "./src/options/index.ts",
-		"./preview": "./src/preview/index.ts",
-		"./static_resource": "./src/static-resource/index.ts",
-		"./test_utils": "./src/test-utils.ts",
-		"./throttled_action": "./src/throttled-action/index.ts",
-		"./timestamps": "./src/timestamps/index.ts",
-		"./tree": "./src/tree.ts",
-		"./tstr": "./src/tstr/index.ts",
-		"./types": "./src/types/index.ts",
-		"./waited": "./src/waited/index.ts",
-		"./wash": "./src/wash/index.ts",
-		"./xtype": "./src/xtype/index.ts",
-		".": "./src/index.ts"
-	},
-	"tasks": {
-		"index": "deno -A ./scripts/index.ts",
-		"check": "deno check src test",
-		"test": "deno test --parallel -A",
-		"build-npm": "deno run -A scripts/build_npm.ts",
-		"verify": "deno task index -- --check && deno fmt --check && deno lint && deno task test",
-		"prepare-jsr": "deno task verify && deno publish --dry-run",
-		"prepare-npm": "deno task verify && deno task build-npm && cd npm && npm publish --dry-run",
-		"prepare": "deno task verify && deno task build-npm && deno publish --dry-run && cd npm && npm publish --dry-run"
-	},
-	"test": {
-		"include": [
-			"src/**/*.test.ts",
-			"test/**/*.test.ts"
-		]
-	},
-	"publish": {
-		"exclude": [
-			"examples/",
-			"**/*.test.ts",
-			"test/",
-			"scripts",
-			".github/",
-			".vscode/"
-		]
-	},
-	"imports": {
-		"@deno/dnt": "jsr:@deno/dnt@^0.41.3",
-		"@leawind/delegate": "jsr:@leawind/delegate@^0.6.0",
-		"@leawind/lay-sing": "jsr:@leawind/lay-sing@^0.2.1",
-		"@std": "jsr:@std",
-		"@/": "./src/"
-	},
-	"lint": {
-		"include": [
-			"src/",
-			"test/"
-		],
-		"rules": {
-			"exclude": [
-				"ban-types",
-				"no-explicit-any"
-			]
-		}
-	},
-	"fmt": {
-		"useTabs": true,
-		"lineWidth": 120,
-		"indentWidth": 4,
-		"semiColons": true,
-		"singleQuote": true,
-		"proseWrap": "preserve",
-		"include": [
-			"README.md",
-			"deno.json",
-			"scripts",
-			"src/",
-			"test/"
-		],
-		"exclude": []
-	}
+  "name": "@leawind/inventory",
+  "version": "0.17.2",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Leawind/inventory-ts.git"
+  },
+  "license": "MIT",
+  "exports": {
+    "./algorithm": "./src/algorithm/index.ts",
+    "./baffer": "./src/baffer/index.ts",
+    "./call_stack": "./src/call-stack/index.ts",
+    "./comap": "./src/comap.ts",
+    "./communication": "./src/communication/index.ts",
+    "./csv": "./src/csv/index.ts",
+    "./deferred": "./src/deferred/index.ts",
+    "./env_manager": "./src/env-manager/index.ts",
+    "./fs": "./src/fs/index.ts",
+    "./func_type": "./src/func-type/index.ts",
+    "./id_generator": "./src/id-generator/index.ts",
+    "./imagine": "./src/imagine/index.ts",
+    "./index_gen": "./src/index-gen/index.ts",
+    "./lazy": "./src/lazy/index.ts",
+    "./list_iterator": "./src/list-iterator/index.ts",
+    "./lock": "./src/lock/index.ts",
+    "./log": "./src/log/index.ts",
+    "./misc": "./src/misc/index.ts",
+    "./monolist": "./src/monolist/index.ts",
+    "./options": "./src/options/index.ts",
+    "./preview": "./src/preview/index.ts",
+    "./static_resource": "./src/static-resource/index.ts",
+    "./test_utils": "./src/test-utils.ts",
+    "./throttled_action": "./src/throttled-action/index.ts",
+    "./timestamps": "./src/timestamps/index.ts",
+    "./tree": "./src/tree.ts",
+    "./tstr": "./src/tstr/index.ts",
+    "./types": "./src/types/index.ts",
+    "./waited": "./src/waited/index.ts",
+    "./wash": "./src/wash/index.ts",
+    "./xtype": "./src/xtype/index.ts",
+    ".": "./src/index.ts"
+  },
+  "tasks": {
+    "index": "deno -A ./scripts/index.ts",
+    "check": "deno check src test",
+    "test": "deno test --parallel -A",
+    "build-npm": "deno run -A scripts/build_npm.ts",
+    "verify": "deno task index -- --check && deno fmt --check && deno lint && deno task test",
+    "prepare-jsr": "deno task verify && deno publish --dry-run",
+    "prepare-npm": "deno task verify && deno task build-npm && cd npm && npm publish --dry-run",
+    "prepare": "deno task verify && deno task build-npm && deno publish --dry-run && cd npm && npm publish --dry-run"
+  },
+  "test": {
+    "include": [
+      "src/**/*.test.ts",
+      "test/**/*.test.ts"
+    ]
+  },
+  "publish": {
+    "exclude": [
+      "examples/",
+      "**/*.test.ts",
+      "test/",
+      "scripts",
+      ".github/",
+      ".vscode/"
+    ]
+  },
+  "imports": {
+    "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
+    "@leawind/delegate": "jsr:@leawind/delegate@^0.6.0",
+    "@leawind/lay-sing": "jsr:@leawind/lay-sing@^0.2.1",
+    "@std": "jsr:@std",
+    "@/": "./src/"
+  },
+  "lint": {
+    "include": [
+      "src/",
+      "test/"
+    ],
+    "rules": {
+      "exclude": [
+        "ban-types",
+        "no-explicit-any"
+      ]
+    }
+  },
+  "fmt": {
+    "bracePosition": "sameLine",
+    "indentWidth": 2,
+    "lineWidth": 120,
+    "newLineKind": "lf",
+    "nextControlFlowPosition": "sameLine",
+    "operatorPosition": "nextLine",
+    "proseWrap": "preserve",
+    "quoteProps": "asNeeded",
+    "semiColons": false,
+    "singleBodyPosition": "sameLine",
+    "useBraces": "always",
+    "useTabs": false,
+    "singleQuote": true,
+    "spaceAround": false,
+    "spaceSurroundingProperties": true,
+    "trailingCommas": "onlyMultiLine",
+    "typeLiteral.separatorKind": "semiColon",
+    "include": [
+      ".github/",
+      ".github/workflows/*.yaml",
+      "**/*.md",
+      "*.json",
+      "scripts",
+      "src/",
+      "test/"
+    ],
+    "exclude": []
+  }
 }

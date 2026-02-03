@@ -15,8 +15,8 @@
  * ```
  */
 export type IntersectOf<Types extends readonly unknown[]> = Types extends [infer First, ...infer Rest]
-	? First & IntersectOf<Rest>
-	: unknown;
+  ? First & IntersectOf<Rest>
+  : unknown
 
 /**
  * Creates a union of all types in the provided tuple
@@ -34,5 +34,5 @@ export type IntersectOf<Types extends readonly unknown[]> = Types extends [infer
  * ```
  */
 export type UnionOf<Types extends readonly unknown[]> = Types extends [infer First, ...infer Rest]
-	? First | UnionOf<Rest>
-	: never;
+  ? First | UnionOf<Rest>
+  : never

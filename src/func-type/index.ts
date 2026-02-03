@@ -1,4 +1,4 @@
-import type { AnyFunction, Constructor } from '../types/index.ts';
+import type { AnyFunction, Constructor } from '../types/index.ts'
 
 /**
  * Three types of function:
@@ -7,17 +7,17 @@ import type { AnyFunction, Constructor } from '../types/index.ts';
  * - **`arrow`** - `const fn = ()=>{}`
  * - **`method`** - `const fn = { m(){} }.m`
  */
-export type FunctionType = 'normal' | 'arrow' | 'method';
+export type FunctionType = 'normal' | 'arrow' | 'method'
 
 export function detectFunctionType<F extends AnyFunction | Constructor>(fn: F): FunctionType {
-	if (Object.prototype.hasOwnProperty.call(fn, 'prototype')) {
-		return 'normal';
-	}
+  if (Object.prototype.hasOwnProperty.call(fn, 'prototype')) {
+    return 'normal'
+  }
 
-	const str = Function.prototype.toString.call(fn);
-	if (str.startsWith('(') || /^[^(),.=>{}[]]+\s*=>\s*\{/.test(str)) {
-		return 'arrow';
-	}
+  const str = Function.prototype.toString.call(fn)
+  if (str.startsWith('(') || /^[^(),.=>{}[]]+\s*=>\s*\{/.test(str)) {
+    return 'arrow'
+  }
 
-	return 'method';
+  return 'method'
 }

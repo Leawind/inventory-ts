@@ -18,7 +18,7 @@
  * expect<Access<User, 'email', 'none'>>().toBe<'none'>().success
  * ```
  */
-export type Access<Obj, K extends PropertyKey, E = never> = K extends keyof Obj ? Obj[K] : E;
+export type Access<Obj, K extends PropertyKey, E = never> = K extends keyof Obj ? Obj[K] : E
 
 /**
  * Inverse of `Access` - gets keys from an object that have values of a specific type
@@ -36,7 +36,7 @@ export type Access<Obj, K extends PropertyKey, E = never> = K extends keyof Obj 
  * expect<InverseAccess<{ a: string }, number>>().toBe<never>().success
  * ```
  */
-export type InverseAccess<T, V, E = never> = { [K in keyof T]: T[K] extends V ? K : E }[keyof T];
+export type InverseAccess<T, V, E = never> = { [K in keyof T]: T[K] extends V ? K : E }[keyof T]
 
 /**
  * Patch `Source` into `Target`
@@ -53,4 +53,4 @@ export type InverseAccess<T, V, E = never> = { [K in keyof T]: T[K] extends V ? 
  * expect<Patch<A, B>>().toExtend<{ a: 1; b: string; c: 3 }>().success
  * ```
  */
-export type Patch<Target, Source> = Omit<Target, keyof Source> & Source;
+export type Patch<Target, Source> = Omit<Target, keyof Source> & Source

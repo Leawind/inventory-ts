@@ -1,9 +1,9 @@
 export type OperationCosts = {
-	delete: number;
-	insert: number;
-	replace: number;
-	swap: number;
-};
+  delete: number
+  insert: number
+  replace: number
+  swap: number
+}
 
 /**
  * The Damerau-Levenshtein Algorithm is an extension to the Levenshtein Algorithm which solves the
@@ -29,82 +29,82 @@ export type OperationCosts = {
  * space.
  */
 export function levenshtein(source: string, target: string, costs?: Partial<OperationCosts>): number {
-	const cost = Object.assign({
-		delete: 1,
-		insert: 1,
-		replace: 1,
-		swap: 1,
-	}, costs);
+  const cost = Object.assign({
+    delete: 1,
+    insert: 1,
+    replace: 1,
+    swap: 1,
+  }, costs)
 
-	// Required to facilitate the premise to the algorithm that two swaps of the same character are never required for optimality.
-	if (2 * cost.swap < cost.insert + cost.delete) {
-		throw new Error('Unsupported cost assignment');
-	} else if (source.length === 0) {
-		return target.length * cost.insert;
-	} else if (target.length === 0) {
-		return source.length * cost.delete;
-	} else {
-		/**
-		 * Table: the miminum cost of an edit from the substring `source[0..i]` to the substring `target[0..j]`.
-		 */
-		const table: number[][] = new Array(source.length);
-		for (let i = 0; i < source.length; i++) {
-			table[i] = new Array(target.length).fill(0);
-		}
+  // Required to facilitate the premise to the algorithm that two swaps of the same character are never required for optimality.
+  if (2 * cost.swap < cost.insert + cost.delete) {
+    throw new Error('Unsupported cost assignment')
+  } else if (source.length === 0) {
+    return target.length * cost.insert
+  } else if (target.length === 0) {
+    return source.length * cost.delete
+  } else {
+    /**
+     * Table: the miminum cost of an edit from the substring `source[0..i]` to the substring `target[0..j]`.
+     */
+    const table: number[][] = new Array(source.length)
+    for (let i = 0; i < source.length; i++) {
+      table[i] = new Array(target.length).fill(0)
+    }
 
-		/**
-		 * Map: the index of the last occurrence of each character in the source string.
-		 */
-		const sourceIndexByCharacter: Map<string, number> = new Map();
-		if (source[0] !== target[0]) {
-			table[0][0] = Math.min(cost.replace, cost.delete + cost.insert);
-		}
-		sourceIndexByCharacter.set(source[0], 0);
+    /**
+     * Map: the index of the last occurrence of each character in the source string.
+     */
+    const sourceIndexByCharacter: Map<string, number> = new Map()
+    if (source[0] !== target[0]) {
+      table[0][0] = Math.min(cost.replace, cost.delete + cost.insert)
+    }
+    sourceIndexByCharacter.set(source[0], 0)
 
-		for (let i = 1; i < source.length; i++) {
-			const deleteDist = table[i - 1][0] + cost.delete;
-			const insertDist = (i + 1) * cost.delete + cost.insert;
-			const matchDist = i * cost.delete + (source[i] === target[0] ? 0 : cost.replace);
-			table[i][0] = Math.min(deleteDist, insertDist, matchDist);
-		}
-		for (let j = 1; j < target.length; j++) {
-			const deleteDist = (j + 1) * cost.insert + cost.delete;
-			const insertDist = table[0][j - 1] + cost.insert;
-			const matchDist = j * cost.insert + (source[0] === target[j] ? 0 : cost.replace);
-			table[0][j] = Math.min(deleteDist, insertDist, matchDist);
-		}
-		for (let i = 1; i < source.length; i++) {
-			let maxSourceLetterMatchIndex = source[i] === target[0] ? 0 : -1;
-			for (let j = 1; j < target.length; j++) {
-				let matchDist = table[i - 1][j - 1];
-				if (source[i] !== target[j]) {
-					matchDist += cost.replace;
-				} else {
-					maxSourceLetterMatchIndex = j;
-				}
+    for (let i = 1; i < source.length; i++) {
+      const deleteDist = table[i - 1][0] + cost.delete
+      const insertDist = (i + 1) * cost.delete + cost.insert
+      const matchDist = i * cost.delete + (source[i] === target[0] ? 0 : cost.replace)
+      table[i][0] = Math.min(deleteDist, insertDist, matchDist)
+    }
+    for (let j = 1; j < target.length; j++) {
+      const deleteDist = (j + 1) * cost.insert + cost.delete
+      const insertDist = table[0][j - 1] + cost.insert
+      const matchDist = j * cost.insert + (source[0] === target[j] ? 0 : cost.replace)
+      table[0][j] = Math.min(deleteDist, insertDist, matchDist)
+    }
+    for (let i = 1; i < source.length; i++) {
+      let maxSourceLetterMatchIndex = source[i] === target[0] ? 0 : -1
+      for (let j = 1; j < target.length; j++) {
+        let matchDist = table[i - 1][j - 1]
+        if (source[i] !== target[j]) {
+          matchDist += cost.replace
+        } else {
+          maxSourceLetterMatchIndex = j
+        }
 
-				let swapDist: number;
-				const candidateSwapIndex = sourceIndexByCharacter.get(target[j]);
-				const jSwap = maxSourceLetterMatchIndex;
-				if (candidateSwapIndex !== undefined && jSwap !== -1) {
-					const iSwap = candidateSwapIndex;
-					swapDist = (i - iSwap - 1) * cost.delete + (j - jSwap - 1) * cost.insert + cost.swap;
-					if (iSwap !== 0 || jSwap !== 0) {
-						swapDist += table[Math.max(0, iSwap - 1)][Math.max(0, jSwap - 1)];
-					}
-				} else {
-					swapDist = Infinity;
-				}
+        let swapDist: number
+        const candidateSwapIndex = sourceIndexByCharacter.get(target[j])
+        const jSwap = maxSourceLetterMatchIndex
+        if (candidateSwapIndex !== undefined && jSwap !== -1) {
+          const iSwap = candidateSwapIndex
+          swapDist = (i - iSwap - 1) * cost.delete + (j - jSwap - 1) * cost.insert + cost.swap
+          if (iSwap !== 0 || jSwap !== 0) {
+            swapDist += table[Math.max(0, iSwap - 1)][Math.max(0, jSwap - 1)]
+          }
+        } else {
+          swapDist = Infinity
+        }
 
-				table[i][j] = Math.min(
-					table[i - 1][j] + cost.delete, // delete cost
-					table[i][j - 1] + cost.insert, // insert cost
-					matchDist,
-					swapDist,
-				);
-			}
-			sourceIndexByCharacter.set(source[i], i);
-		}
-		return table[source.length - 1][target.length - 1];
-	}
+        table[i][j] = Math.min(
+          table[i - 1][j] + cost.delete, // delete cost
+          table[i][j - 1] + cost.insert, // insert cost
+          matchDist,
+          swapDist,
+        )
+      }
+      sourceIndexByCharacter.set(source[i], i)
+    }
+    return table[source.length - 1][target.length - 1]
+  }
 }
