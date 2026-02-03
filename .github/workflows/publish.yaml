@@ -42,5 +42,5 @@ jobs:
 
       - name: Publish to NPM
         run: |
-          cd npm
+          cd dist/npm
           npm publish

@@ -3,7 +3,7 @@ import * as std_path from 'jsr:@std/path@^1'
 
 import DENO_JSON from '../deno.json' with { type: 'json' }
 
-const OUTPUT_DIR = `npm`
+const OUTPUT_DIR = `dist/npm`
 const COPIED_FILES = [
   `README.md`,
   `LICENSE`,

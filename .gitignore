@@ -2,7 +2,7 @@ node_modules/
 .vscode/
 
 /TASKS.md
-npm/
+dist/
 /examples/
 
 .lingma/rules/*.md
