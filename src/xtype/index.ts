@@ -1,4 +1,4 @@
-import type { IntersectOf, UnionOf } from '@leawind/lay-sing';
+import type { IntersectOf, UnionOf } from '../types/set.ts';
 
 /**
  * ### Example
