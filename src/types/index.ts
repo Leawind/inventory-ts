@@ -148,3 +148,4 @@ export type TypedArrayConstructor<T> = T extends Int8Array ? Int8ArrayConstructo
 	: T extends Float64Array ? Float64ArrayConstructor
 	: T extends Uint32Array ? Uint32ArrayConstructor
 	: never;
+export type TemplateStringArgs = [strs: TemplateStringsArray, ...args: readonly unknown[]];
