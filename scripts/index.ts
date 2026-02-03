@@ -1,5 +1,5 @@
 import { program } from 'npm:commander';
-import fs from 'jsr:@leawind/inventory@0.15.0/fs';
+import { fs } from '@/index.ts';
 
 program
 	.name('index')
