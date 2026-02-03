@@ -1,6 +1,50 @@
 // deno-lint-ignore-file ban-types no-explicit-any
 import { compare, expect } from '@leawind/lay-sing/test-utils';
-import type { Patch } from '../object.ts';
+import type { Access, InverseAccess, Patch } from '../object.ts';
+
+{
+	type A = { a: string; b?: number; c: boolean };
+	type B = { a: bigint; b?: symbol; c: string };
+
+	expect<Access<A, 'a'>>().toBe<string>().success;
+	expect<Access<A, 'b'>>().toBe<number | undefined>().success;
+	expect<Access<A, 'x', 'default'>>().toBe<'default'>().success;
+
+	expect<Access<A, 'a' | 'b'>>().toBe<string | number | undefined>().success;
+	expect<Access<A, 'a' | 'c'>>().toBe<string | boolean>().success;
+
+	expect<Access<A | B, 'a'>>().toBe<string | bigint>().success;
+	expect<Access<A | B, 'a' | 'c'>>().toBe<string | bigint | boolean>().success;
+}
+
+{
+	type A = {
+		a: 1;
+		b: 2;
+		c: 3;
+	};
+
+	type M<K extends keyof A> = A[K];
+	type W<V> = InverseAccess<A, V>;
+	{
+		expect<M<'a'>>().toBe<1>().success;
+		expect<M<'b'>>().toBe<2>().success;
+		expect<M<'c'>>().toBe<3>().success;
+	}
+	{
+		expect<W<1>>().toBe<'a'>().success;
+		expect<W<2>>().toBe<'b'>().success;
+		expect<W<3>>().toBe<'c'>().success;
+
+		expect<W<1 | 2>>().toBe<'a' | 'b'>().success;
+
+		expect<W<4>>().toBeNever;
+		expect<W<'a'>>().toBeNever;
+		expect<W<never>>().toBeNever;
+		expect<W<unknown>>().toBe<'a' | 'b' | 'c'>().success;
+		expect<W<any>>().toBe<'a' | 'b' | 'c'>().success;
+	}
+}
 
 {
 	compare<
