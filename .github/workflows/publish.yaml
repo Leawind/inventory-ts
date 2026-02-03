@@ -35,7 +35,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Build NPM
-        run: deno run -A scripts/build_npm.ts
+        run: deno run -A scripts/build-npm.ts
 
       - name: Publish to NPM
         run: |
