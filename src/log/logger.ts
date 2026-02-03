@@ -10,7 +10,7 @@ import type {
 } from './api.ts';
 import { LEVEL_REGISTRY } from './api.ts';
 import { interleave } from '@leawind/inventory/tstr';
-import type { Patch } from 'https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/index.ts';
+import type { Patch } from '../types/object.ts';
 import { ColorFormatter } from './builtin/formatter.ts';
 import { CliTransport } from './builtin/transport.ts';
 

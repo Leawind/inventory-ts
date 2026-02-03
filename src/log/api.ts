@@ -1,7 +1,5 @@
-import type {
-	Awaitable,
-	InverseAccess,
-} from 'https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/index.ts';
+import type { Awaitable } from '@leawind/inventory/types';
+import type { InverseAccess } from '../types/object.ts';
 
 export const LEVEL_REGISTRY = {
 	all: -2147483648,

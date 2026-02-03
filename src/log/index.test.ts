@@ -2,7 +2,7 @@ import log from '@leawind/inventory/log';
 import { expect } from '@leawind/lay-sing/test-utils';
 
 {
-	expect<typeof log>().toHaveProperty<'api'>().success;
+	expect<typeof log>().toHaveKey<'api'>().success;
 }
 
 Deno.test('log basic usage', () => {
