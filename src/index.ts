@@ -13,6 +13,7 @@ export * as imagine from '@/imagine/index.ts';
 export * as lazy from '@/lazy/index.ts';
 export * as list_iterator from '@/list-iterator/index.ts';
 export * as lock from '@/lock/index.ts';
+export * as log from '@/log/index.ts';
 export * as misc from '@/misc/index.ts';
 export * as monolist from '@/monolist/index.ts';
 export * as options from '@/options/index.ts';

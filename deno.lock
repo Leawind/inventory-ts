@@ -151,6 +151,22 @@
       "integrity": "sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ=="
     }
   },
+  "remote": {
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/async.ts": "bbc5f7d075c6ac8ecccb9af8d1be100ac72533d77fac3145a0e6d86600730a94",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/boolean.ts": "099bdbbe2d4b4a93445faa10bbd5117bf9f9ad7ce5714eae0baa51a49206eba6",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/control.ts": "56f2eaaf63de93d42f836e64b7da6b27a38032b7428ef0143ee2c2b1bdbbc5af",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/doc.ts": "7607de3384c28ca0c905b0a3b5110f535ed246653cbea436cd5bd3629483e133",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/function.ts": "5bb05c152d25aff0f2e2072d905a546f5bab6a65705c1c6ee051e83534edfd28",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/index.ts": "a895ee9164a6993744d4cda0cf1811afd4da60533619e67a9515a888c9335c7b",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/json.ts": "dcaa8363dbf2326270e4cdaefbf00d2d720d3d8d68ba6b1c3e61939165bf6780",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/key.ts": "10f3be7fd3395ab329be14dce08bb4727ac711219232c0855d0ef19393c61e2a",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/object.ts": "8084d548a283022a8de5a412b5050e11a98199ae51a68cb393082712e10ac59d",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/tuple.ts": "e2f0e6dea1430e17188c8e79c4c70dc1229d5fdc056b0fb59e206652d4bda638",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/type/compare.ts": "2ccfc7cd690a67d6102dea12ad5da63b0cdd7837268e803d92d308cee2663d8e",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/type/index.ts": "32f89aa70519661599c8fc941bd7e111a27b64334cbe2bd52b5526f77ae2b7a8",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/type/set.ts": "1de304f73990fa6d4c2ef6f82052c0eade5866f3305f08a1ded05dbf09c11d13",
+    "https://raw.githubusercontent.com/Leawind/lay-sing/refs/heads/main/src/main/typed-array.ts": "09bbd786e0ff40ce2c81975f3abe7a2cc732f7c5c5cbcfbbfee0a92d98d26e11"
+  },
   "workspace": {
     "dependencies": [
       "jsr:@deno/dnt@~0.41.3",

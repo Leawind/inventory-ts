@@ -23,6 +23,7 @@
 		"./lazy": "./src/lazy/index.ts",
 		"./list_iterator": "./src/list-iterator/index.ts",
 		"./lock": "./src/lock/index.ts",
+		"./log": "./src/log/index.ts",
 		"./misc": "./src/misc/index.ts",
 		"./monolist": "./src/monolist/index.ts",
 		"./options": "./src/options/index.ts",
