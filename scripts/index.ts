@@ -117,16 +117,6 @@ program
 				manifest.exports['.'] = './src/index.ts';
 			}
 
-			// Install bins
-			{
-				if (!('tasks' in manifest)) {
-					manifest.tasks = {};
-				}
-				for (const bin of bins) {
-					delete manifest.tasks[bin.id];
-					manifest.tasks[`install-${bin.id}`] = `deno install -g -A -n ${bin.id} ${bin.path}`;
-				}
-			}
 			writeIfDifferentSync(fs.p`./deno.json`, JSON.stringify(manifest, null, '\t') + '\n');
 		}
 
