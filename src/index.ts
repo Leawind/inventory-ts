@@ -10,6 +10,7 @@ export * as fs from '@/fs/index.ts';
 export * as func_type from '@/func-type/index.ts';
 export * as id_generator from '@/id-generator/index.ts';
 export * as imagine from '@/imagine/index.ts';
+export * as index_gen from '@/index-gen/index.ts';
 export * as lazy from '@/lazy/index.ts';
 export * as list_iterator from '@/list-iterator/index.ts';
 export * as lock from '@/lock/index.ts';

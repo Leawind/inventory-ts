@@ -20,6 +20,7 @@
 		"./func_type": "./src/func-type/index.ts",
 		"./id_generator": "./src/id-generator/index.ts",
 		"./imagine": "./src/imagine/index.ts",
+		"./index_gen": "./src/index-gen/index.ts",
 		"./lazy": "./src/lazy/index.ts",
 		"./list_iterator": "./src/list-iterator/index.ts",
 		"./lock": "./src/lock/index.ts",
