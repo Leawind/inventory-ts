@@ -41,15 +41,14 @@
 		".": "./src/index.ts"
 	},
 	"tasks": {
-		"dev": "deno test --watch --parallel -R",
-		"test": "deno test --parallel -A",
 		"index": "deno -A ./scripts/index.ts",
 		"check": "deno check src test",
+		"test": "deno test --parallel -A",
 		"build-npm": "deno run -A scripts/build_npm.ts",
 		"verify": "deno task index -- --check && deno fmt --check && deno lint && deno task test",
 		"prepare-jsr": "deno task verify && deno publish --dry-run",
 		"prepare-npm": "deno task verify && deno task build-npm && cd npm && npm publish --dry-run",
-		"prepare": "deno task verify && deno publish --dry-run && deno task build-npm && cd npm && npm publish --dry-run"
+		"prepare": "deno task verify && deno task build-npm && deno publish --dry-run && cd npm && npm publish --dry-run"
 	},
 	"test": {
 		"include": [
