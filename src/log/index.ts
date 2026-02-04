@@ -9,7 +9,9 @@
  */
 
 import { Logger, type LoggerApiMini } from './logger.ts'
+
 export * from './logger.ts'
+export * from './api.ts'
 
 /**
  * Global logger

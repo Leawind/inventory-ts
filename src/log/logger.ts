@@ -180,7 +180,6 @@ export class Logger implements LogMethodOwner {
     function log(...args: TemplateStringArgs | [...data: ReadonlyArray<unknown>]) {
       if (Logger.isTemplateStringArgs(args)) {
         const [strs, ...targs] = args
-        // 优化模板字符串处理，保留原始类型信息
         const content = interleave(
           strs,
           targs.map((arg) => {
