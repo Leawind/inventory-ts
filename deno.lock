@@ -25,7 +25,8 @@
     "jsr:@std/path@~0.225.2": "0.225.2",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
-    "npm:commander@*": "14.0.2"
+    "npm:commander@*": "14.0.2",
+    "npm:commander@14": "14.0.2"
   },
   "jsr": {
     "@david/code-block-writer@13.0.3": {

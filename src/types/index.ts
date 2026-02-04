@@ -147,3 +147,8 @@ export type TypedArrayConstructor<T> = T extends Int8Array ? Int8ArrayConstructo
   : T extends Uint32Array ? Uint32ArrayConstructor
   : never
 export type TemplateStringArgs = [strs: TemplateStringsArray, ...args: readonly unknown[]]
+
+// Index start >>>>>>>>>>>>>>>>
+export * from './object.ts'
+export * from './set.ts'
+// <<<<<<<<<<<<<<<<   Index end
