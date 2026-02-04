@@ -43,12 +43,14 @@ export type LogMethodName = Exclude<LevelName, 'all' | 'none'>
 export type LogMethodOwner = Record<LogMethodName, FnLog>
 // export type LoggerApiMini = Pick<Logger, 'api'> & Record<LogMethodName, FnLog>;
 export type LoggerApiMini = Pick<Logger, LogMethodName | 'api'>
+export type LoggerApi = Omit<Logger, 'api'>
 export type SubLoggerApi = Patch<Logger, {
   getScope(): string
   setScope(scope: string): SubLoggerApi
 }>
-
 export class Logger implements LogMethodOwner {
+  public Logger: typeof Logger = Logger
+
   public static isValidScopeName(scope: string): boolean {
     return /^[\p{ID_Start} ]+(\/[\p{ID_Start} ]+)*$/u.test(scope)
   }
@@ -62,7 +64,7 @@ export class Logger implements LogMethodOwner {
   /**
    * More api for Logger
    */
-  public get api(): Omit<Logger, 'api'> {
+  public get api(): LoggerApi {
     return this
   }
 
