@@ -151,6 +151,8 @@ export class Logger implements LogMethodOwner {
     return Logger.levelNumberOf(level) >= this.level
   }
 
+  private pendingPromises: Promise<void>[] = []
+
   private log(level: LevelLike, ...data: unknown[]): this {
     if (!this.shouldLog(level)) {
       return this
@@ -164,14 +166,49 @@ export class Logger implements LogMethodOwner {
       useColors: this.useColors,
     }
     if (this.formatter) {
-      entry.formatted = this.formatter.format(entry)
+      try {
+        entry.formatted = this.formatter.format(entry)
+      } catch (error) {
+        // Fallback formatting if formatter fails
+        entry.formatted = `${entry.timestamp.toISOString()} [${entry.scope}] [${entry.level}] Formatter error: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      }
     }
 
     for (const transport of this.transports) {
-      transport.log(entry)
+      try {
+        const result = transport.log(entry)
+        // Handle async transports
+        if (result instanceof Promise) {
+          // Store pending promises for waitForTransports
+          this.pendingPromises.push(result)
+          result.catch((error) => {
+            console.error('Transport async error:', error)
+          }).finally(() => {
+            // Remove resolved/rejected promises
+            const index = this.pendingPromises.indexOf(result)
+            if (index > -1) {
+              this.pendingPromises.splice(index, 1)
+            }
+          })
+        }
+      } catch (error) {
+        // Ignore transport errors to prevent cascading failures
+        console.error('Transport sync error:', error)
+      }
     }
 
     return this
+  }
+
+  /**
+   * Wait for all asynchronous transports to complete
+   */
+  public async waitForTransports(): Promise<void> {
+    if (this.pendingPromises.length > 0) {
+      await Promise.allSettled(this.pendingPromises)
+    }
   }
 
   private defineLogMethod(self: Logger, level: LEVEL_REGISTRY[LevelName]): FnLog {

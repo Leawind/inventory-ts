@@ -3,7 +3,7 @@ import { BaseTransport, type LogEntry } from '../api.ts'
 import { Logger } from '../logger.ts'
 
 export class CliTransport extends BaseTransport {
-  public stderrThreshold = Logger.levelNumberOf('error')
+  public stderrThreshold: number = Logger.levelNumberOf('error')
 
   public constructor() {
     super()
