@@ -822,6 +822,30 @@ export class Path {
         return callbacks.symlink && callbacks.symlink(this.asSymlinkSync(false))
     }
   }
+
+  /**
+   * Executes the corresponding callback function based on the actual type of the path.
+   *
+   * @param callbacks An object containing callback functions for different path types
+   * @param callbacks.file Optional callback function for file type, receives FilePath parameter
+   * @param callbacks.dir Optional callback function for directory type, receives DirPath parameter
+   * @param callbacks.symlink Optional callback function for symbolic link type, receives SymlinkPath parameter
+   */
+  public matchSync<R>(callbacks: {
+    file?(path: FilePath): R
+    dir?(path: DirPath): R
+    symlink?(path: SymlinkPath): R
+  }): R | undefined {
+    const type = this.typeSync()
+    switch (type) {
+      case FilePath:
+        return callbacks.file && callbacks.file(this.asFileSync(false))
+      case DirPath:
+        return callbacks.dir && callbacks.dir(this.asDirSync(false))
+      case SymlinkPath:
+        return callbacks.symlink && callbacks.symlink(this.asSymlinkSync(false))
+    }
+  }
 }
 
 /**
