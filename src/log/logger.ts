@@ -204,6 +204,16 @@ export class Logger implements LogMethodOwner {
   error: FnLog = this.defineLogMethod(this, LEVEL_REGISTRY.error)
   fatal: FnLog = this.defineLogMethod(this, LEVEL_REGISTRY.fatal)
 
+  public parseLevel(levelLike: string | number): LevelLike {
+    if (levelLike in LEVEL_REGISTRY) {
+      return levelLike as LevelName
+    }
+    if (typeof levelLike === 'number') {
+      return levelLike
+    }
+    throw new Error(`Unknown log level name: ${levelLike}`)
+  }
+
   public static create(scope?: string): Logger {
     return new Logger(scope)
   }
