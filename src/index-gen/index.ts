@@ -27,11 +27,11 @@ export async function genIndex(path: PathLike, options: Partial<Options>): Promi
     check: true,
     startLine: `// Index start >>>>>>>>>>>>>>>>`,
     endLine: `// <<<<<<<<<<<<<<<<   Index end`,
-    startLinePattern: /\/\/ +Index start +>>>>>>>>>>>>>>>>/,
-    endLinePattern: /\/\/ +<<<<<<<<<<<<<<<< +Index end/,
+    startLinePattern: /^\/\/ +Index start +>>>>>>>>>>>>>>>> *$/,
+    endLinePattern: /^\/\/ +<<<<<<<<<<<<<<<< +Index end *$/,
     exportStatement: (path: string) => `export * from '${path}'`,
     fileFilter: (path: FilePath) => /.*\.ts$/.test(path.name) && !/(^index\.ts$)|(.*\.test\.ts$)/.test(path.name),
-    dirFilter: (path: DirPath) => !path.name.startsWith('.'),
+    dirFilter: (path: DirPath) => !/^(\..*)|(test)$/.test(path.name),
   }, options)
 
   const indent = '  '.repeat(opts.depth)
@@ -58,7 +58,7 @@ export async function genIndex(path: PathLike, options: Partial<Options>): Promi
           const statement = opts.exportStatement(`./${path.name}/index.ts`)
           log.trace(indent + statement)
           statements.push(statement)
-          outdatedFiles.push(...await genIndex(path, Object.assign(opts, { depth: opts.depth + 1 })))
+          outdatedFiles.push(...await genIndex(path, Object.assign({}, opts, { depth: opts.depth + 1 })))
         }
       },
     })
