@@ -6,3 +6,4 @@ dist/
 /examples/
 
 .lingma/rules/*.md
+.trae/
