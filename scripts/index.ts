@@ -3,7 +3,7 @@ import { fs } from '@/index.ts'
 
 program
   .name('index')
-  .description('Generate or check index files')
+  .description('Generate or check root index files')
   .option('-c, --check', 'Check if index files are prepared', false)
   .action(async (options: { check: boolean }) => {
     type ExportedItem = {
@@ -41,7 +41,6 @@ program
     }
 
     const exporteds: ExportedItem[] = []
-    const bins: BinItem[] = []
     Deno.readDirSync(fs.p`./src`)
       .forEach((entry) => {
         if (entry.isFile) {
@@ -63,42 +62,20 @@ program
         } else if (entry.isDirectory) {
           const name = entry.name
 
-          if (name === 'bin') {
-            Deno.readDirSync(fs.p`./src/bin`).forEach((entry) => {
-              if (entry.isFile) {
-                const name = entry.name.replace(/\.ts$/, '')
-                if (!isValidBinName(name)) {
-                  throw new Error(`Invalid bin name '${name}'`)
-                }
-                bins.push({
-                  id: name,
-                  path: `./src/bin/${entry.name}`,
-                })
-              }
-            })
-          } else {
-            const hasIndex = fs.existsSync(`./src/${name}/index.ts`)
-            const hasMod = fs.existsSync(`./src/${name}/mod.ts`)
-
-            if (hasIndex && hasMod) {
-              throw new Error(`Both 'index.ts' and 'mod.ts' exist in '${name}'`)
-            }
-
-            const main = hasIndex ? 'index' : 'mod'
-
-            exporteds.push({
-              id: normalizeName(name),
-              import: `@/${name}/${main}.ts`,
-              export: `./src/${name}/${main}.ts`,
-            })
-          }
+          // For subdirectories, we always assume they have an index.ts
+          // The actual generation of these index.ts files is handled by scripts/gen-index.ts
+          exporteds.push({
+            id: normalizeName(name),
+            import: `@/${name}/index.ts`,
+            export: `./src/${name}/index.ts`,
+          })
         }
       })
 
     exporteds.sort((a, b) => a.id.localeCompare(b.id))
 
     {
-      // Write index.ts
+      // Write src/index.ts
       const lines: string[] = exporteds.map((item) => `export * as ${item.id} from '${item.import}'`)
       writeIfDifferentSync('./src/index.ts', lines.join('\n') + '\n')
     }
