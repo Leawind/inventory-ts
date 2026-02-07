@@ -1,4 +1,4 @@
-import type { AnyFunction, Case, Exact, Switch } from '../types/index.ts'
+import type { AnyFunction, AssertExtends, Case, Exact, Switch } from '../types/index.ts'
 
 type AsIs = AnyFunction | string | number | boolean | bigint | symbol
 enum ValueType {
@@ -70,8 +70,6 @@ const DEFAULT_OPTIONS: OverwriteOptions<'replace', 'concat-tail'> = {
   undefined: 'replace',
   array: 'concat-tail',
 }
-
-type AssertExtends<T, A> = T extends A ? T : never
 
 type ConcatArray<A, B> = A extends readonly unknown[] ? B extends readonly unknown[] ? [...A, ...B] : never
   : never
