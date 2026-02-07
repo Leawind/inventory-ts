@@ -4,7 +4,7 @@ import { Path } from '../fs/index.ts'
 import { r } from '../tstr/index.ts'
 
 export type Options = {
-  depth: number
+  maxDepth: number
   check: boolean
   startLine: string
   endLine: string
@@ -21,9 +21,9 @@ export type Options = {
  * @param options - Configuration options for the index generation
  * @returns Array of outdated index files (when in check mode)
  */
-export async function genIndex(path: PathLike, options: Partial<Options>): Promise<FilePath[]> {
+export async function generateIndex(path: PathLike, options: Partial<Options>, depth: number = 0): Promise<FilePath[]> {
   const opts: Options = Object.assign({
-    depth: 0,
+    maxDepth: Infinity,
     check: true,
     startLine: `// Index start >>>>>>>>>>>>>>>>`,
     endLine: `// <<<<<<<<<<<<<<<<   Index end`,
@@ -34,7 +34,11 @@ export async function genIndex(path: PathLike, options: Partial<Options>): Promi
     dirFilter: (path: DirPath) => !/^(\..*)|(test)$/.test(path.name),
   }, options)
 
-  const indent = '  '.repeat(opts.depth)
+  if (opts.maxDepth < 0) {
+    log.warn(r`Max depth must be >= 0, but got ${opts.maxDepth}`)
+  }
+
+  const indent = '  '.repeat(depth)
   const dir = await Path.dir(path)
 
   const indexFile = await dir.join('index.ts').asFile(false)
@@ -58,7 +62,16 @@ export async function genIndex(path: PathLike, options: Partial<Options>): Promi
           const statement = opts.exportStatement(`./${path.name}/index.ts`)
           log.trace(indent + statement)
           statements.push(statement)
-          outdatedFiles.push(...await genIndex(path, Object.assign({}, opts, { depth: opts.depth + 1 })))
+
+          if (opts.maxDepth > 0) {
+            outdatedFiles.push(
+              ...await generateIndex(
+                path,
+                Object.assign({}, opts, { maxDepth: opts.maxDepth - 1 }),
+                depth + 1,
+              ),
+            )
+          }
         }
       },
     })

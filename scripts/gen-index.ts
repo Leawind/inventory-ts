@@ -1,7 +1,7 @@
 import { program } from 'npm:commander@^14.0'
 import { FilePath, Path } from '@/fs/index.ts'
 import log from '@/log/index.ts'
-import { genIndex } from '@/index-gen/index.ts'
+import { generateIndex } from '@/index-gen/index.ts'
 
 type CliOptions = {
   check: boolean
@@ -28,7 +28,7 @@ if (import.meta.main) {
       const rootDir = await Path.dir(dir)
       for await (const entry of await rootDir.list()) {
         if (await entry.isDirectory()) {
-          const outdates = await genIndex(entry, { check: options.check })
+          const outdates = await generateIndex(entry, { check: options.check })
           outdatedFiles.push(...outdates)
           if (outdates.length > 0) {
             log.warn(`BAD: ${entry}`)
