@@ -10,7 +10,7 @@ export type Options = {
   endLine: string
   startLinePattern?: RegExp
   endLinePattern?: RegExp
-  exportStatement(path: string): string
+  exportStatements(path: string, name: string): string[]
   fileFilter: (path: FilePath) => boolean
   dirFilter: (path: DirPath) => boolean
 }
@@ -29,7 +29,7 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
     endLine: `// <<<<<<<<<<<<<<<<   Index end`,
     startLinePattern: /^\/\/ +Index start +>>>>>>>>>>>>>>>> *$/,
     endLinePattern: /^\/\/ +<<<<<<<<<<<<<<<< +Index end *$/,
-    exportStatement: (path: string) => `export * from '${path}'`,
+    exportStatements: (path: string, _name: string) => [`export * from '${path}'`],
     fileFilter: (path: FilePath) => /.*\.ts$/.test(path.name) && !/(^index\.ts$)|(.*\.test\.ts$)/.test(path.name),
     dirFilter: (path: DirPath) => !/^(\..*)|(test)$/.test(path.name),
   }, options)
@@ -53,15 +53,19 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
   for (const child of children) {
     await child.match({
       file(path) {
-        const statement = opts.exportStatement(`./${path.name}`)
-        log.trace(indent + statement)
-        statements.push(statement)
+        const result = opts.exportStatements(`./${path.name}`, path.nameNoExt)
+        result.forEach((statement) => {
+          log.trace(indent + statement)
+          statements.push(statement)
+        })
       },
       async dir(path) {
         if ((await path.list()).length > 0) {
-          const statement = opts.exportStatement(`./${path.name}/index.ts`)
-          log.trace(indent + statement)
-          statements.push(statement)
+          const result = opts.exportStatements(`./${path.name}/index.ts`, path.name)
+          result.forEach((statement) => {
+            log.trace(indent + statement)
+            statements.push(statement)
+          })
 
           if (opts.maxDepth > 0) {
             outdatedFiles.push(
