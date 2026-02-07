@@ -13,6 +13,8 @@ export type Options = {
   exportStatements(path: string, name: string): string[]
   fileFilter: (path: FilePath) => boolean
   dirFilter: (path: DirPath) => boolean
+
+  onEntry?: (filePath: FilePath, name: string) => void
 }
 /**
  * Recursively generates or validates index.ts files in a directory structure.
@@ -53,19 +55,23 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
   for (const child of children) {
     await child.match({
       file(path) {
-        const result = opts.exportStatements(`./${path.name}`, path.nameNoExt)
-        result.forEach((statement) => {
-          log.trace(indent + statement)
-          statements.push(statement)
-        })
-      },
-      async dir(path) {
-        if ((await path.list()).length > 0) {
-          const result = opts.exportStatements(`./${path.name}/index.ts`, path.name)
-          result.forEach((statement) => {
+        opts.onEntry?.(path, path.nameNoExt)
+
+        opts.exportStatements(`./${path.name}`, path.nameNoExt)
+          .forEach((statement) => {
             log.trace(indent + statement)
             statements.push(statement)
           })
+      },
+      async dir(path) {
+        if ((await path.list()).length > 0) {
+          opts.onEntry?.(path.join('index.ts').asFileSync(false), path.name)
+
+          opts.exportStatements(`./${path.name}/index.ts`, path.name)
+            .forEach((statement) => {
+              log.trace(indent + statement)
+              statements.push(statement)
+            })
 
           if (opts.maxDepth > 0) {
             outdatedFiles.push(
