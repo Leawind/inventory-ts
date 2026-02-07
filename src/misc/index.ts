@@ -1,4 +1,4 @@
-import * as posix_path from '@std/path@1/posix'
+import * as posix_path from '@std/path/posix'
 import type { JsonValue } from '../types/index.ts'
 
 export * from './zone.ts'

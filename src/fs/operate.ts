@@ -1,4 +1,4 @@
-import * as std_path from '@std/path@1'
+import * as std_path from '@std/path'
 import { walk } from './walk.ts'
 import { exists, existsSync } from './basic.ts'
 

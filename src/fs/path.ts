@@ -1,4 +1,4 @@
-import * as std_path from '@std/path@1'
+import * as std_path from '@std/path'
 import type { Constructor } from '../types/index.ts'
 import * as fs_basic from './basic.ts'
 import * as fs_operate from './operate.ts'

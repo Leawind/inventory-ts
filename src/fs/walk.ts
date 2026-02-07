@@ -1,4 +1,4 @@
-import * as std_path from '@std/path@1'
+import * as std_path from '@std/path'
 import { p } from './utils.ts'
 
 type WalkItem = {
