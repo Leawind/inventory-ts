@@ -1,4 +1,4 @@
-import { compare, expect } from '@leawind/lay-sing/test-utils'
+import { compare, expect } from 'lay-sing/test-utils'
 import type { Access, InverseAccess, Patch } from '../object.ts'
 
 {

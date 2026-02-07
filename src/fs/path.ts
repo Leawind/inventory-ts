@@ -1,7 +1,7 @@
 import * as std_path from '@std/path'
 import * as fs_basic from './basic.ts'
 import * as fs_operate from './operate.ts'
-import type { Exact } from '@leawind/lay-sing'
+import type { Exact } from 'lay-sing'
 
 export type PathLike = string | Path
 

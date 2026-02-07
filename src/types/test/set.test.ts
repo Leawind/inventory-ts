@@ -1,5 +1,5 @@
-import { expect } from '@leawind/lay-sing/test-utils'
-import type { IntersectOf, UnionOf } from '@leawind/lay-sing'
+import { expect } from 'lay-sing/test-utils'
+import type { IntersectOf, UnionOf } from 'lay-sing'
 
 type A = { a: string; b: number }
 type B = { a: number; b: number; c: symbol }

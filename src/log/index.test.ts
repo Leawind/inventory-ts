@@ -1,5 +1,5 @@
 import log from '../log/index.ts'
-import { expect } from '@leawind/lay-sing/test-utils'
+import { expect } from 'lay-sing/test-utils'
 
 {
   expect<typeof log>().toHaveKey<'api'>().success

@@ -1,4 +1,4 @@
-import type { AssertExtends, Exact } from '@leawind/lay-sing'
+import type { AssertExtends, Exact } from 'lay-sing'
 
 /**
  * Checks if two types are exactly equal (structurally identical).

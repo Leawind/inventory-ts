@@ -9,7 +9,7 @@
  *
  * @example
  * ```ts
- * import { expect } from '@leawind/lay-sing/test-utils'
+ * import { expect } from 'lay-sing/test-utils'
  *
  * type User = { name: string; age?: number };
  *
@@ -29,7 +29,7 @@ export type Access<Obj, K extends PropertyKey, E = never> = K extends keyof Obj 
  *
  * @example
  * ```ts
- * import { expect } from '@leawind/lay-sing/test-utils'
+ * import { expect } from 'lay-sing/test-utils'
  *
  * expect<InverseAccess<{ a: string }, string>>().toBe<'a'>().success
  * expect<InverseAccess<{ a: string; b: string }, string>>().toBe<'a' | 'b'>().success
@@ -46,7 +46,7 @@ export type InverseAccess<T, V, E = never> = { [K in keyof T]: T[K] extends V ? 
  *
  * @example
  * ```ts
- * import { expect } from '@leawind/lay-sing/test-utils'
+ * import { expect } from 'lay-sing/test-utils'
  *
  * type A = { a: 1; b: 2; }
  * type B = { b: string; c: 3 }

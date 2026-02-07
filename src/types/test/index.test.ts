@@ -1,4 +1,4 @@
-import { expect } from '@leawind/lay-sing/test-utils'
+import { expect } from 'lay-sing/test-utils'
 import type { Replace } from '../index.ts'
 
 Deno.test('list fields', () => {
