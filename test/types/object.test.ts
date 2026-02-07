@@ -1,5 +1,5 @@
 import { compare, expect } from 'lay-sing/test-utils'
-import type { Access, InverseAccess, Patch } from '../object.ts'
+import type { Access, InverseAccess, Patch } from '../../src/types/index.ts'
 
 {
   type A = { a: string; b?: number; c: boolean }
@@ -76,42 +76,42 @@ import type { Access, InverseAccess, Patch } from '../object.ts'
     // Test with optional properties
     type WithOptional = { a?: string; b: number }
     type SourceWithOptional = { a: boolean; c?: string }
-    expect<Patch<WithOptional, SourceWithOptional>>().toEqual<{ a: boolean; b: number; c?: string }>().success
+    expect<Patch<WithOptional, SourceWithOptional>>()
+      .toEqual<{ a: boolean; b: number; c?: string }>().success
 
     // Test with function types
     type WithFunction = { fn(): string; x: number }
     type SourceWithFunction = { fn(): number; y: boolean }
-    expect<Patch<WithFunction, SourceWithFunction>>().toEqual<{ fn(): number; x: number; y: boolean }>().success
+    expect<Patch<WithFunction, SourceWithFunction>>()
+      .toEqual<{ fn(): number; x: number; y: boolean }>().success
 
     // Test with nested objects
     type Nested = { a: string; nested: { x: number; y: string } }
     type SourceNested = { b: boolean; nested: { x: boolean; z: number } }
-    expect<Patch<Nested, SourceNested>>().toEqual<{ a: string; b: boolean; nested: { x: boolean; z: number } }>()
-      .success
+    expect<Patch<Nested, SourceNested>>()
+      .toEqual<{ a: string; b: boolean; nested: { x: boolean; z: number } }>().success
 
     // Test with union types
     type UnionTarget = { a: string | number; b: boolean }
     type UnionSource = { a: bigint; c: symbol }
-    expect<Patch<UnionTarget, UnionSource>>().toEqual<{ a: bigint; b: boolean; c: symbol }>().success
+    expect<Patch<UnionTarget, UnionSource>>()
+      .toEqual<{ a: bigint; b: boolean; c: symbol }>().success
 
     // Test with generic types
     type GenericTarget<T> = { value: T; id: string }
     type GenericSource<U> = { value: U; extra: boolean }
-    expect<Patch<GenericTarget<number>, GenericSource<string>>>().toEqual<
-      { value: string; id: string; extra: boolean }
-    >().success
+    expect<Patch<GenericTarget<number>, GenericSource<string>>>()
+      .toEqual<{ value: string; id: string; extra: boolean }>().success
 
     // Test with intersection types
     type IntersectionSource = { a: number } & { b: string }
-    expect<Patch<{ c: boolean }, IntersectionSource>>().toEqual<{ c: boolean } & { a: number; b: string }>()
-      .success
+    expect<Patch<{ c: boolean }, IntersectionSource>>()
+      .toEqual<{ c: boolean } & { a: number; b: string }>().success
 
     // Test with indexed access types
     type IndexedTarget = { a: string; b: number }
     type KeyFromTarget = keyof IndexedTarget
-    expect<Patch<IndexedTarget, { [K in Exclude<KeyFromTarget, 'a'>]: boolean }>>().toEqual<
-      { a: string; b: boolean }
-    >()
-      .success
+    expect<Patch<IndexedTarget, { [K in Exclude<KeyFromTarget, 'a'>]: boolean }>>()
+      .toEqual<{ a: string; b: boolean }>().success
   }
 }

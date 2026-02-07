@@ -1,5 +1,5 @@
 import { expect } from 'lay-sing/test-utils'
-import type { IntersectOf, UnionOf } from 'lay-sing'
+import type { IntersectOf, UnionOf } from '../../src/types/index.ts'
 
 type A = { a: string; b: number }
 type B = { a: number; b: number; c: symbol }

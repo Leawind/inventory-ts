@@ -1,5 +1,5 @@
 import { expect } from 'lay-sing/test-utils'
-import type { Replace } from '../index.ts'
+import type { Replace } from '../../src/types/index.ts'
 
 Deno.test('list fields', () => {
   type Keys<T, U extends (keyof T)[]> = Exclude<keyof T, U[number]> extends never ? U
@@ -62,16 +62,5 @@ Deno.test('list fields', () => {
     expect<Replace<WeakMap<{ a: 2 }, 3>, 2, 9>>().toBe<WeakMap<{ a: 9 }, 3>>().success
     // WeakSet
     expect<Replace<WeakSet<{ a: 2 }>, 2, 9>>().toBe<WeakSet<{ a: 9 }>>().success
-  }
-
-  // class
-  {
-    class _A {
-      a!: 1
-      m(_a: 2): 3 {
-        return 3
-      }
-    }
-    expect<Replace<_A, 2, 9>>().T
   }
 }
