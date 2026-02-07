@@ -7,13 +7,13 @@ export * from './utils.ts'
 
 const ENV_PATH_SEPARATOR = Deno.build.os === 'windows' ? ';' : ':'
 
-type WashCommand = (
+export type WashCommand = (
   args: string[],
   stdout: WritableStream<Uint8Array>,
   stderr: WritableStream<Uint8Array>,
 ) => Promise<number>
 
-type Executable = {
+export type Executable = {
   execute(): Promise<WashOutput>
   toString(): string
 }
@@ -387,7 +387,7 @@ export class Wash {
   }
 }
 
-class WashOutput {
+export class WashOutput {
   public readonly stdout: WashOutputData
   public readonly stderr: WashOutputData
 
@@ -407,10 +407,13 @@ class WashOutput {
   }
 }
 
-class WashOutputData {
+export class WashOutputData {
   public constructor(public array: Uint8Array) {}
   private static decoder = new TextDecoder()
   public get utf8(): string {
     return WashOutputData.decoder.decode(this.array)
   }
 }
+
+const wash: Wash = Wash.default()
+export default wash

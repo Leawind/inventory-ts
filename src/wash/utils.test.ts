@@ -1,6 +1,5 @@
 import { assertEquals } from '@std/assert'
 import { cmd } from './utils.ts'
-
 Deno.test('cmd', () => {
   assertEquals(cmd``, [])
   assertEquals(cmd`""`, [''])
