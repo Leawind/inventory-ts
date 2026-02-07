@@ -49,11 +49,11 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
   const statements: string[] = []
   const outdatedFiles: Path[] = []
 
-  const children = (await dir.list())
+  const children = (await dir.listAsync())
     .filter((path: Path) => path.matchSync({ file: opts.fileFilter, dir: opts.dirFilter }))
     .sort((a, b) => a.path.localeCompare(b.path))
   for (const child of children) {
-    await child.match({
+    await child.matchAsync({
       file(path) {
         opts.onEntry?.(path, path.nameNoExt)
 
@@ -64,7 +64,7 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
           })
       },
       async dir(path) {
-        if ((await path.list()).length > 0) {
+        if ((await path.listAsync()).length > 0) {
           opts.onEntry?.(path.join('index.ts'), path.name)
 
           opts.exportStatements(`./${path.name}/index.ts`, path.name)
@@ -87,7 +87,7 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
     })
   }
 
-  const content = await indexFile.isFile() ? await indexFile.readText() : ''
+  const content = await indexFile.isFileAsync() ? await indexFile.readTextAsync() : ''
 
   // Find start and end lines using string or regex matching
   const lines = content.split('\n')
@@ -128,7 +128,7 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
       log.trace(indent + c(91)`${indexFile.path} ...Outdated`)
       return [...outdatedFiles, indexFile]
     } else {
-      await indexFile.write(replaced)
+      await indexFile.writeAsync(replaced)
       log.trace(indent + c(92)`${indexFile.path} ...Updated`)
       return []
     }

@@ -1,7 +1,51 @@
 import { assert, assertEquals, assertStrictEquals } from '@std/assert'
-import { Path } from './path.ts'
+import { Path, type PathAsync, type PathSync } from './path.ts'
 import { existsSync } from './basic.ts'
 import { p } from './utils.ts'
+import { expect } from '@leawind/lay-sing/test-utils'
+
+{
+  type RemoveSuffix<S extends string, Suffix extends string> = S extends `${infer Prefix}${Suffix}` ? Prefix : S
+
+  type PathInstKeysSync = { [K in keyof Path]: K extends `${string}Sync` ? K : never }[keyof Path]
+  expect<`${RemoveSuffix<PathInstKeysSync, 'Sync'>}Async`>().toExtend<keyof Path>().success
+
+  type PathInstKeysAsync = { [K in keyof Path]: K extends `${string}Async` ? K : never }[keyof Path]
+  expect<`${RemoveSuffix<PathInstKeysAsync, 'Async'>}Sync`>().toExtend<keyof Path>().success
+}
+// sync/async switch
+{
+  const p = Path.from('/some/path')
+  // Keys
+  {
+    expect(p).toHaveKey<'absolute'>().success
+    expect(p).toHaveKey<'isFile'>().fail
+    expect(p).toHaveKey<'isFileSync'>().success
+    expect(p).toHaveKey<'isFileAsync'>().success
+
+    const ps = p.sync
+    expect(ps).toHaveKey<'absolute'>().success
+    expect(ps).toHaveKey<'isFile'>().success
+    expect(ps).toHaveKey<'isFileSync'>().fail
+    expect(ps).toHaveKey<'isFileAsync'>().fail
+
+    const pa = p.async
+    expect(pa).toHaveKey<'absolute'>().success
+    expect(pa).toHaveKey<'isFile'>().success
+    expect(pa).toHaveKey<'isFileSync'>().fail
+    expect(pa).toHaveKey<'isFileAsync'>().fail
+  }
+  // Return types
+  {
+    expect<ReturnType<typeof p.sync.absolute>>().toBe<PathSync>().success
+    expect<ReturnType<typeof p.async.absolute>>().toBe<PathAsync>().success
+    expect<ReturnType<typeof p.sync.relative>>().toBe<PathSync>().success
+    expect<ReturnType<typeof p.async.relative>>().toBe<PathAsync>().success
+
+    expect<ReturnType<typeof p.sync.moveTo>>().toBe<PathSync>().success
+    expect<ReturnType<typeof p.async.moveTo>>().toBe<Promise<PathAsync>>().success
+  }
+}
 
 Deno.test('fs/path: Path basic construction and conversion', async (t) => {
   const tempDir = await Deno.makeTempDir({ prefix: 'test-inventory-ts-' })
@@ -132,8 +176,8 @@ Deno.test('fs/path: Path type checking methods', async (t) => {
       const existingPath = new Path(tempDir)
       const nonExistingPath = new Path(`${tempDir}/non-existing-file`)
 
-      assertEquals(await existingPath.exists(), true)
-      assertEquals(await nonExistingPath.exists(), false)
+      assertEquals(await existingPath.existsAsync(), true)
+      assertEquals(await nonExistingPath.existsAsync(), false)
     })
 
     await t.step('isDirectorySync checks if path is directory synchronously', () => {
@@ -150,8 +194,8 @@ Deno.test('fs/path: Path type checking methods', async (t) => {
       const filePath = new Path(`${tempDir}/test-file-async.txt`)
       Deno.writeTextFileSync(filePath.path, 'test content')
 
-      assertEquals(await dirPath.isDirectory(), true)
-      assertEquals(await filePath.isDirectory(), false)
+      assertEquals(await dirPath.isDirectoryAsync(), true)
+      assertEquals(await filePath.isDirectoryAsync(), false)
     })
 
     await t.step('isFileSync checks if path is file synchronously', () => {
@@ -168,8 +212,8 @@ Deno.test('fs/path: Path type checking methods', async (t) => {
       const filePath = new Path(`${tempDir}/test-file-async-2.txt`)
       Deno.writeTextFileSync(filePath.path, 'test content')
 
-      assertEquals(await dirPath.isFile(), false)
-      assertEquals(await filePath.isFile(), true)
+      assertEquals(await dirPath.isFileAsync(), false)
+      assertEquals(await filePath.isFileAsync(), true)
     })
 
     await t.step('isSymlinkSync checks if path is symlink synchronously', () => {
@@ -186,8 +230,8 @@ Deno.test('fs/path: Path type checking methods', async (t) => {
       const filePath = new Path(`${tempDir}/test-symlink-async.txt`)
       Deno.writeTextFileSync(filePath.path, 'test content')
 
-      assertEquals(await dirPath.isSymlink(), false)
-      assertEquals(await filePath.isSymlink(), false)
+      assertEquals(await dirPath.isSymlinkAsync(), false)
+      assertEquals(await filePath.isSymlinkAsync(), false)
     })
   } finally {
     await Deno.remove(tempDir, { recursive: true })
@@ -220,19 +264,19 @@ Deno.test('fs/path: Path type detection methods', async (t) => {
     await t.step('type detects file type', async () => {
       const filePath = new Path(`${tempDir}/test-file-type.txt`)
       Deno.writeTextFileSync(filePath.path, 'test content')
-      assertEquals(await filePath.type(), 'file')
+      assertEquals(await filePath.typeAsync(), 'file')
     })
 
     await t.step('type detects directory type', async () => {
       const dirPath = new Path(tempDir)
 
-      assertEquals(await dirPath.type(), 'dir')
+      assertEquals(await dirPath.typeAsync(), 'dir')
     })
 
     await t.step('type detects void path type', async () => {
       const voidPath = new Path(`${tempDir}/nonexistent-type`)
 
-      assertEquals(await voidPath.type(), 'void')
+      assertEquals(await voidPath.typeAsync(), 'void')
     })
   } finally {
     await Deno.remove(tempDir, { recursive: true })
@@ -255,7 +299,7 @@ Deno.test('fs/path: Path file information methods', async (t) => {
       const filePath = new Path(`${tempDir}/test-lstat.txt`)
       Deno.writeTextFileSync(filePath.path, 'test content')
 
-      const fileInfo = await filePath.lstat()
+      const fileInfo = await filePath.lstatAsync()
       assert(fileInfo.isFile)
     })
 
@@ -271,7 +315,7 @@ Deno.test('fs/path: Path file information methods', async (t) => {
       const filePath = new Path(`${tempDir}/test-stat.txt`)
       Deno.writeTextFileSync(filePath.path, 'test content')
 
-      const fileInfo = await filePath.stat()
+      const fileInfo = await filePath.statAsync()
       assert(fileInfo.isFile)
     })
   } finally {
@@ -316,7 +360,7 @@ Deno.test('fs/path: Path removal and moving operations', async (t) => {
 
       assert(existsSync(filePath.path)) // File exists initially
 
-      await filePath.remove()
+      await filePath.removeAsync()
 
       assert(!existsSync(filePath.path)) // File should be removed
     })
@@ -338,7 +382,7 @@ Deno.test('fs/path: Path removal and moving operations', async (t) => {
 
       assert(existsSync(dirPath.path)) // Directory exists initially
 
-      await dirPath.remove({ recursive: true })
+      await dirPath.removeAsync({ recursive: true })
 
       assert(!existsSync(dirPath.path)) // Directory should be removed
     })
@@ -352,7 +396,7 @@ Deno.test('fs/path: Path removal and moving operations', async (t) => {
       assert(existsSync(sourcePath.path)) // Source file exists
       assert(!existsSync(destPath.path)) // Destination doesn't exist yet
 
-      await sourcePath.moveTo(destPath)
+      await sourcePath.moveToAsync(destPath)
 
       assert(!existsSync(sourcePath.path)) // Source file no longer exists
       assert(existsSync(destPath.path)) // Destination file now exists
@@ -384,7 +428,7 @@ Deno.test('fs/path: Path creation operations', async (t) => {
   try {
     await t.step('Path mkdir creates directory', async () => {
       const voidPath = new Path(`${tempDir}/new-dir`)
-      const dirPath = await voidPath.mkdir()
+      const dirPath = await voidPath.mkdirAsync()
 
       assert(existsSync(dirPath.path))
     })
@@ -398,7 +442,7 @@ Deno.test('fs/path: Path creation operations', async (t) => {
 
     await t.step('Path touch creates file', async () => {
       const voidPath = new Path(`${tempDir}/new-file.txt`)
-      const filePath = await voidPath.touch()
+      const filePath = await voidPath.touchAsync()
 
       assert(existsSync(filePath.path))
     })
@@ -412,7 +456,7 @@ Deno.test('fs/path: Path creation operations', async (t) => {
 
     await t.step('Path write creates and writes to file', async () => {
       const voidPath = new Path(`${tempDir}/write-test.txt`)
-      await voidPath.write('Hello, World!')
+      await voidPath.writeAsync('Hello, World!')
 
       const content = await Deno.readTextFile(voidPath.path)
       assertEquals(content, 'Hello, World!')
@@ -445,7 +489,7 @@ Deno.test('fs/path: Path creation operations', async (t) => {
       await Deno.writeTextFile(filePath, 'original content')
 
       const voidPath = new Path(linkPath)
-      await voidPath.linkTo(filePath)
+      await voidPath.linkToAsync(filePath)
 
       assert(existsSync(linkPath)) // Link was created
     })
@@ -476,7 +520,7 @@ Deno.test('fs/path: Path file operations', async (t) => {
       await Deno.writeTextFile(filePath, testData)
 
       const fileObj = new Path(filePath)
-      const bytes = await fileObj.read()
+      const bytes = await fileObj.readAsync()
       const content = new TextDecoder().decode(bytes)
 
       assertEquals(content, testData)
@@ -499,7 +543,7 @@ Deno.test('fs/path: Path file operations', async (t) => {
       await Deno.writeTextFile(filePath, testData)
 
       const fileObj = new Path(filePath)
-      const content = await fileObj.readText()
+      const content = await fileObj.readTextAsync()
 
       assertEquals(content, testData)
     })
@@ -522,7 +566,7 @@ Deno.test('fs/path: Path file operations', async (t) => {
       await Deno.writeTextFile(filePath, initialData)
 
       const fileObj = new Path(filePath)
-      await fileObj.write('Updated content async')
+      await fileObj.writeAsync('Updated content async')
 
       const content = await Deno.readTextFile(filePath)
       assertEquals(content, 'Updated content async')
@@ -562,7 +606,7 @@ Deno.test('fs/path: Path directory operations', async (t) => {
       Deno.mkdirSync(`${testSubDir}/async-subdir`)
 
       const dirObj = new Path(testSubDir)
-      const entries = await dirObj.list()
+      const entries = await dirObj.listAsync()
 
       assertEquals(entries.length, 3) // async-file1.txt, async-file2.txt, async-subdir
 
@@ -599,7 +643,7 @@ Deno.test('fs/path: Path symlink operations', async (t) => {
       await Deno.symlink(targetPath, linkPath)
 
       const symlinkObj = new Path(linkPath)
-      const target = await symlinkObj.target()
+      const target = await symlinkObj.targetAsync()
 
       assertEquals(p`${target.path}`, p`${targetPath}`)
     })

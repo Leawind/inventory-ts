@@ -27,8 +27,8 @@ if (import.meta.main) {
 
       const outdatedFiles: Path[] = []
 
-      for await (const entry of await DIR_SOURCE.list()) {
-        if (await entry.isDirectory()) {
+      for await (const entry of await DIR_SOURCE.listAsync()) {
+        if (await entry.isDirectoryAsync()) {
           const outdates = await generateIndex(entry, { check: opts.check })
           outdatedFiles.push(...outdates)
           if (outdates.length > 0) {
@@ -58,7 +58,7 @@ if (import.meta.main) {
 
       // update deno.json
       {
-        const manifest = JSON.parse(await FILE_DENO_JSON.readText())
+        const manifest = JSON.parse(await FILE_DENO_JSON.readTextAsync())
 
         for (const [name, path] of exporteds) {
           manifest.exports[name] = path
@@ -86,7 +86,7 @@ if (import.meta.main) {
 }
 
 async function writeIfDifferent(path: Path, content: string, checkOnly: boolean = false): Promise<Path[]> {
-  const existing = await path.readText()
+  const existing = await path.readTextAsync()
   if (existing === content) {
     return []
   }
@@ -94,7 +94,7 @@ async function writeIfDifferent(path: Path, content: string, checkOnly: boolean 
   log.info(`Update to:\n${content}`)
 
   if (!checkOnly) {
-    await path.write(content)
+    await path.writeAsync(content)
   }
   return [path]
 }
