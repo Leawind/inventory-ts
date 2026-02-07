@@ -1,7 +1,7 @@
 import { program } from 'npm:commander@^14.0'
-import { FilePath, Path } from '@/fs/index.ts'
-import log from '@/log/index.ts'
-import { generateIndex } from '@/index-gen/index.ts'
+import { FilePath, Path } from '../src/fs/index.ts'
+import log from '../src/log/index.ts'
+import { generateIndex } from '../src/index-gen/index.ts'
 
 const DIR_SOURCE = await Path.dir('./src')
 const FILE_DENO_JSON = await Path.file('./deno.json')

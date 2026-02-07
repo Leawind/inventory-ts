@@ -1,4 +1,4 @@
-import { Waited, type WaitingWaited } from '@/waited/index.ts'
+import { Waited, type WaitingWaited } from '../waited/index.ts'
 
 /**
  * ThrottledAction encapsulates a function that is throttled by a minimum interval.

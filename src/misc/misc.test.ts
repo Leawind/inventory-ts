@@ -1,5 +1,5 @@
 import { assertEquals } from '@std/assert'
-import { Escaper, range, sortObjectKeys } from '@/misc/index.ts'
+import { Escaper, range, sortObjectKeys } from './index.ts'
 
 Deno.test('Escaper', () => {
   const esc = new Escaper().addDefaultMappings()

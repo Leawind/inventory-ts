@@ -1,4 +1,4 @@
-import { levenshtein } from '@/algorithm/levenshtein/index.ts'
+import { levenshtein } from '../levenshtein/index.ts'
 import { assertEquals } from '@std/assert'
 
 Deno.test('Levenshtein distance - empty strings', () => {

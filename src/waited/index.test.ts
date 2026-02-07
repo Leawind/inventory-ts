@@ -1,5 +1,5 @@
-import { Waited } from '@/waited/index.ts'
-import { wait } from '@/test-utils.ts'
+import { Waited } from './index.ts'
+import { wait } from '../test-utils.ts'
 import { assert, assertStrictEquals, assertThrows } from '@std/assert'
 
 Deno.test('wait with auto reset', async () => {

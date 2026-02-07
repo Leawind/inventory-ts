@@ -1,4 +1,4 @@
-import { Deferred } from '@/deferred/index.ts'
+import { Deferred } from '../deferred/index.ts'
 
 export interface IBasePeer {
   send(data: string): void

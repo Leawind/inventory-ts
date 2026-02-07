@@ -1,5 +1,5 @@
 import { assertEquals } from '@std/assert'
-import { ArrayListIterator } from '@/list-iterator/impl/array.ts'
+import { ArrayListIterator } from './array.ts'
 
 Deno.test('ArrayListIterator - hasNext', () => {
   const list = [1, 2, 3]

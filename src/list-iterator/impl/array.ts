@@ -1,4 +1,4 @@
-import type { ListIterator } from '@/list-iterator/types.ts'
+import type { ListIterator } from '../types.ts'
 
 export class ArrayListIterator<E> implements ListIterator<E> {
   constructor(private list: E[], private index: number = 0) {}

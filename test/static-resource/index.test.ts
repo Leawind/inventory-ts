@@ -1,4 +1,4 @@
-import { StaticResourceManager } from '@/static-resource/index.ts'
+import { StaticResourceManager } from '../../src/static-resource/index.ts'
 import { assertStrictEquals } from '@std/assert'
 
 Deno.test('Test static resource', async () => {

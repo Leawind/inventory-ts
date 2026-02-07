@@ -1,6 +1,6 @@
-import { ThrottledAction } from '@/throttled-action/index.ts'
 import { assertStrictEquals } from '@std/assert'
-import { TimeRuler } from '@/test-utils.ts'
+import { TimeRuler } from '../test-utils.ts'
+import { ThrottledAction } from './index.ts'
 
 Deno.test('ThrottledAction simple', async () => {
   let executeTimes = 0

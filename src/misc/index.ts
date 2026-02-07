@@ -1,8 +1,8 @@
 import * as posix_path from '@std/path@1/posix'
 import type { JsonValue } from '../types/index.ts'
 
-export * from '@/misc/zone.ts'
-export * from '@/misc/parsing.ts'
+export * from './zone.ts'
+export * from './parsing.ts'
 
 export class Sets {
   static and<T>(setA: Set<T>, setB: Set<T>): Set<T> {

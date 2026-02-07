@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from '@std/assert'
-import { CSV } from '@/csv/index.ts'
+import { CSV } from './index.ts'
 
 Deno.test('CSV.parse should parse CSV text correctly', () => {
   const text = 'name,age\nAlice,30\nBob,25'

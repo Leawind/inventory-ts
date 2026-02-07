@@ -1,5 +1,5 @@
 import { assert, assertRejects, assertStrictEquals, assertThrows } from '@std/assert'
-import { Deferred } from '@/deferred/index.ts'
+import { Deferred } from './index.ts'
 
 Deno.test('Deferred basic functionality', async () => {
   const deferred = new Deferred<string>()

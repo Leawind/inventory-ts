@@ -1,4 +1,4 @@
-import { CallStackItem, getCallStack } from '@/call-stack/index.ts'
+import { CallStackItem, getCallStack } from './index.ts'
 import { assert, assertEquals } from '@std/assert'
 
 Deno.test('Stack line matching', () => {

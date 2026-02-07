@@ -1,4 +1,4 @@
-import { Deferred } from '@/deferred/index.ts'
+import { Deferred } from '../deferred/index.ts'
 
 /**
  * Options to configure the behavior of a Waited instance.

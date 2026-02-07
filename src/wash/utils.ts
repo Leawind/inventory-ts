@@ -1,4 +1,4 @@
-import { r } from '@/tstr/index.ts'
+import { r } from '../tstr/index.ts'
 
 export function cmd(strs: TemplateStringsArray, ...args: unknown[]): string[] {
   const src = r(strs, ...args)

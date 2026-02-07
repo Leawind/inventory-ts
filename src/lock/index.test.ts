@@ -1,6 +1,6 @@
 import { assert, assertAlmostEquals, assertGreaterOrEqual, assertStrictEquals, assertThrows } from '@std/assert'
-import { TimeRuler, wait } from '@/test-utils.ts'
-import { Lock } from '@/lock/index.ts'
+import { TimeRuler, wait } from '../test-utils.ts'
+import { Lock } from './index.ts'
 
 Deno.test('Simple lock', async () => {
   const lock = new Lock()

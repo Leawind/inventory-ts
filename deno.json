@@ -71,8 +71,7 @@
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@leawind/delegate": "jsr:@leawind/delegate@^0.6.0",
     "@leawind/lay-sing": "jsr:@leawind/lay-sing@^0.2.1",
-    "@std": "jsr:@std",
-    "@/": "./src/"
+    "@std": "jsr:@std"
   },
   "lint": {
     "include": [

@@ -1,5 +1,5 @@
 import { assert } from '@std/assert'
-import { imagine, META } from '@/imagine/index.ts'
+import { imagine, META } from './index.ts'
 
 Deno.test('imagine', () => {
   type A = {
