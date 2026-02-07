@@ -1,6 +1,5 @@
-import { StaticMonoList } from './static.ts'
-import { DeferedMonoList } from './defered.ts'
 import { assertEquals } from '@std/assert'
+import { DeferedMonoList, StaticMonoList } from './index.ts'
 
 const array = [1, 3, 4, 9, 11, 12, 13]
 

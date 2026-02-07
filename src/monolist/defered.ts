@@ -1,4 +1,4 @@
-import { MonoList } from './index.ts'
+import { MonoList } from './api.ts'
 
 export class DeferedMonoList extends MonoList {
   readonly #length: number
