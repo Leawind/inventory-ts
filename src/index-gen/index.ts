@@ -1,5 +1,5 @@
 import log from '../log/index.ts'
-import type { DirPath, FilePath, PathLike } from '../fs/index.ts'
+import type { PathLike } from '../fs/index.ts'
 import { Path } from '../fs/index.ts'
 import { r } from '../tstr/index.ts'
 
@@ -11,10 +11,10 @@ export type Options = {
   startLinePattern?: RegExp
   endLinePattern?: RegExp
   exportStatements(path: string, name: string): string[]
-  fileFilter: (path: FilePath) => boolean
-  dirFilter: (path: DirPath) => boolean
+  fileFilter: (path: Path) => boolean
+  dirFilter: (path: Path) => boolean
 
-  onEntry?: (filePath: FilePath, name: string) => void
+  onEntry?: (filePath: Path, name: string) => void
 }
 /**
  * Recursively generates or validates index.ts files in a directory structure.
@@ -23,7 +23,7 @@ export type Options = {
  * @param options - Configuration options for the index generation
  * @returns Array of outdated index files (when in check mode)
  */
-export async function generateIndex(path: PathLike, options: Partial<Options>, depth: number = 0): Promise<FilePath[]> {
+export async function generateIndex(path: PathLike, options: Partial<Options>, depth: number = 0): Promise<Path[]> {
   const opts: Options = Object.assign({
     maxDepth: Infinity,
     check: true,
@@ -32,8 +32,8 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
     startLinePattern: /^\/\/ +Index start +>>>>>>>>>>>>>>>> *$/,
     endLinePattern: /^\/\/ +<<<<<<<<<<<<<<<< +Index end *$/,
     exportStatements: (path: string, _name: string) => [`export * from '${path}'`],
-    fileFilter: (path: FilePath) => /.*\.ts$/.test(path.name) && !/(^index\.ts$)|(.*\.test\.ts$)/.test(path.name),
-    dirFilter: (path: DirPath) => !/^(\..*)|(test)$/.test(path.name),
+    fileFilter: (path: Path) => /.*\.ts$/.test(path.name) && !/(^index\.ts$)|(.*\.test\.ts$)/.test(path.name),
+    dirFilter: (path: Path) => !/^(\..*)|(test)$/.test(path.name),
   }, options)
 
   if (opts.maxDepth < 0) {
@@ -41,13 +41,13 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
   }
 
   const indent = '  '.repeat(depth)
-  const dir = await Path.dir(path)
+  const dir = Path.from(path)
 
-  const indexFile = await dir.join('index.ts').asFile(false)
+  const indexFile = dir.join('index.ts')
   log.trace(indent + indexFile)
 
   const statements: string[] = []
-  const outdatedFiles: FilePath[] = []
+  const outdatedFiles: Path[] = []
 
   const children = (await dir.list())
     .filter((path: Path) => path.matchSync({ file: opts.fileFilter, dir: opts.dirFilter }))
@@ -65,7 +65,7 @@ export async function generateIndex(path: PathLike, options: Partial<Options>, d
       },
       async dir(path) {
         if ((await path.list()).length > 0) {
-          opts.onEntry?.(path.join('index.ts').asFileSync(false), path.name)
+          opts.onEntry?.(path.join('index.ts'), path.name)
 
           opts.exportStatements(`./${path.name}/index.ts`, path.name)
             .forEach((statement) => {

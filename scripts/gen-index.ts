@@ -1,10 +1,10 @@
 import { program } from 'npm:commander@^14.0'
-import { FilePath, Path } from '../src/fs/index.ts'
+import { Path } from '../src/fs/index.ts'
 import log from '../src/log/index.ts'
 import { generateIndex } from '../src/index-gen/index.ts'
 
-const DIR_SOURCE = await Path.dir('./src')
-const FILE_DENO_JSON = await Path.file('./deno.json')
+const DIR_SOURCE = Path.from('./src')
+const FILE_DENO_JSON = Path.from('./deno.json')
 
 type CliOptions = {
   check: boolean
@@ -25,7 +25,7 @@ if (import.meta.main) {
       }
       log.api.setLevel(opts.verbose ? 'trace' : opts.quiet ? 'none' : 'info')
 
-      const outdatedFiles: FilePath[] = []
+      const outdatedFiles: Path[] = []
 
       for await (const entry of await DIR_SOURCE.list()) {
         if (await entry.isDirectory()) {
@@ -50,7 +50,7 @@ if (import.meta.main) {
             `export * as ${name.replace(/-/g, '_')} from '${path}'`,
           ],
 
-          onEntry: (path: FilePath, name: string) => {
+          onEntry: (path: Path, name: string) => {
             exporteds.push(['./' + name, './' + path.relative('.').str])
           },
         }),
@@ -85,7 +85,7 @@ if (import.meta.main) {
     .parse([Deno.execPath(), ...Deno.args])
 }
 
-async function writeIfDifferent(path: FilePath, content: string, checkOnly: boolean = false): Promise<FilePath[]> {
+async function writeIfDifferent(path: Path, content: string, checkOnly: boolean = false): Promise<Path[]> {
   const existing = await path.readText()
   if (existing === content) {
     return []
