@@ -1,3 +1,5 @@
+import type { AssertExtends, Exact } from '@leawind/lay-sing'
+
 /**
  * Checks if two types are exactly equal (structurally identical).
  *
@@ -147,6 +149,21 @@ export type TypedArrayConstructor<T> = T extends Int8Array ? Int8ArrayConstructo
   : T extends Uint32Array ? Uint32ArrayConstructor
   : never
 export type TemplateStringArgs = [strs: TemplateStringsArray, ...args: readonly unknown[]]
+
+export type Replace<T, Old, New> = T extends any ? (
+    Exact<T, Old> extends true ? New
+      : T extends Promise<infer U> ? Promise<Replace<U, Old, New>>
+      : T extends Map<infer K, infer V> ? Map<Replace<K, Old, New>, Replace<V, Old, New>>
+      : T extends Set<infer U> ? Set<Replace<U, Old, New>>
+      : T extends WeakMap<infer K, infer V>
+        ? WeakMap<AssertExtends<Replace<K, Old, New>, WeakKey>, Replace<V, Old, New>>
+      : T extends WeakSet<infer U> ? WeakSet<AssertExtends<Replace<U, Old, New>, WeakKey>>
+      : T extends (...args: infer P extends any[]) => infer R
+        ? (...args: AssertExtends<Replace<P, Old, New>, any[]>) => Replace<R, Old, New>
+      : T extends object ? { [K in keyof T]: Replace<T[K], Old, New> }
+      : T
+  )
+  : never
 
 // Index start >>>>>>>>>>>>>>>>
 export * from './object.ts'
