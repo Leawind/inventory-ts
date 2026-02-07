@@ -4,7 +4,7 @@
   "description": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Leawind/inventory-ts.git"
+    "url": "git+https://github.com/Leawind/inventory-ts.git"
   },
   "license": "MIT",
   "exports": {
