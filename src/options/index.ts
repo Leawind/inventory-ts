@@ -1,4 +1,4 @@
-import type { AnyFunction, Case, Same, Switch } from '../types/index.ts'
+import type { AnyFunction, Case, Exact, Switch } from '../types/index.ts'
 
 type AsIs = AnyFunction | string | number | boolean | bigint | symbol
 enum ValueType {
@@ -77,7 +77,7 @@ type ConcatArray<A, B> = A extends readonly unknown[] ? B extends readonly unkno
   : never
 
 type Includes<Tuple extends readonly unknown[], Element> = Tuple extends readonly [infer First, ...infer Rest]
-  ? (Same<Element, First> extends true ? true : Includes<Rest, Element>)
+  ? (Exact<Element, First> extends true ? true : Includes<Rest, Element>)
   : false
 type PushIfNotExists<Tuple extends readonly unknown[], Element> = Includes<Tuple, Element> extends true ? Tuple
   : [...Tuple, Element]

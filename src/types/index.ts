@@ -1,4 +1,4 @@
-import type { AssertExtends, Exact } from 'lay-sing'
+import type { AssertExtends } from 'lay-sing'
 
 /**
  * Checks if two types are exactly equal (structurally identical).
@@ -34,7 +34,7 @@ import type { AssertExtends, Exact } from 'lay-sing'
  * type T15 = Same<{a: number[]}, {a: Array<number>}>;  // true
  * ```
  */
-export type Same<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false
+export type Exact<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false
 
 /**
  * Use with {@link Switch}
@@ -54,7 +54,7 @@ export type Case<T, Return> = [T, Return]
 export type Switch<T, Cases extends readonly [unknown, unknown][], Default = never> = Cases extends
   [infer First, ...infer Rest] ? (
     First extends [infer C, infer R] ? (
-        Same<T, C> extends true ? R
+        Exact<T, C> extends true ? R
           : Switch<T, (Rest extends readonly [unknown, unknown][] ? Rest : never), Default>
       )
       : never
