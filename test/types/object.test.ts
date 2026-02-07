@@ -1,6 +1,23 @@
 import { compare, expect } from 'lay-sing/test-utils'
-import type { Access, InverseAccess, Patch } from '../../src/types/index.ts'
+import type { Access, DeepPartial, DeepRequire, InverseAccess, Patch } from '../../src/types/index.ts'
 
+// DeepPartial
+{
+  type MyObject = { a: string; b?: number; c: boolean }
+  expect<DeepPartial<MyObject>>().toBe<{ a?: string; b?: number; c?: boolean }>().success
+}
+// DeepRequire
+{
+  expect<DeepRequire<{ a?: 1; b?: 2 }>>().toBe<{ a: 1; b: 2 }>().success
+  expect<DeepRequire<{ a: 1 | undefined; b?: 2 }>>().toBe<{ a: 1 | undefined; b: 2 }>().success
+
+  expect<DeepRequire<{ _?: 1 }>>().toBe<{ _: 1 }>().success
+  expect<DeepRequire<{ _?: { _?: 1 } }>>().toBe<{ _: { _: 1 } }>().success
+  expect<DeepRequire<{ _?: { _?: { _?: 1 } } }>>().toBe<{ _: { _: { _: 1 } } }>().success
+
+  type NestedType = { a?: string; b: number; nested?: { c?: string } }
+  expect<DeepRequire<NestedType>['nested']>().toBe<{ c: string }>().success
+}
 {
   type A = { a: string; b?: number; c: boolean }
   type B = { a: bigint; b?: symbol; c: string }

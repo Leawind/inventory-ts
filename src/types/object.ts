@@ -1,4 +1,37 @@
 /**
+ * Recursively makes all properties of `T` optional
+ *
+ * @template T - The object type to make deep partial
+ *
+ * @example
+ * ```ts
+ * import { expect } from '@leawind/lay-sing/test-utils'
+ *
+ * type Result = DeepPartial<{ a: string; nested: { b: number } }>
+ * expect<Result>().toBe<{ a?: string; nested?: { b?: number } }>().success
+ * ```
+ */
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
+
+/**
+ * Recursively makes all properties of `T` required
+ *
+ * @template T - The object type to make deep required
+ *
+ * @example
+ * ```ts
+ * import { expect } from '@leawind/lay-sing/test-utils'
+ *
+ * expect<DeepRequire<{ _?: { _?: 1 } }>>().toBe<{ _: { _: 1 } }>().success
+ * ```
+ */
+export type DeepRequire<T> = {
+  [K in keyof T]-?: T[K] extends object | undefined ? DeepRequire<NonNullable<T[K]>> : T[K]
+}
+
+/**
  * Get property type from object, with fallback for missing keys.
  *
  * @template Obj - The object type to access
