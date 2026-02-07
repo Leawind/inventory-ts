@@ -115,4 +115,5 @@ jobs:
       - name: Run dry publish to NPM
         run: |
           cd dist/npm
+          npm version patch --no-git-tag-version
           npm publish --dry-run
