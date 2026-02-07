@@ -1,5 +1,5 @@
 import { program } from 'npm:commander@^14.0'
-import { FilePath, Path, PathLike } from '@/fs/index.ts'
+import { FilePath, Path } from '@/fs/index.ts'
 import log from '@/log/index.ts'
 import { generateIndex } from '@/index-gen/index.ts'
 
@@ -47,7 +47,7 @@ if (import.meta.main) {
           maxDepth: 0,
           exportStatements: (path: string, name: string) => [
             // `export * from './${path}'`,
-            `export * as ${name} from './${path}'`,
+            `export * as ${name.replace(/-/g, '_')} from '${path}'`,
           ],
 
           onEntry: (path: FilePath, name: string) => {
