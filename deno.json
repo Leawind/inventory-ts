@@ -11,7 +11,6 @@
     ".": "./src/index.ts",
     "./algorithm": "./src/algorithm/index.ts",
     "./baffer": "./src/baffer/index.ts",
-    "./bin": "./src/bin/index.ts",
     "./call-stack": "./src/call-stack/index.ts",
     "./comap": "./src/comap.ts",
     "./communication": "./src/communication/index.ts",
@@ -43,7 +42,7 @@
     "./xtype": "./src/xtype/index.ts"
   },
   "tasks": {
-    "index": "deno -A ./scripts/index.ts",
+    "index": "deno -A ./scripts/gen-index.ts",
     "check": "deno check src test",
     "test": "deno test --parallel -A",
     "build-npm": "deno run -A scripts/build-npm.ts",

@@ -22,7 +22,7 @@ jobs:
           deno-version: v2.6.x
 
       - name: Run check index
-        run: deno -A scripts/index.ts -- --check
+        run: deno -A scripts/gen-index.ts -- --check
 
   check-format:
     name: Check format
