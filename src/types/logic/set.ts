@@ -7,7 +7,7 @@
  *
  * @example
  * ```ts
- * import { expect } from 'lay-sing/test-utils'
+ * import { expect } from 'lay-sing'
  *
  * type Result = IntersectOf<[{ a: string }, { b: number }, { c: boolean }]>
  * expect<Result>().toExtend<{ a: string } & { b: number } & { c: boolean }>().success
@@ -27,7 +27,7 @@ export type IntersectOf<Types extends readonly unknown[]> = Types extends [infer
  *
  * @example
  * ```ts
- * import { expect } from 'lay-sing/test-utils'
+ * import { expect } from 'lay-sing'
  *
  * type Result = UnionOf<[string, number, boolean]>
  * expect<Result>().toBe<string | number | boolean>().success

@@ -29,7 +29,7 @@
     "jsr:@ts-morph/common@0.24": "0.24.0",
     "npm:commander@*": "14.0.2",
     "npm:commander@14": "14.0.2",
-    "npm:lay-sing@~0.2.1": "0.2.1"
+    "npm:lay-sing@0.3": "0.3.0"
   },
   "jsr": {
     "@david/code-block-writer@13.0.3": {
@@ -148,8 +148,8 @@
     "commander@14.0.2": {
       "integrity": "sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ=="
     },
-    "lay-sing@0.2.1": {
-      "integrity": "sha512-GNPIJGM4ZPldb66gBGI6s8bV6CQ+bBgoPqkAYaf/uYeJNeHAeZmOdbXCG8b1obpBrLo8RFJFrEzX6dIlE1mAdQ=="
+    "lay-sing@0.3.0": {
+      "integrity": "sha512-BNuGiYWQ4RT1EqZE4qtUnz5vZWi2VpUuxVkp8L3bwNSeHKP6EZus57uQyPOdJbsbTLuQ4AH4rB+QTpMWKQlbVQ=="
     }
   },
   "workspace": {
@@ -159,7 +159,7 @@
       "jsr:@std/assert@^1.0.18",
       "jsr:@std/fs@^1.0.22",
       "jsr:@std/path@^1.1.4",
-      "npm:lay-sing@~0.2.1"
+      "npm:lay-sing@0.3"
     ]
   }
 }

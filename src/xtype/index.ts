@@ -1,4 +1,4 @@
-import type { IntersectOf, UnionOf } from '../types/set.ts'
+import type { IntersectOf, UnionOf } from '../types/logic/set.ts'
 
 /**
  * ### Example

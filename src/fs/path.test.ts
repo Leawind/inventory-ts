@@ -2,7 +2,7 @@ import { assert, assertEquals, assertStrictEquals } from '@std/assert'
 import { Path, type PathAsync, type PathSync } from './path.ts'
 import { existsSync } from './basic.ts'
 import { p } from './utils.ts'
-import { expect } from 'lay-sing/test-utils'
+import { expect } from 'lay-sing'
 
 {
   type RemoveSuffix<S extends string, Suffix extends string> = S extends `${infer Prefix}${Suffix}` ? Prefix : S

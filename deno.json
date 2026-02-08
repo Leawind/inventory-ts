@@ -74,7 +74,7 @@
     "@std/assert": "jsr:@std/assert@^1.0.18",
     "@std/fs": "jsr:@std/fs@^1.0.22",
     "@std/path": "jsr:@std/path@^1.1.4",
-    "lay-sing": "npm:lay-sing@^0.2.1"
+    "lay-sing": "npm:lay-sing@^0.3.0"
   },
   "lint": {
     "include": [

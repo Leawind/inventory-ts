@@ -1,4 +1,5 @@
-import type { AnyFunction, AssertExtends, Case, Exact, Switch } from '../types/index.ts'
+import type { AssertExtends, Case, Exact, SwitchExact } from 'lay-sing/utils'
+import type { AnyFunction } from '../types/index.ts'
 
 type AsIs = AnyFunction | string | number | boolean | bigint | symbol
 enum ValueType {
@@ -100,16 +101,16 @@ export type Overwrite<
   Opts extends OverwriteOptions,
   Ou extends UndefinedOptions = Opts extends OverwriteOptions<infer X> ? X : never,
   Oa extends ArrayOptions = Opts extends OverwriteOptions<infer _X, infer Y> ? Y : never,
-> = S extends undefined ? (Switch<Ou, [
+> = S extends undefined ? (SwitchExact<Ou, [
     Case<'replace', S>,
     Case<'ignore', T>,
   ]>)
   : TypeOf<T> extends TypeOf<S> ? (
-      Switch<TypeOf<S>, [
+      SwitchExact<TypeOf<S>, [
         Case<ValueType.AsIs, S>,
         Case<
           ValueType.Array,
-          Switch<Oa, [
+          SwitchExact<Oa, [
             Case<'replace', S>,
             Case<'concat-tail', ConcatArray<T, S>>,
             Case<'concat-head', ConcatArray<S, T>>,

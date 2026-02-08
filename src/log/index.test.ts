@@ -1,5 +1,5 @@
 import log from '../log/index.ts'
-import { expect } from 'lay-sing/test-utils'
+import { expect } from 'lay-sing'
 
 {
   expect<typeof log>().toHaveKey<'api'>().success

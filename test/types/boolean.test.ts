@@ -1,4 +1,4 @@
-import { expect } from 'lay-sing/test-utils'
+import { expect } from 'lay-sing'
 import type { And, Not, Or } from '../../src/types/index.ts'
 
 // Not

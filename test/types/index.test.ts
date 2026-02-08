@@ -1,4 +1,4 @@
-import { expect } from 'lay-sing/test-utils'
+import { expect } from 'lay-sing'
 import type { ReplaceExact } from '../../src/types/index.ts'
 
 Deno.test('list fields', () => {

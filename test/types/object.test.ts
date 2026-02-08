@@ -1,4 +1,4 @@
-import { compare, expect } from 'lay-sing/test-utils'
+import { expect } from 'lay-sing'
 import type { Access, DeepPartial, DeepRequire, InverseAccess, Patch } from '../../src/types/index.ts'
 
 // DeepPartial
@@ -63,13 +63,8 @@ import type { Access, DeepPartial, DeepRequire, InverseAccess, Patch } from '../
 }
 
 {
-  compare<
-    Patch<
-      { a: 1; b: 2 },
-      { b: string; c: 3 }
-    >,
-    { a: 1; b: string; c: 3 }
-  >().mutuallyAssignable
+  expect<Patch<{ a: 1; b: 2 }, { b: string; c: 3 }>>()
+    .toEqual<{ a: 1; b: string; c: 3 }>().success
 
   {
     type A = { a: 1; b: 2; c: 3 }

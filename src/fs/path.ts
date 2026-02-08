@@ -1,5 +1,5 @@
 import * as std_path from '@std/path'
-import type { Exact } from '../types/index.ts'
+import type { Exact } from 'lay-sing/utils'
 import * as fs_basic from './basic.ts'
 import * as fs_operate from './operate.ts'
 

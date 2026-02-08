@@ -1,4 +1,4 @@
-import { expect } from 'lay-sing/test-utils'
+import { expect } from 'lay-sing'
 import type { LEVEL_REGISTRY, LevelLike, LevelName, LevelNameOf, LevelOf } from './api.ts'
 
 {
