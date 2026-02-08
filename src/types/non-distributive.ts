@@ -87,17 +87,17 @@ export type SwitchExtends<T, Cases extends readonly [unknown, unknown][], Defaul
  */
 export type AssertExtends<T, U> = [T] extends [U] ? T : never
 
-export type Replace<T, Old, New> = T extends any ? (
+export type ReplaceExact<T, Old, New> = T extends any ? (
     Exact<T, Old> extends true ? New
-      : T extends Promise<infer U> ? Promise<Replace<U, Old, New>>
-      : T extends Map<infer K, infer V> ? Map<Replace<K, Old, New>, Replace<V, Old, New>>
-      : T extends Set<infer U> ? Set<Replace<U, Old, New>>
+      : T extends Promise<infer U> ? Promise<ReplaceExact<U, Old, New>>
+      : T extends Map<infer K, infer V> ? Map<ReplaceExact<K, Old, New>, ReplaceExact<V, Old, New>>
+      : T extends Set<infer U> ? Set<ReplaceExact<U, Old, New>>
       : T extends WeakMap<infer K, infer V>
-        ? WeakMap<AssertExtends<Replace<K, Old, New>, WeakKey>, Replace<V, Old, New>>
-      : T extends WeakSet<infer U> ? WeakSet<AssertExtends<Replace<U, Old, New>, WeakKey>>
+        ? WeakMap<AssertExtends<ReplaceExact<K, Old, New>, WeakKey>, ReplaceExact<V, Old, New>>
+      : T extends WeakSet<infer U> ? WeakSet<AssertExtends<ReplaceExact<U, Old, New>, WeakKey>>
       : T extends (...args: infer P extends any[]) => infer R
-        ? (...args: AssertExtends<Replace<P, Old, New>, any[]>) => Replace<R, Old, New>
-      : T extends object ? { [K in keyof T]: Replace<T[K], Old, New> }
+        ? (...args: AssertExtends<ReplaceExact<P, Old, New>, any[]>) => ReplaceExact<R, Old, New>
+      : T extends object ? { [K in keyof T]: ReplaceExact<T[K], Old, New> }
       : T
   )
   : never
