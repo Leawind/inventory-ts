@@ -715,7 +715,6 @@ export class Path {
   }
 
   static {
-    console.log(`Init Path.prototype`)
     for (const keySync of Reflect.ownKeys(Path.prototype)) {
       if (typeof keySync === 'string') {
         const m = /^(.+)Sync$/.exec(keySync)
