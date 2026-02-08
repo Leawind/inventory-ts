@@ -42,11 +42,12 @@
     "./xtype": "./src/xtype/index.ts"
   },
   "tasks": {
-    "index": "deno -A ./scripts/gen-index.ts",
+    "index": "deno -A ./scripts/gen-index.ts --",
+    "doc-html": "deno doc --html --output=dist/doc-html ./src/**/*.ts",
     "check": "deno check src test",
     "test": "deno test --parallel -A",
     "build-npm": "deno run -A scripts/build-npm.ts",
-    "verify": "deno task index -- --check && deno fmt --check && deno lint && deno task test",
+    "verify": "deno task index --check && deno fmt --check && deno lint && deno task test",
     "prepare-jsr": "deno task verify && deno publish --dry-run",
     "prepare-npm": "deno task verify && deno task build-npm && cd dist/npm && npm publish --dry-run",
     "prepare": "deno task verify && deno task build-npm && deno publish --dry-run && cd dist/npm && npm publish --dry-run"
