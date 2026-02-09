@@ -5,6 +5,9 @@ type A = { a: string; b: number }
 type B = { a: number; b: number; c: symbol }
 type C = { b: number; c: boolean }
 {
+  expect<IntersectOf<[]>>().toBeUnknown
+  expect<IntersectOf<[A]>>().toBe<A>().success
+
   expect<IntersectOf<[A, B]>>().toBe<A & B>().success
   expect<IntersectOf<[B, C]>>().toBe<B & C>().success
   expect<IntersectOf<[A, C]>>().toBe<A & C>().success
@@ -13,6 +16,10 @@ type C = { b: number; c: boolean }
   expect<IntersectOf<never>>().toBeNever
 }
 {
+  expect<UnionOf<[]>>().toBeNever
+
+  expect<UnionOf<[A]>>().toBe<A>().success
+
   expect<UnionOf<[A, B]>>().toBe<A | B>().success
   expect<UnionOf<[B, C]>>().toBe<B | C>().success
   expect<UnionOf<[A, C]>>().toBe<A | C>().success
