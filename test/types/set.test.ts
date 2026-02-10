@@ -5,27 +5,27 @@ type A = { a: string; b: number }
 type B = { a: number; b: number; c: symbol }
 type C = { b: number; c: boolean }
 {
-  expect<IntersectionOf<[]>>().toBeUnknown
-  expect<IntersectionOf<[A]>>().toBe<A>().success
+  expect<IntersectionOf<[]>>().to.be.unknown
+  expect<IntersectionOf<[A]>>().to.be<A>().pass
 
-  expect<IntersectionOf<[A, B]>>().toBe<A & B>().success
-  expect<IntersectionOf<[B, C]>>().toBe<B & C>().success
-  expect<IntersectionOf<[A, C]>>().toBe<A & C>().success
+  expect<IntersectionOf<[A, B]>>().to.be<A & B>().pass
+  expect<IntersectionOf<[B, C]>>().to.be<B & C>().pass
+  expect<IntersectionOf<[A, C]>>().to.be<A & C>().pass
 
-  expect<IntersectionOf<[A, B, C]>>().toBe<A & B & C>().success
-  expect<IntersectionOf<never>>().toBeNever
+  expect<IntersectionOf<[A, B, C]>>().to.be<A & B & C>().pass
+  expect<IntersectionOf<never>>().to.be.never
 }
 {
-  expect<UnionOf<[]>>().toBeNever
+  expect<UnionOf<[]>>().to.be.never
 
-  expect<UnionOf<[A]>>().toBe<A>().success
+  expect<UnionOf<[A]>>().to.be<A>().pass
 
-  expect<UnionOf<[A, B]>>().toBe<A | B>().success
-  expect<UnionOf<[B, C]>>().toBe<B | C>().success
-  expect<UnionOf<[A, C]>>().toBe<A | C>().success
+  expect<UnionOf<[A, B]>>().to.be<A | B>().pass
+  expect<UnionOf<[B, C]>>().to.be<B | C>().pass
+  expect<UnionOf<[A, C]>>().to.be<A | C>().pass
 
-  expect<UnionOf<[A, B, C]>>().toBe<A | B | C>().success
-  expect<UnionOf<never>>().toBeNever
+  expect<UnionOf<[A, B, C]>>().to.be<A | B | C>().pass
+  expect<UnionOf<never>>().to.be.never
 
-  expect<UnionOf<[A, B] | [A, C]>>().toBe<A | B | C>().success
+  expect<UnionOf<[A, B] | [A, C]>>().to.be<A | B | C>().pass
 }

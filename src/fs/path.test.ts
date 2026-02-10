@@ -9,42 +9,42 @@ import { withTempDirSync } from './temp.ts'
   type RemoveSuffix<S extends string, Suffix extends string> = S extends `${infer Prefix}${Suffix}` ? Prefix : S
 
   type PathInstKeysSync = { [K in keyof Path]: K extends `${string}Sync` ? K : never }[keyof Path]
-  expect<`${RemoveSuffix<PathInstKeysSync, 'Sync'>}Async`>().toExtend<keyof Path>().success
+  expect<`${RemoveSuffix<PathInstKeysSync, 'Sync'>}Async`>().to.extend<keyof Path>().pass
 
   type PathInstKeysAsync = { [K in keyof Path]: K extends `${string}Async` ? K : never }[keyof Path]
-  expect<`${RemoveSuffix<PathInstKeysAsync, 'Async'>}Sync`>().toExtend<keyof Path>().success
+  expect<`${RemoveSuffix<PathInstKeysAsync, 'Async'>}Sync`>().to.extend<keyof Path>().pass
 }
 // sync/async switch
 {
   const p = Path.from('/some/path')
   // Keys
   {
-    expect(p).toHaveKey<'absolute'>().success
-    expect(p).toHaveKey<'isFile'>().fail
-    expect(p).toHaveKey<'isFileSync'>().success
-    expect(p).toHaveKey<'isFileAsync'>().success
+    expect(p).to.haveKey<'absolute'>().pass
+    expect(p).to.haveKey<'isFile'>().fail
+    expect(p).to.haveKey<'isFileSync'>().pass
+    expect(p).to.haveKey<'isFileAsync'>().pass
 
     const ps = p.sync
-    expect(ps).toHaveKey<'absolute'>().success
-    expect(ps).toHaveKey<'isFile'>().success
-    expect(ps).toHaveKey<'isFileSync'>().fail
-    expect(ps).toHaveKey<'isFileAsync'>().fail
+    expect(ps).to.haveKey<'absolute'>().pass
+    expect(ps).to.haveKey<'isFile'>().pass
+    expect(ps).to.haveKey<'isFileSync'>().fail
+    expect(ps).to.haveKey<'isFileAsync'>().fail
 
     const pa = p.async
-    expect(pa).toHaveKey<'absolute'>().success
-    expect(pa).toHaveKey<'isFile'>().success
-    expect(pa).toHaveKey<'isFileSync'>().fail
-    expect(pa).toHaveKey<'isFileAsync'>().fail
+    expect(pa).to.haveKey<'absolute'>().pass
+    expect(pa).to.haveKey<'isFile'>().pass
+    expect(pa).to.haveKey<'isFileSync'>().fail
+    expect(pa).to.haveKey<'isFileAsync'>().fail
   }
   // Return types
   {
-    expect<ReturnType<typeof p.sync.absolute>>().toBe<PathSync>().success
-    expect<ReturnType<typeof p.async.absolute>>().toBe<PathAsync>().success
-    expect<ReturnType<typeof p.sync.relative>>().toBe<PathSync>().success
-    expect<ReturnType<typeof p.async.relative>>().toBe<PathAsync>().success
+    expect<ReturnType<typeof p.sync.absolute>>().to.be<PathSync>().pass
+    expect<ReturnType<typeof p.async.absolute>>().to.be<PathAsync>().pass
+    expect<ReturnType<typeof p.sync.relative>>().to.be<PathSync>().pass
+    expect<ReturnType<typeof p.async.relative>>().to.be<PathAsync>().pass
 
-    expect<ReturnType<typeof p.sync.moveTo>>().toBe<PathSync>().success
-    expect<ReturnType<typeof p.async.moveTo>>().toBe<Promise<PathAsync>>().success
+    expect<ReturnType<typeof p.sync.moveTo>>().to.be<PathSync>().pass
+    expect<ReturnType<typeof p.async.moveTo>>().to.be<Promise<PathAsync>>().pass
   }
 }
 

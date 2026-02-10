@@ -36,6 +36,7 @@
     "./timestamps": "./src/timestamps/index.ts",
     "./tree": "./src/tree.ts",
     "./tstr": "./src/tstr/index.ts",
+    "./type-desc": "./src/type-desc/index.ts",
     "./types": "./src/types/index.ts",
     "./waited": "./src/waited/index.ts",
     "./wash": "./src/wash/index.ts",
@@ -74,7 +75,7 @@
     "@std/assert": "jsr:@std/assert@^1.0.18",
     "@std/fs": "jsr:@std/fs@^1.0.22",
     "@std/path": "jsr:@std/path@^1.1.4",
-    "lay-sing": "npm:lay-sing@^0.3.0"
+    "lay-sing": "npm:lay-sing@^0.4.1"
   },
   "lint": {
     "include": [

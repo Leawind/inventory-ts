@@ -8,7 +8,7 @@
  * import { expect } from '@leawind/lay-sing/test-utils'
  *
  * type Result = DeepPartial<{ a: string; nested: { b: number } }>
- * expect<Result>().toBe<{ a?: string; nested?: { b?: number } }>().success
+ * expect<Result>().to.be<{ a?: string; nested?: { b?: number } }>().pass
  * ```
  */
 export type DeepPartial<T> = {
@@ -24,7 +24,7 @@ export type DeepPartial<T> = {
  * ```ts
  * import { expect } from '@leawind/lay-sing/test-utils'
  *
- * expect<DeepRequire<{ _?: { _?: 1 } }>>().toBe<{ _: { _: 1 } }>().success
+ * expect<DeepRequire<{ _?: { _?: 1 } }>>().to.be<{ _: { _: 1 } }>().pass
  * ```
  */
 export type DeepRequire<T> = {
@@ -46,9 +46,9 @@ export type DeepRequire<T> = {
  *
  * type User = { name: string; age?: number };
  *
- * expect<Access<User, 'name'>>().toBe<string>().success
- * expect<Access<User, 'age'>>().toBe<number | undefined>().success
- * expect<Access<User, 'email', 'none'>>().toBe<'none'>().success
+ * expect<Access<User, 'name'>>().to.be<string>().pass
+ * expect<Access<User, 'age'>>().to.be<number | undefined>().pass
+ * expect<Access<User, 'email', 'none'>>().to.be<'none'>().pass
  * ```
  */
 export type Access<Obj, K extends PropertyKey, E = never> = K extends keyof Obj ? Obj[K] : E
@@ -64,9 +64,9 @@ export type Access<Obj, K extends PropertyKey, E = never> = K extends keyof Obj 
  * ```ts
  * import { expect } from 'lay-sing'
  *
- * expect<InverseAccess<{ a: string }, string>>().toBe<'a'>().success
- * expect<InverseAccess<{ a: string; b: string }, string>>().toBe<'a' | 'b'>().success
- * expect<InverseAccess<{ a: string }, number>>().toBe<never>().success
+ * expect<InverseAccess<{ a: string }, string>>().to.be<'a'>().pass
+ * expect<InverseAccess<{ a: string; b: string }, string>>().to.be<'a' | 'b'>().pass
+ * expect<InverseAccess<{ a: string }, number>>().to.be<never>().pass
  * ```
  */
 export type InverseAccess<T, V, E = never> = { [K in keyof T]: T[K] extends V ? K : E }[keyof T]
@@ -83,7 +83,7 @@ export type InverseAccess<T, V, E = never> = { [K in keyof T]: T[K] extends V ? 
  *
  * type A = { a: 1; b: 2; }
  * type B = { b: string; c: 3 }
- * expect<Patch<A, B>>().toExtend<{ a: 1; b: string; c: 3 }>().success
+ * expect<Patch<A, B>>().to.extend<{ a: 1; b: string; c: 3 }>().pass
  * ```
  */
 export type Patch<Target, Source> = Omit<Target, keyof Source> & Source

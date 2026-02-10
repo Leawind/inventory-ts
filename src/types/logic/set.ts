@@ -10,8 +10,8 @@
  * import { expect } from 'lay-sing'
  *
  * type Result = IntersectOf<[{ a: string }, { b: number }, { c: boolean }]>
- * expect<Result>().toExtend<{ a: string } & { b: number } & { c: boolean }>().success
- * expect<Result>().toExtend<{ a: string; b: number; c: boolean }>().success
+ * expect<Result>().to.extend<{ a: string } & { b: number } & { c: boolean }>().pass
+ * expect<Result>().to.extend<{ a: string; b: number; c: boolean }>().pass
  * ```
  */
 export type IntersectionOf<Types extends readonly unknown[]> = Types extends [infer First, ...infer Rest]
@@ -30,7 +30,7 @@ export type IntersectionOf<Types extends readonly unknown[]> = Types extends [in
  * import { expect } from 'lay-sing'
  *
  * type Result = UnionOf<[string, number, boolean]>
- * expect<Result>().toBe<string | number | boolean>().success
+ * expect<Result>().to.be<string | number | boolean>().pass
  * ```
  */
 export type UnionOf<Types extends readonly unknown[]> = Types extends [infer First, ...infer Rest]

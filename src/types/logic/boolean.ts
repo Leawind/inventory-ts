@@ -7,9 +7,9 @@
  * ```ts
  * import { expect } from '@leawind/lay-sing/test-utils'
  *
- * expect<Not<true>>().toBeFalse
- * expect<Not<false>>().toBeTrue
- * expect<Not<boolean>>().toBe<boolean>().success
+ * expect<Not<true>>().to.be.false
+ * expect<Not<false>>().to.be.true
+ * expect<Not<boolean>>().to.be<boolean>().pass
  * ```
  */
 export type Not<T extends boolean> = T extends true ? false
@@ -26,11 +26,11 @@ export type Not<T extends boolean> = T extends true ? false
  * ```ts
  * import { expect } from '@leawind/lay-sing/test-utils'
  *
- * expect<And<true, true>>().toBeTrue
- * expect<And<true, false>>().toBeFalse
- * expect<And<false, true>>().toBeFalse
- * expect<And<false, false>>().toBeFalse
- * expect<And<boolean, boolean>>().toBe<boolean>().success
+ * expect<And<true, true>>().to.be.true
+ * expect<And<true, false>>().to.be.false
+ * expect<And<false, true>>().to.be.false
+ * expect<And<false, false>>().to.be.false
+ * expect<And<boolean, boolean>>().to.be<boolean>().pass
  * ```
  */
 export type And<
@@ -57,11 +57,11 @@ export type And<
  * ```ts
  * import { expect } from '@leawind/lay-sing/test-utils'
  *
- * expect<Or<true, true>>().toBeTrue
- * expect<Or<true, false>>().toBeTrue
- * expect<Or<false, true>>().toBeTrue
- * expect<Or<false, false>>().toBeFalse
- * expect<Or<boolean, false>>().toBe<boolean>().success
+ * expect<Or<true, true>>().to.be.true
+ * expect<Or<true, false>>().to.be.true
+ * expect<Or<false, true>>().to.be.true
+ * expect<Or<false, false>>().to.be.false
+ * expect<Or<boolean, false>>().to.be<boolean>().pass
  * ```
  */
 export type Or<
