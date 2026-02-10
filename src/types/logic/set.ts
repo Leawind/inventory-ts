@@ -14,8 +14,8 @@
  * expect<Result>().toExtend<{ a: string; b: number; c: boolean }>().success
  * ```
  */
-export type IntersectOf<Types extends readonly unknown[]> = Types extends [infer First, ...infer Rest]
-  ? First & IntersectOf<Rest>
+export type IntersectionOf<Types extends readonly unknown[]> = Types extends [infer First, ...infer Rest]
+  ? First & IntersectionOf<Rest>
   : unknown
 
 /**

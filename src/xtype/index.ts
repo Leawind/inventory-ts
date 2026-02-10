@@ -1,4 +1,4 @@
-import type { IntersectOf, UnionOf } from '../types/logic/set.ts'
+import type { IntersectionOf, UnionOf } from '../types/logic/set.ts'
 
 /**
  * ### Example
@@ -11,7 +11,7 @@ import type { IntersectOf, UnionOf } from '../types/logic/set.ts'
  * type Result = { b: number, c: boolean }
  * ```
  */
-export type DiffProps<T extends unknown[]> = Omit<IntersectOf<T>, keyof UnionOf<T>>
+export type DiffProps<T extends unknown[]> = Omit<IntersectionOf<T>, keyof UnionOf<T>>
 
 export function xorMerge<T extends object[]>(...objs: T): DiffProps<T> {
   return new Proxy({}, {

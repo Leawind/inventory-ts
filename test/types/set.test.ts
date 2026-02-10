@@ -1,19 +1,19 @@
 import { expect } from 'lay-sing'
-import type { IntersectOf, UnionOf } from '../../src/types/index.ts'
+import type { IntersectionOf, UnionOf } from '../../src/types/index.ts'
 
 type A = { a: string; b: number }
 type B = { a: number; b: number; c: symbol }
 type C = { b: number; c: boolean }
 {
-  expect<IntersectOf<[]>>().toBeUnknown
-  expect<IntersectOf<[A]>>().toBe<A>().success
+  expect<IntersectionOf<[]>>().toBeUnknown
+  expect<IntersectionOf<[A]>>().toBe<A>().success
 
-  expect<IntersectOf<[A, B]>>().toBe<A & B>().success
-  expect<IntersectOf<[B, C]>>().toBe<B & C>().success
-  expect<IntersectOf<[A, C]>>().toBe<A & C>().success
+  expect<IntersectionOf<[A, B]>>().toBe<A & B>().success
+  expect<IntersectionOf<[B, C]>>().toBe<B & C>().success
+  expect<IntersectionOf<[A, C]>>().toBe<A & C>().success
 
-  expect<IntersectOf<[A, B, C]>>().toBe<A & B & C>().success
-  expect<IntersectOf<never>>().toBeNever
+  expect<IntersectionOf<[A, B, C]>>().toBe<A & B & C>().success
+  expect<IntersectionOf<never>>().toBeNever
 }
 {
   expect<UnionOf<[]>>().toBeNever
