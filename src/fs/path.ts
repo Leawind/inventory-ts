@@ -3,7 +3,7 @@ import type { Exact } from 'lay-sing/utils'
 import * as fs_basic from './basic.ts'
 import * as fs_operate from './operate.ts'
 
-export type PathLike = string | Path
+export type PathLike = string | Path | PathSync | PathAsync
 
 export type PathType = 'void' | 'file' | 'dir' | 'symlink'
 
@@ -21,7 +21,7 @@ export class Path {
    * ```
    */
   public static from(path: PathLike): Path {
-    return path instanceof Path ? path : new Path(path)
+    return new Path(path instanceof Path ? path.path : path as string)
   }
 
   /**
