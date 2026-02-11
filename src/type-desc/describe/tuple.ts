@@ -29,15 +29,39 @@ type IsReadonly<T extends readonly unknown[]> = T extends unknown[] ? false : tr
   expect<IsReadonly<readonly [1, 2]>>().to.be.true
 }
 
+type WritableTuple<T extends readonly unknown[]> = T extends readonly [...infer E] ? [...E] : never
+{
+  expect<WritableTuple<1[]>>().to.equal<1[]>().pass
+  expect<WritableTuple<[1, 2]>>().to.equal<[1, 2]>().pass
+
+  expect<WritableTuple<readonly 1[]>>().to.equal<1[]>().pass
+  expect<WritableTuple<readonly [1, 2]>>().to.equal<[1, 2]>().pass
+
+  // nested
+  expect<WritableTuple<(readonly 1[])[]>>().to.equal<(readonly 1[])[]>().pass
+  expect<WritableTuple<[readonly 1[], readonly 2[]]>>().to.equal<[readonly 1[], readonly 2[]]>().pass
+
+  expect<WritableTuple<readonly (readonly 1[])[]>>().to.equal<(readonly 1[])[]>().pass
+  expect<WritableTuple<readonly [readonly 1[], readonly 2[]]>>().to.equal<[readonly 1[], readonly 2[]]>().pass
+}
+
 type DescribeArray<Arr extends readonly unknown[]> = Arr extends readonly (infer U)[] ? `${DescribeType<U>}[]` : never
 
-type MapElements<T extends readonly unknown[]> = T extends [infer First, ...infer Rest extends readonly unknown[]]
+type MapElements<T extends readonly unknown[]> = WritableTuple<T> extends [infer First, ...infer Rest extends unknown[]]
   ? [DescribeType<First>, ...MapElements<Rest>]
   : []
+{
+  expect<MapElements<[1, 2]>>().to.equal<['1', '2']>().pass
+  expect<MapElements<readonly [1, 2]>>().to.equal<['1', '2']>().pass
+}
 
 type DescribeTuple<
   T extends readonly unknown[],
 > = `[${JoinString<MapElements<T>, ', '>}]`
+{
+  expect<DescribeTuple<[1, 2]>>().to.be<'[1, 2]'>().pass
+  expect<DescribeTuple<readonly [1, 2]>>().to.be<'[1, 2]'>().pass
+}
 
 type DescribeReadonly<T extends readonly unknown[], S extends string> = IsReadonly<T> extends true ? `readonly ${S}` : S
 

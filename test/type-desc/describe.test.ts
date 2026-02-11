@@ -34,7 +34,7 @@ import type { DescribeType } from '../../src/type-desc/describe/index.ts'
     expect<DescribeType<string[]>>().to.be<'string[]'>().pass
 
     expect<DescribeType<readonly []>>().to.be<'readonly []'>().pass
-    // expect<DescribeType<readonly [1, 2]>>().to.be<'readonly [1, 2]'>().pass
+    expect<DescribeType<readonly [1, 2]>>().to.be<'readonly [1, 2]'>().pass
   }
   {
     expect<DescribeType<[1, 2]>>().to.be<'[1, 2]'>().pass
