@@ -704,14 +704,19 @@ export class Path {
     return new Path(await Deno.readLink(this.path))
   }
 
+  private _sync: Path = this
   private _async: Path | null = null
-  private _sync: Path | null = null
 
   public get async(): PathAsync {
-    return (this._async ??= this._sync ? this : this.clone()) as unknown as PathAsync
+    if (!this._async) {
+      this._async = this.clone()
+      this._async._async = this._async
+      this._async._sync = this._sync
+    }
+    return this._async as any
   }
   public get sync(): PathSync {
-    return (this._sync ??= this._async ? this : this.clone()) as unknown as PathSync
+    return this as any
   }
 
   static {

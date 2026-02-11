@@ -3,6 +3,7 @@ import { Path, type PathAsync, type PathSync } from './path.ts'
 import { existsSync } from './basic.ts'
 import { p } from './utils.ts'
 import { expect } from 'lay-sing'
+import { withTempDirSync } from './temp.ts'
 
 {
   type RemoveSuffix<S extends string, Suffix extends string> = S extends `${infer Prefix}${Suffix}` ? Prefix : S
@@ -668,4 +669,16 @@ Deno.test('fs/path: Path static helper methods', async (t) => {
   } finally {
     await Deno.remove(tempDir, { recursive: true })
   }
+})
+
+Deno.test('fs/path: sync/async switch', () => {
+  withTempDirSync(async (tempDir) => {
+    const p = Path.from(tempDir)
+    const ps = p.sync
+
+    ps.list()
+
+    const pa = p.async
+    await pa.list()
+  })
 })
