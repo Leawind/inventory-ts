@@ -1,6 +1,6 @@
 import { expect } from 'lay-sing'
 import type { CharToDigit, Digit, DigitAdd, DigitChar } from './digit.ts'
-import type { JoinString } from '../string/index.ts'
+import type { StringJoin } from '../string/index.ts'
 
 export type IsIntegerString<T extends `${number}`> = T extends `${string}.${string}` ? false : true
 {
@@ -200,7 +200,7 @@ export type IntegerAdd<
 > extends [
   infer A extends readonly Digit[],
   infer B extends readonly Digit[],
-] ? JoinString<AlignedDigitTupleAdd<A, B>> extends `${infer N extends number}` ? N : never
+] ? StringJoin<AlignedDigitTupleAdd<A, B>> extends `${infer N extends number}` ? N : never
   : never
 {
   expect<IntegerAdd<1, 2>>().to.be<3>().pass

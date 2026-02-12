@@ -1,12 +1,12 @@
 import { expect } from 'lay-sing'
 import type {
-  CharUnion,
   IdStart,
   IsChar,
-  JoinString,
-  SplitAsChars,
-  SplitString,
   Stringable,
+  StringAsCharUnion,
+  StringJoin,
+  StringSplit,
+  StringSplitAsChars,
 } from '../../src/type-desc/string/index.ts'
 
 {
@@ -37,8 +37,8 @@ import type {
 }
 
 {
-  expect<CharUnion<'abc'>>().to.be<'a' | 'b' | 'c'>().pass
-  expect<'a'>().to.extend<CharUnion<'abc'>>().pass
+  expect<StringAsCharUnion<'abc'>>().to.be<'a' | 'b' | 'c'>().pass
+  expect<'a'>().to.extend<StringAsCharUnion<'abc'>>().pass
 }
 
 {
@@ -47,30 +47,30 @@ import type {
 }
 
 {
-  expect<SplitAsChars<''>>().to.equal<[]>().pass
-  expect<SplitAsChars<'abc'>>().to.equal<['a', 'b', 'c']>().pass
-  expect<SplitAsChars<'a/b/c'>>().to.equal<['a', '/', 'b', '/', 'c']>().pass
+  expect<StringSplitAsChars<''>>().to.equal<[]>().pass
+  expect<StringSplitAsChars<'abc'>>().to.equal<['a', 'b', 'c']>().pass
+  expect<StringSplitAsChars<'a/b/c'>>().to.equal<['a', '/', 'b', '/', 'c']>().pass
 
-  expect<SplitAsChars<never>>().to.be.never
+  expect<StringSplitAsChars<never>>().to.be.never
 }
 
 {
-  expect<SplitString<'', '/'>>().to.equal<[]>().pass
-  expect<SplitString<'/', '/'>>().to.equal<['', '']>().pass
-  expect<SplitString<'123/', '/'>>().to.equal<['123', '']>().pass
-  expect<SplitString<'/123', '/'>>().to.equal<['', '123']>().pass
-  expect<SplitString<'123/456/', '/'>>().to.equal<['123', '456', '']>().pass
-  expect<SplitString<'src/main/index.ts', '/'>>().to.equal<['src', 'main', 'index.ts']>().pass
+  expect<StringSplit<'', '/'>>().to.equal<[]>().pass
+  expect<StringSplit<'/', '/'>>().to.equal<['', '']>().pass
+  expect<StringSplit<'123/', '/'>>().to.equal<['123', '']>().pass
+  expect<StringSplit<'/123', '/'>>().to.equal<['', '123']>().pass
+  expect<StringSplit<'123/456/', '/'>>().to.equal<['123', '456', '']>().pass
+  expect<StringSplit<'src/main/index.ts', '/'>>().to.equal<['src', 'main', 'index.ts']>().pass
 
-  expect<SplitString<'abc', ''>>().to.equal<['a', 'b', 'c']>().pass
-  expect<SplitString<'', ''>>().to.equal<[]>().pass
-  expect<SplitString<'a', ''>>().to.equal<['a']>().pass
+  expect<StringSplit<'abc', ''>>().to.equal<['a', 'b', 'c']>().pass
+  expect<StringSplit<'', ''>>().to.equal<[]>().pass
+  expect<StringSplit<'a', ''>>().to.equal<['a']>().pass
 }
 
 {
-  expect<JoinString<[], '/'>>().to.equal<''>().pass
-  expect<JoinString<['1', '2', '3'], ', '>>().to.equal<'1, 2, 3'>().pass
-  expect<JoinString<['a'], '/'>>().to.equal<'a'>().pass
-  expect<JoinString<['a', 'b'], '/'>>().to.equal<'a/b'>().pass
-  expect<JoinString<['src', 'main', 'index.ts'], '/'>>().to.equal<'src/main/index.ts'>().pass
+  expect<StringJoin<[], '/'>>().to.equal<''>().pass
+  expect<StringJoin<['1', '2', '3'], ', '>>().to.equal<'1, 2, 3'>().pass
+  expect<StringJoin<['a'], '/'>>().to.equal<'a'>().pass
+  expect<StringJoin<['a', 'b'], '/'>>().to.equal<'a/b'>().pass
+  expect<StringJoin<['src', 'main', 'index.ts'], '/'>>().to.equal<'src/main/index.ts'>().pass
 }

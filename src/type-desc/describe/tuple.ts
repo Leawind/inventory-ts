@@ -1,6 +1,6 @@
 import { expect } from 'lay-sing'
 import type { DescribeType } from './index.ts'
-import type { JoinString } from '../string/index.ts'
+import type { StringJoin } from '../string/index.ts'
 
 type IsTuple<T extends readonly any[]> = number extends T['length'] ? false : true
 
@@ -57,7 +57,7 @@ type MapElements<T extends readonly unknown[]> = WritableTuple<T> extends [infer
 
 type DescribeTuple<
   T extends readonly unknown[],
-> = `[${JoinString<MapElements<T>, ', '>}]`
+> = `[${StringJoin<MapElements<T>, ', '>}]`
 {
   expect<DescribeTuple<[1, 2]>>().to.be<'[1, 2]'>().pass
   expect<DescribeTuple<readonly [1, 2]>>().to.be<'[1, 2]'>().pass

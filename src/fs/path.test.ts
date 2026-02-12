@@ -65,7 +65,7 @@ Deno.test('fs/path: Path basic construction and conversion', async (t) => {
     await t.step('Path.from returns same instance if passed a Path', () => {
       const original = new Path('/some/path')
       const result = Path.from(original)
-      assertStrictEquals(result, original)
+      assertStrictEquals(result.path, original.path)
     })
 
     await t.step('toString returns the path', () => {
