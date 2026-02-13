@@ -1,3 +1,5 @@
+import type { SwitchExtends } from 'lay-sing/utils'
+
 export type IsChar<T extends string> = T extends `${string}${infer Rest}` ? Rest extends '' ? true
   : false
   : false
@@ -32,3 +34,23 @@ export type StringJoin<
   : Tuple extends [infer First extends Stringable, ...infer Rest extends Stringable[]]
     ? `${First}${Sep}${StringJoin<Rest, Sep>}`
   : never
+
+export type StringReplaceChar<
+  S extends string,
+  Char extends string,
+  To extends string,
+> = S extends `${infer C}${infer Rest}`
+  ? (C extends Char ? `${To}${StringReplaceChar<Rest, Char, To>}` : `${C}${StringReplaceChar<Rest, Char, To>}`)
+  : ''
+
+export type StringTableReplace<
+  S extends string,
+  Table extends readonly [Char: string, To: string][] = [],
+> = S extends `${infer C}${infer Rest}` ? `${SwitchExtends<C, Table, C>}${StringTableReplace<Rest, Table>}` : ''
+
+export type StringMappingReplace<
+  S extends string,
+  Map extends Record<string, string> = {},
+> = S extends `${infer C}${infer Rest}`
+  ? (C extends keyof Map ? `${Map[C]}${StringMappingReplace<Rest, Map>}` : `${C}${StringMappingReplace<Rest, Map>}`)
+  : ''
