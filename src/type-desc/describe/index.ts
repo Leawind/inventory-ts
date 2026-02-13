@@ -1,5 +1,6 @@
 import type { Case, SwitchExact } from 'lay-sing/utils'
 import type { DescribeArrayOrTuple } from './tuple.ts'
+import type { DescribeString } from './string.ts'
 
 /**
  * Non-distributive
@@ -27,7 +28,7 @@ export type DescribeType<T> = SwitchExact<
   ],
   T extends number ? `${T}`
     : T extends readonly any[] ? DescribeArrayOrTuple<T>
-    : T extends string ? `'${T}'`
+    : T extends string ? DescribeString<T>
     : T extends object ? '{}'
     : 'todo'
 >

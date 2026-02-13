@@ -5,6 +5,8 @@ expect<DescribeType<1.2>>().to.be<'1.2'>().pass
 expect<DescribeType<123>>().to.be<'123'>().pass
 expect<DescribeType<false>>().to.be<'false'>().pass
 expect<DescribeType<'a'>>().to.be<"'a'">().pass
+expect<DescribeType<'\n'>>().to.be<"'\\n'">().pass
+expect<DescribeType<'\\'>>().to.be<"'\\\\'">().pass
 
 expect<DescribeType<boolean>>().to.be<'boolean'>().pass
 expect<DescribeType<true | false>>().to.be<'boolean'>().pass
