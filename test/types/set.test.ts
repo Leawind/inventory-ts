@@ -4,6 +4,7 @@ import type { IntersectionOf, UnionOf } from '../../src/types/index.ts'
 type A = { a: string; b: number }
 type B = { a: number; b: number; c: symbol }
 type C = { b: number; c: boolean }
+
 {
   expect<IntersectionOf<[]>>().to.be.unknown
   expect<IntersectionOf<[A]>>().to.be<A>().pass

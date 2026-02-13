@@ -3,4 +3,5 @@ export * from './alias.ts'
 export * from './logic/index.ts'
 export * from './non-distributive.ts'
 export * from './object.ts'
+export * from './union.ts'
 // <<<<<<<<<<<<<<<<   Index end
