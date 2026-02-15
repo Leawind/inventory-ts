@@ -152,9 +152,14 @@ Deno.test('fs/path: Path properties and methods', async (t) => {
     })
 
     await t.step('join combines paths', () => {
-      const basePath = new Path('/some/path')
-      const joined = basePath.join('sub', 'folder', 'file.txt')
-      assertEquals(p`${joined}`, p`/some/path/sub/folder/file.txt`)
+      assertEquals(
+        Path.from('/some/path').join('sub', 'folder', 'file.txt').path,
+        p`/some/path/sub/folder/file.txt`,
+      )
+      assertEquals(
+        Path.from('/some/path').join`sub/folder/file.txt`.path,
+        p`/some/path/sub/folder/file.txt`,
+      )
     })
   } finally {
     await Deno.remove(tempDir, { recursive: true })

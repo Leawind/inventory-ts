@@ -2,6 +2,7 @@ import * as std_path from '@std/path'
 import type { Exact } from 'lay-sing/utils'
 import * as fs_basic from './basic.ts'
 import * as fs_operate from './operate.ts'
+import { P, p } from './utils.ts'
 
 export type PathLike = string | Path | PathSync | PathAsync
 
@@ -284,8 +285,20 @@ export class Path {
    * const joinedPath = path.join("file.txt"); // "/path/to/file.txt"
    * ```
    */
-  public join(...paths: string[]): Path {
-    return new Path(std_path.join(this.path, ...paths))
+  public join(...paths: string[]): Path
+  public join(strs: TemplateStringsArray, ...embed: unknown[]): Path
+  public join(
+    ...args:
+      | [...paths: string[]]
+      | [strs: TemplateStringsArray, ...embed: unknown[]]
+  ): Path {
+    if (Array.isArray(args[0])) {
+      const [strs, ...embed] = args as [TemplateStringsArray, ...unknown[]]
+      return P`${this.path}/${p(strs, ...embed)}`
+    } else {
+      const paths = args as string[]
+      return new Path(std_path.join(this.path, ...paths))
+    }
   }
 
   private _type(stat: Deno.FileInfo): PathType {
