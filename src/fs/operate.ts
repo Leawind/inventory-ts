@@ -137,3 +137,18 @@ export async function copyDirStructure(src: string, dest: string): Promise<void>
     await mkdir(destPath)
   }
 }
+
+export type DirectoryStructure = {
+  [key: string]: DirectoryStructure | string
+}
+export function makeDirectoryStructure(directory: string, structure: DirectoryStructure): void {
+  for (const key in structure) {
+    const item = structure[key]
+    if (typeof item === 'string') {
+      Deno.writeFileSync(std_path.join(directory, key), new TextEncoder().encode(item))
+    } else {
+      mkdirSync(std_path.join(directory, key))
+      makeDirectoryStructure(std_path.join(directory, key), item)
+    }
+  }
+}
