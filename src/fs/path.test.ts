@@ -132,6 +132,15 @@ Deno.test('fs/path: Path properties and methods', async (t) => {
       assert(relPath2.isRelative)
     })
 
+    await t.step('isAncestorOf method checks if path is ancestor of given path', () => {
+      const basePath = new Path('/path/to')
+      const childPath = new Path('/path/to/file.txt')
+      const unrelatedPath = new Path('/path/elsewhere')
+
+      assert(basePath.isAncestorOf(childPath))
+      assert(!basePath.isAncestorOf(unrelatedPath))
+    })
+
     await t.step('absolute method converts to absolute path', () => {
       const relPath = new Path('./some/relative/path')
       const absPath = relPath.absolute()

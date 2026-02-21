@@ -227,6 +227,23 @@ export class Path {
   }
 
   /**
+   * Checks if the path is an ancestor of the given path.
+   *
+   * @param path The path to check against
+   * @returns True if the path is an ancestor of the given path, false otherwise
+   *
+   * @example
+   * ```ts
+   * const basePath = new Path("/path/to");
+   * const childPath = new Path("/path/to/file.txt");
+   * console.log(basePath.isAncestorOf(childPath)); // true
+   * ```
+   */
+  public isAncestorOf(path: PathLike): boolean {
+    return Path.from(path).absolute().path.startsWith(this.absolute().path)
+  }
+
+  /**
    * Converts the path to an absolute path.
    *
    * @returns A new Path instance with the absolute path
