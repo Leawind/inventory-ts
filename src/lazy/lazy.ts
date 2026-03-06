@@ -12,6 +12,10 @@ export class Lazy<T> implements ILazy<T> {
     private readonly getter: () => T,
   ) {}
 
+  public set(value: T) {
+    this.value = value
+  }
+
   public get(): T {
     if (this.value === NULL) {
       this.value = this.getter()
@@ -41,6 +45,10 @@ export class LazyAsync<T> {
   public constructor(
     private readonly getter: () => T | Promise<T>,
   ) {}
+
+  public set(value: T) {
+    this.value = value
+  }
 
   public async get(): Promise<T> {
     if (this.value === NULL) {
