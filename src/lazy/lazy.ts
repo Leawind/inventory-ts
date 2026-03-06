@@ -12,7 +12,7 @@ export class Lazy<T> implements ILazy<T> {
     private readonly getter: () => T,
   ) {}
 
-  public set(value: T) {
+  public set(value: T): void {
     this.value = value
   }
 
@@ -23,12 +23,16 @@ export class Lazy<T> implements ILazy<T> {
     return this.value
   }
 
-  public clear() {
+  public clear(): void {
     this.value = NULL
   }
 
   public isComputed(): boolean {
     return this.value !== NULL
+  }
+
+  public toMethod(): () => T {
+    return () => this.get()
   }
 
   public static of<T>(getter: () => T): Lazy<T> {
@@ -63,5 +67,9 @@ export class LazyAsync<T> {
 
   public isComputed(): boolean {
     return this.value !== NULL
+  }
+
+  public toMethod(): () => Promise<T> {
+    return () => this.get()
   }
 }
