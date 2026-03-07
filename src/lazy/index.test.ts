@@ -104,10 +104,24 @@ Deno.test('Lazy', () => {
   const lazy = Lazy.of(() => 'lazy_value')
   assertStrictEquals(lazy.get(), 'lazy_value')
   assert(lazy.isComputed())
+
+  lazy.clear()
+  assert(!lazy.isComputed())
+
+  const method = lazy.toMethod()
+  assertStrictEquals(method(), 'lazy_value')
 })
 
 Deno.test('LazyAsync', async () => {
   const lazy = Lazy.ofAsync(() => Promise.resolve('lazy_value'))
   assertStrictEquals(await lazy.get(), 'lazy_value')
   assert(lazy.isComputed())
+})
+
+Deno.test('toMethod', () => {
+  class A {
+    getName = Lazy.of(() => 'A').toMethod()
+  }
+  const a = new A()
+  assertStrictEquals(a.getName(), 'A')
 })
