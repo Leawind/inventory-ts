@@ -68,7 +68,8 @@ export async function* walkFile(
   depth: number = Infinity,
 ): AsyncIterable<string> {
   if (filter instanceof RegExp) {
-    filter = (path) => (filter as RegExp).test(path)
+    const rgx = filter
+    filter = (path) => rgx.test(path)
   }
 
   for await (const { path, files } of walk(root, depth)) {
