@@ -152,3 +152,19 @@ export function makeDirectoryStructure(directory: string, structure: DirectorySt
     }
   }
 }
+
+export async function link(src: string, dest: string): Promise<void> {
+  await Deno.link(src, dest)
+}
+
+export function linkSync(src: string, dest: string): void {
+  Deno.linkSync(src, dest)
+}
+
+export async function symlink(src: string, dest: string): Promise<void> {
+  await Deno.symlink(src, dest)
+}
+
+export function symlinkSync(src: string, dest: string): void {
+  Deno.symlinkSync(src, dest)
+}
