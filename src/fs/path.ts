@@ -1,10 +1,9 @@
 import * as std_path from '@std/path'
-import type { Exact } from 'lay-sing/utils'
 import * as fs_basic from './basic.ts'
 import * as fs_operate from './operate.ts'
 import { P, p } from './utils.ts'
 
-export type PathLike = string | Path | PathSync | PathAsync
+export type PathLike = string | Path
 
 export type PathType = 'void' | 'file' | 'dir' | 'symlink'
 
@@ -338,7 +337,7 @@ export class Path {
     }
   }
 
-  public async typeAsync(): Promise<PathType> {
+  public async type(): Promise<PathType> {
     try {
       return this._type(await Deno.lstat(this.path))
     } catch {
@@ -360,7 +359,7 @@ export class Path {
    *
    * @returns A promise that resolves to true if the path exists, false otherwise
    */
-  public existsAsync(): Promise<boolean> {
+  public exists(): Promise<boolean> {
     return fs_basic.exists(this.path)
   }
 
@@ -378,7 +377,7 @@ export class Path {
    *
    * @returns A promise that resolves to true if the path is a file, false otherwise
    */
-  public isFileAsync(): Promise<boolean> {
+  public isFile(): Promise<boolean> {
     return fs_basic.isFile(this.path)
   }
 
@@ -396,7 +395,7 @@ export class Path {
    *
    * @returns A promise that resolves to true if the path is a directory, false otherwise
    */
-  public isDirectoryAsync(): Promise<boolean> {
+  public isDirectory(): Promise<boolean> {
     return fs_basic.isDirectory(this.path)
   }
 
@@ -414,7 +413,7 @@ export class Path {
    *
    * @returns A promise that resolves to true if the path is a symbolic link, false otherwise
    */
-  public isSymlinkAsync(): Promise<boolean> {
+  public isSymlink(): Promise<boolean> {
     return fs_basic.isSymlink(this.path)
   }
 
@@ -432,7 +431,7 @@ export class Path {
    *
    * @returns A promise that resolves to FileInfo for the path
    */
-  public lstatAsync(): Promise<Deno.FileInfo> {
+  public lstat(): Promise<Deno.FileInfo> {
     return fs_basic.lstat(this.path)
   }
 
@@ -450,7 +449,7 @@ export class Path {
    *
    * @returns A promise that resolves to FileInfo for the path
    */
-  public statAsync(): Promise<Deno.FileInfo> {
+  public stat(): Promise<Deno.FileInfo> {
     return fs_basic.stat(this.path)
   }
 
@@ -464,12 +463,12 @@ export class Path {
    * @param callbacks An object containing callback functions for different path types
    * @returns The return value of the executed callback, or undefined if no callback was executed
    */
-  public async matchAsync<R>(callbacks: {
+  public async match<R>(callbacks: {
     file?(path: Path): Promise<R> | R
     dir?(path: Path): Promise<R> | R
     symlink?(path: Path): Promise<R> | R
   }): Promise<R | undefined> {
-    const type = await this.typeAsync()
+    const type = await this.type()
     switch (type) {
       case 'file':
         return callbacks.file && callbacks.file(this)
@@ -519,7 +518,7 @@ export class Path {
    * @param options Directory creation options
    * @returns A promise that resolves to a Path instance representing the created directory
    */
-  public async mkdirAsync(options?: { recursive?: boolean }): Promise<Path> {
+  public async mkdir(options?: { recursive?: boolean }): Promise<Path> {
     await Deno.mkdir(this.path, options)
     return this
   }
@@ -553,7 +552,7 @@ export class Path {
    * await path.touch(); // Creates or updates the file
    * ```
    */
-  public async touchAsync(): Promise<this> {
+  public async touch(): Promise<this> {
     await fs_operate.touch(this.path)
     return this
   }
@@ -580,7 +579,7 @@ export class Path {
    * @param options Write options
    * @returns A promise that resolves when the write is complete
    */
-  public async writeAsync(data: Uint8Array | string, options?: Deno.WriteFileOptions): Promise<void> {
+  public async write(data: Uint8Array | string, options?: Deno.WriteFileOptions): Promise<void> {
     await fs_operate.makeParentDir(this.path)
     if (typeof data === 'string') {
       await Deno.writeTextFile(this.path, data, options)
@@ -606,8 +605,18 @@ export class Path {
    * @param target The target path to link from
    * @returns A promise that resolves to a Path instance representing the created link (this path)
    */
-  public async linkToAsync(target: PathLike): Promise<Path> {
+  public async linkTo(target: PathLike): Promise<Path> {
     await Deno.link(Path.str(target), this.path)
+    return new Path(this.path)
+  }
+
+  public symlinkToSync(target: PathLike): Path {
+    Deno.symlinkSync(Path.str(target), this.path)
+    return new Path(this.path)
+  }
+
+  public async symlinkTo(target: PathLike): Promise<Path> {
+    await Deno.symlink(Path.str(target), this.path)
     return new Path(this.path)
   }
 
@@ -626,7 +635,7 @@ export class Path {
    * @param options Removal options
    * @returns A promise that resolves when the removal is complete
    */
-  public async removeAsync(options?: { recursive?: boolean }): Promise<void> {
+  public async remove(options?: { recursive?: boolean }): Promise<void> {
     await Deno.remove(this.path, options)
   }
 
@@ -636,7 +645,7 @@ export class Path {
    * @param dest The destination path to move to
    * @returns A promise that resolves to a Path instance
    */
-  public async moveToAsync(dest: PathLike): Promise<Path> {
+  public async moveTo(dest: PathLike): Promise<Path> {
     const destPath = Path.from(dest)
     await Deno.rename(this.path, destPath.path)
     return destPath
@@ -668,7 +677,7 @@ export class Path {
    *
    * @returns A promise that resolves to the file contents as a Uint8Array
    */
-  public readAsync(): Promise<Uint8Array> {
+  public read(): Promise<Uint8Array> {
     return Deno.readFile(this.path)
   }
 
@@ -686,7 +695,7 @@ export class Path {
    *
    * @returns A promise that resolves to the file contents as a string
    */
-  public readTextAsync(): Promise<string> {
+  public readText(): Promise<string> {
     return Deno.readTextFile(this.path)
   }
 
@@ -708,7 +717,7 @@ export class Path {
    *
    * @returns A promise that resolves to an array of Path instances representing the directory entries
    */
-  public async listAsync(): Promise<Path[]> {
+  public async list(): Promise<Path[]> {
     const entries: Path[] = []
     for await (const entry of Deno.readDir(this.path)) {
       entries.push(new Path(std_path.join(this.path, entry.name)))
@@ -730,80 +739,7 @@ export class Path {
    *
    * @returns A promise that resolves to a Path instance representing the target of the symlink
    */
-  public async targetAsync(): Promise<Path> {
+  public async target(): Promise<Path> {
     return new Path(await Deno.readLink(this.path))
   }
-
-  private _sync: Path = this
-  private _async: Path | null = null
-
-  public get async(): PathAsync {
-    if (!this._async) {
-      this._async = this.clone()
-      this._async._async = this._async
-      this._async._sync = this._sync
-    }
-    return this._async as any
-  }
-  public get sync(): PathSync {
-    return this as any
-  }
-
-  static {
-    for (const keySync of Reflect.ownKeys(Path.prototype)) {
-      if (typeof keySync === 'string') {
-        const m = /^(.+)Sync$/.exec(keySync)
-        if (m) {
-          const key = m[1]
-          const keyAsync = key + 'Async'
-          if (!Reflect.has(Path.prototype, keyAsync)) {
-            throw new Error(`Unreachable: ${keyAsync} is not a method of Path`)
-          }
-          Reflect.set(Path.prototype, key, function (this: any, ...args: any[]) {
-            switch (this) {
-              case this._sync:
-                return this[keySync](...args)
-              case this._async:
-                return this[keyAsync](...args)
-              default:
-                throw new Error('Invalid path instance')
-            }
-          })
-        }
-      }
-    }
-  }
 }
-
-type Replace<T, Old, New> = T extends any ? (
-    Exact<T, Old> extends true ? New
-      : T extends Promise<infer U> ? Promise<Replace<U, Old, New>>
-      : T extends Map<infer K, infer V> ? Map<Replace<K, Old, New>, Replace<V, Old, New>>
-      : T extends Set<infer U> ? Set<Replace<U, Old, New>>
-      : T extends (...args: infer P) => infer R ? (...args: P) => Replace<R, Old, New>
-      : T extends object ? { [K in keyof T]: Replace<T[K], Old, New> }
-      : T
-  )
-  : never
-
-/**
- * Help: search `\): .*Path`
- */
-type Filter<T, N extends PathSync | PathAsync> = Replace<T, Path, N>
-
-type KeysSync = { [K in keyof Path]: K extends `${string}Sync` ? K : never }[keyof Path]
-type KeysAsync = { [K in keyof Path]: K extends `${string}Async` ? K : never }[keyof Path]
-
-type KeysNaked = {
-  [k in keyof Path]: k extends `${infer key extends string}Sync` ? key : never
-}[keyof Path]
-
-type KeysSimple = Exclude<keyof Path, KeysSync | KeysAsync>
-
-export type PathSync =
-  & { [K in KeysSimple]: Filter<Path[K], PathSync> }
-  & { [K in KeysNaked]: Filter<Path[`${K}Sync`], PathSync> }
-
-export type PathAsync =
-  & { [K in KeysSimple]: Filter<Path[K], PathAsync> }
-  & { [K in KeysNaked]: Filter<Path[`${K}Async`], PathAsync> }
