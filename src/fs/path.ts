@@ -301,19 +301,19 @@ export class Path {
    * const joinedPath = path.join("file.txt"); // "/path/to/file.txt"
    * ```
    */
-  public join(...paths: string[]): Path
+  public join(...paths: PathLike[]): Path
   public join(strs: TemplateStringsArray, ...embed: unknown[]): Path
   public join(
     ...args:
-      | [...paths: string[]]
+      | [...paths: PathLike[]]
       | [strs: TemplateStringsArray, ...embed: unknown[]]
   ): Path {
     if (Array.isArray(args[0])) {
       const [strs, ...embed] = args as [TemplateStringsArray, ...unknown[]]
       return P`${this.path}/${p(strs, ...embed)}`
     } else {
-      const paths = args as string[]
-      return new Path(std_path.join(this.path, ...paths))
+      const paths = args as PathLike[]
+      return new Path(std_path.join(this.path, ...paths.map(Path.str)))
     }
   }
 

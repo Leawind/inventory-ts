@@ -1,11 +1,13 @@
+import { Path, type PathLike } from './path.ts'
+
 /**
  * Synchronously check if a path is a file
  * @param path - The path to check
  * @returns true if the path exists and is a file, false otherwise
  */
-export function isFileSync(path: string): boolean {
+export function isFileSync(path: PathLike): boolean {
   try {
-    return Deno.statSync(path).isFile
+    return Deno.statSync(Path.str(path)).isFile
   } catch {
     return false
   }
@@ -16,9 +18,9 @@ export function isFileSync(path: string): boolean {
  * @param path - The path to check
  * @returns true if the path exists and is a file, false otherwise
  */
-export async function isFile(path: string): Promise<boolean> {
+export async function isFile(path: PathLike): Promise<boolean> {
   try {
-    return (await Deno.stat(path)).isFile
+    return (await Deno.stat(Path.str(path))).isFile
   } catch {
     return false
   }
@@ -29,9 +31,9 @@ export async function isFile(path: string): Promise<boolean> {
  * @param path - The path to check
  * @returns true if the path exists and is a directory, false otherwise
  */
-export function isDirectorySync(path: string): boolean {
+export function isDirectorySync(path: PathLike): boolean {
   try {
-    return Deno.statSync(path).isDirectory
+    return Deno.statSync(Path.str(path)).isDirectory
   } catch {
     return false
   }
@@ -42,9 +44,9 @@ export function isDirectorySync(path: string): boolean {
  * @param path - The path to check
  * @returns true if the path exists and is a directory, false otherwise
  */
-export async function isDirectory(path: string): Promise<boolean> {
+export async function isDirectory(path: PathLike): Promise<boolean> {
   try {
-    return (await Deno.stat(path)).isDirectory
+    return (await Deno.stat(Path.str(path))).isDirectory
   } catch {
     return false
   }
@@ -55,9 +57,9 @@ export async function isDirectory(path: string): Promise<boolean> {
  * @param path - The path to check
  * @returns true if the path exists and is a symbolic link, false otherwise
  */
-export function isSymlinkSync(path: string): boolean {
+export function isSymlinkSync(path: PathLike): boolean {
   try {
-    return Deno.lstatSync(path).isSymlink
+    return Deno.lstatSync(Path.str(path)).isSymlink
   } catch {
     return false
   }
@@ -68,9 +70,9 @@ export function isSymlinkSync(path: string): boolean {
  * @param path - The path to check
  * @returns true if the path exists and is a symbolic link, false otherwise
  */
-export async function isSymlink(path: string): Promise<boolean> {
+export async function isSymlink(path: PathLike): Promise<boolean> {
   try {
-    return (await Deno.lstat(path)).isSymlink
+    return (await Deno.lstat(Path.str(path))).isSymlink
   } catch {
     return false
   }
@@ -81,9 +83,9 @@ export async function isSymlink(path: string): Promise<boolean> {
  * @param path - The path to check
  * @returns true if the path exists, false otherwise
  */
-export function existsSync(path: string): boolean {
+export function existsSync(path: PathLike): boolean {
   try {
-    Deno.lstatSync(path)
+    Deno.lstatSync(Path.str(path))
     return true
   } catch {
     return false
@@ -95,21 +97,21 @@ export function existsSync(path: string): boolean {
  * @param path - The path to check
  * @returns true if the path exists, false otherwise
  */
-export async function exists(path: string): Promise<boolean> {
+export async function exists(path: PathLike): Promise<boolean> {
   try {
-    await Deno.lstat(path)
+    await Deno.lstat(Path.str(path))
     return true
   } catch {
     return false
   }
 }
 
-export function lstatSync(path: string): Deno.FileInfo {
-  return Deno.lstatSync(path)
+export function lstatSync(path: PathLike): Deno.FileInfo {
+  return Deno.lstatSync(Path.str(path))
 }
 
-export function lstat(path: string): Promise<Deno.FileInfo> {
-  return Deno.lstat(path)
+export function lstat(path: PathLike): Promise<Deno.FileInfo> {
+  return Deno.lstat(Path.str(path))
 }
 
 /**
@@ -117,8 +119,8 @@ export function lstat(path: string): Promise<Deno.FileInfo> {
  * @param path - The path to get the info of
  * @returns The file info
  */
-export function statSync(path: string): Deno.FileInfo {
-  return Deno.statSync(path)
+export function statSync(path: PathLike): Deno.FileInfo {
+  return Deno.statSync(Path.str(path))
 }
 
 /**
@@ -126,6 +128,6 @@ export function statSync(path: string): Deno.FileInfo {
  * @param path - The path to get the info of
  * @returns The file info
  */
-export function stat(path: string): Promise<Deno.FileInfo> {
-  return Deno.stat(path)
+export function stat(path: PathLike): Promise<Deno.FileInfo> {
+  return Deno.stat(Path.str(path))
 }
