@@ -1,7 +1,8 @@
 import * as std_path from '@std/path'
-import { walk } from './walk.ts'
+import { walk, walkFileSync } from './walk.ts'
 import { exists, existsSync } from './basic.ts'
 import { Path, type PathLike } from './path.ts'
+import { isFile, walkFile } from '@leawind/inventory/fs'
 
 /**
  * Synchronously create a directory recursively
@@ -123,6 +124,45 @@ export function copyFileSync(src: PathLike, dest: PathLike): void {
 }
 
 /**
+ * Copy a file or directory recursively
+ * @param src - The source path
+ * @param dest - The destination path
+ */
+export async function copy(srcStr: PathLike, destStr: PathLike): Promise<void> {
+  const src = Path.from(srcStr)
+  const dest = Path.from(destStr)
+
+  if (await isFile(src)) {
+    return await copyFile(src, dest)
+  }
+
+  for await (const item of walkFile(src.str)) {
+    const from = Path.from(item)
+    const relative = from.relative(src)
+    const to = dest.join(relative)
+
+    await copyFile(from, to)
+  }
+}
+
+export function copySync(srcStr: PathLike, destStr: PathLike): void {
+  const src = Path.from(srcStr)
+  const dest = Path.from(destStr)
+
+  if (Deno.statSync(src.str).isFile) {
+    return copyFileSync(src, dest)
+  }
+
+  for (const item of walkFileSync(src.str)) {
+    const from = Path.from(item)
+    const relative = from.relative(src)
+    const to = dest.join(relative)
+
+    copyFileSync(from, to)
+  }
+}
+
+/**
  * Copy the structure of a directory
  * @param src - The source directory
  * @param dest - The destination directory
@@ -140,7 +180,9 @@ export function makeDirectoryStructure(directory: PathLike, structure: Directory
   for (const key in structure) {
     const item = structure[key]
     if (typeof item === 'string') {
-      Deno.writeFileSync(std_path.join(Path.str(directory), key), new TextEncoder().encode(item))
+      const filePath = std_path.join(Path.str(directory), key)
+      makeParentDirSync(filePath)
+      Deno.writeFileSync(filePath, new TextEncoder().encode(item))
     } else {
       mkdirSync(std_path.join(Path.str(directory), key))
       makeDirectoryStructure(std_path.join(Path.str(directory), key), item)
