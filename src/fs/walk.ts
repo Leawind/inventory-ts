@@ -41,6 +41,33 @@ export async function* walk(dirPath: string, depth: number = Infinity): AsyncIte
   }
 }
 
+export function* walkSync(dirPath: string, depth: number = Infinity): Iterable<WalkItem> {
+  const files: string[] = []
+  const dirs: string[] = []
+  const symlinks: string[] = []
+
+  for (const entry of Deno.readDirSync(dirPath)) {
+    if (entry.isFile) {
+      files.push(entry.name)
+    } else if (entry.isDirectory) {
+      dirs.push(entry.name)
+    } else if (entry.isSymlink) {
+      symlinks.push(entry.name)
+    }
+  }
+
+  yield { path: dirPath, files, dirs, symlinks }
+  if (depth <= 1) {
+    return
+  }
+  for (const subdir of dirs) {
+    const subdirPath = std_path.join(dirPath, subdir)
+    for (const x of walkSync(subdirPath, depth - 1)) {
+      yield x
+    }
+  }
+}
+
 /**
  * Walk through a directory tree and yield file paths that match the filter
  * @param root - The root directory path to walk
@@ -73,6 +100,26 @@ export async function* walkFile(
   }
 
   for await (const { path, files } of walk(root, depth)) {
+    for (const file of files) {
+      const filePath = p`${path}/${file}`
+      if (filter(filePath)) {
+        yield filePath
+      }
+    }
+  }
+}
+
+export function* walkFileSync(
+  root: string,
+  filter: RegExp | ((path: string) => boolean) = () => true,
+  depth: number = Infinity,
+): Iterable<string> {
+  if (filter instanceof RegExp) {
+    const rgx = filter
+    filter = (path) => rgx.test(path)
+  }
+
+  for (const { path, files } of walkSync(root, depth)) {
     for (const file of files) {
       const filePath = p`${path}/${file}`
       if (filter(filePath)) {
