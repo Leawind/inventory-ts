@@ -629,22 +629,31 @@ export class Path {
   }
 
   /**
-   * Removes the path
+   * Removes the path.
    *
-   * @param options Removal options
+   * Throws error if:
+   *
+   * - permission denied
+   * - path is a non-empty directory and the recursive option isn't set to true.
    */
   public removeSync(options?: { recursive?: boolean }): void {
-    Deno.removeSync(this.path, options)
+    if (this.existsSync()) {
+      Deno.removeSync(this.path, options)
+    }
   }
 
   /**
    * Removes the path asynchronously.
    *
-   * @param options Removal options
-   * @returns A promise that resolves when the removal is complete
+   * Throws error if:
+   *
+   * - permission denied
+   * - path is a non-empty directory and the recursive option isn't set to true.
    */
   public async remove(options?: { recursive?: boolean }): Promise<void> {
-    await Deno.remove(this.path, options)
+    if (this.existsSync()) {
+      await Deno.remove(this.path, options)
+    }
   }
 
   /**
