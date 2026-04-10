@@ -1,8 +1,7 @@
 import * as std_path from '@std/path'
-import { walk, walkFileSync } from './walk.ts'
-import { exists, existsSync } from './basic.ts'
+import { walk, walkFile, walkFileSync } from './walk.ts'
+import { exists, existsSync, isFile } from './basic.ts'
 import { Path, type PathLike } from './path.ts'
-import { isFile, walkFile } from '@leawind/inventory/fs'
 
 /**
  * Synchronously create a directory recursively
