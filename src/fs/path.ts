@@ -128,6 +128,7 @@ export class Path {
    * ```typescript
    * import { assertEquals } from '@std/assert'
    *
+   * assertEquals(new Path("/path/to/.git").splitExt(),         [".git", ""])
    * assertEquals(new Path("/path/to/file").splitExt(),         ["file", ""])
    * assertEquals(new Path("/path/to/file.tar").splitExt(),     ["file", ".tar"])
    * assertEquals(new Path("/path/to/file.tar.gz").splitExt(),  ["file.tar", ".gz"])
@@ -143,6 +144,9 @@ export class Path {
     }
     for (let i = name.length - 1; i >= 0; i--) {
       if (name[i] === '.') {
+        if (i === 0) {
+          return [name, '']
+        }
         return [name.slice(0, i), name.slice(i) as `.${string}`]
       }
     }
@@ -158,6 +162,10 @@ export class Path {
    */
   public get nameNoExt(): string {
     return this.splitExt()[0]
+  }
+
+  public get noExt(): string {
+    return this.path.slice(0, this.path.length - this.dotext.length)
   }
 
   /**

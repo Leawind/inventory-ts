@@ -56,7 +56,7 @@ Deno.test('fs/path: Path properties and methods', async (t) => {
       assertEquals(path.dotext, '.txt')
 
       const path2 = new Path('/some/path/.hidden')
-      assertEquals(path2.dotext, '.hidden')
+      assertEquals(path2.dotext, '')
     })
 
     await t.step('ext property returns extension without dot', () => {
@@ -65,6 +65,14 @@ Deno.test('fs/path: Path properties and methods', async (t) => {
 
       const path2 = new Path('/some/path/file.tar.gz')
       assertEquals(path2.ext, 'gz')
+    })
+
+    await t.step('no ext', () => {
+      const path = new Path('/some/path/file.txt')
+      assertEquals(path.noExt, '/some/path/file')
+
+      const path2 = new Path('/some/path/.hidden')
+      assertEquals(path2.noExt, '/some/path/.hidden')
     })
 
     await t.step('isAbsolute property identifies absolute paths', () => {
