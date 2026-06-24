@@ -2,6 +2,7 @@
 export * as algorithm from './algorithm/index.ts'
 export * as baffer from './baffer/index.ts'
 export * as call_stack from './call-stack/index.ts'
+export * as collect_files from './collect-files/index.ts'
 export * as comap from './comap.ts'
 export * as communication from './communication/index.ts'
 export * as csv from './csv/index.ts'

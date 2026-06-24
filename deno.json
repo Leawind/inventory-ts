@@ -12,6 +12,7 @@
     "./algorithm": "./src/algorithm/index.ts",
     "./baffer": "./src/baffer/index.ts",
     "./call-stack": "./src/call-stack/index.ts",
+    "./collect-files": "./src/collect-files/index.ts",
     "./comap": "./src/comap.ts",
     "./communication": "./src/communication/index.ts",
     "./csv": "./src/csv/index.ts",
@@ -76,7 +77,9 @@
     "@std/assert": "jsr:@std/assert@^1.0.18",
     "@std/fs": "jsr:@std/fs@^1.0.22",
     "@std/path": "jsr:@std/path@^1.1.4",
-    "lay-sing": "npm:lay-sing@^0.4.2"
+    "commander": "npm:commander@^15.0.0",
+    "lay-sing": "npm:lay-sing@^0.4.2",
+    "minimatch": "npm:minimatch@^10.2.5"
   },
   "lint": {
     "include": [
