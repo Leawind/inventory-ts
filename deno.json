@@ -78,6 +78,7 @@
     "@std/fs": "jsr:@std/fs@^1.0.22",
     "@std/path": "jsr:@std/path@^1.1.4",
     "commander": "npm:commander@^15.0.0",
+    "ignore": "npm:ignore@^7.0.6",
     "lay-sing": "npm:lay-sing@^0.4.2",
     "minimatch": "npm:minimatch@^10.2.5"
   },

@@ -1,5 +1,6 @@
 import { assert, assertArrayIncludes, assertEquals, assertRejects, assertStringIncludes } from '@std/assert'
-import { getGitTrackedFiles } from './git.ts'
+import * as path from '@std/path'
+import { getGitNonIgnoredFiles } from './git.ts'
 import { isBinary } from './binary.ts'
 import { createIgnoreFilter } from './ignore.ts'
 import { type CollectedFile, collectFiles, formatCollected } from './core.ts'
@@ -108,31 +109,29 @@ Deno.test('createIgnoreFilter excludes custom directory and its sub-files', () =
 
 // ============= git.ts =============
 
-Deno.test('getGitTrackedFiles returns array of files from current repo', async () => {
-  const files = await getGitTrackedFiles(Deno.cwd())
-  assert(files.length > 0, 'should have tracked files')
+Deno.test('getGitNonIgnoredFiles returns array of files from current repo', async () => {
+  const files = await getGitNonIgnoredFiles(Deno.cwd())
+  assert(files.length > 0, 'should have files')
   // Use files that are already committed in the repo
   assertArrayIncludes(files, ['src/index.ts'])
   assertArrayIncludes(files, ['src/fs/basic.ts'])
 })
 
-Deno.test('getGitTrackedFiles returns sorted results', async () => {
-  const files = await getGitTrackedFiles(Deno.cwd())
+Deno.test('getGitNonIgnoredFiles returns sorted results', async () => {
+  const files = await getGitNonIgnoredFiles(Deno.cwd())
 
   // Check that files are sorted alphabetically
   const copy = [...files].sort()
   assertEquals(files, copy)
 })
 
-Deno.test('getGitTrackedFiles throws for non-git directory', async () => {
+Deno.test('getGitNonIgnoredFiles works on non-git directory', async () => {
   // Create a temp directory that is NOT a git repo
   const tempDir = await Deno.makeTempDir({ prefix: 'test-non-git-' })
   try {
-    await assertRejects(
-      () => getGitTrackedFiles(tempDir),
-      Error,
-      'git ls-files failed',
-    )
+    await Deno.writeTextFile(path.join(tempDir, 'hello.txt'), 'hi')
+    const files = await getGitNonIgnoredFiles(tempDir)
+    assertArrayIncludes(files, ['hello.txt'])
   } finally {
     await Deno.remove(tempDir, { recursive: true })
   }

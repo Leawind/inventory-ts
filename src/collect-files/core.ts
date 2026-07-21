@@ -1,5 +1,5 @@
 import * as path from '@std/path'
-import { getGitTrackedFiles } from './git.ts'
+import { getGitNonIgnoredFiles } from './git.ts'
 import { isBinary } from './binary.ts'
 import { createIgnoreFilter } from './ignore.ts'
 
@@ -24,7 +24,8 @@ export interface CollectedFile {
 }
 
 /**
- * Collect all Git-tracked files under `sourceDir`, returning their contents.
+ * Collect all files under `sourceDir` that are not excluded by .gitignore,
+ * returning their contents.
  *
  * Files matching `options.ignorePatterns` (or the built-in default list) are
  * skipped. Binary files are skipped unless `options.includeBinary` is true.
@@ -35,7 +36,7 @@ export async function collectFiles(sourceDir: string, options?: CollectOptions):
     throw new Error(`${sourceDir} is not a directory`)
   }
 
-  const tracked = await getGitTrackedFiles(sourceDir)
+  const tracked = await getGitNonIgnoredFiles(sourceDir)
   const isIgnored = createIgnoreFilter(options?.ignorePatterns)
 
   const filtered = tracked.filter((f) => !isIgnored(f))

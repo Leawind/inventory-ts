@@ -27,6 +27,8 @@
     "jsr:@ts-morph/common@0.24": "0.24.0",
     "npm:commander@14": "14.0.3",
     "npm:commander@15": "15.0.0",
+    "npm:ignore@*": "7.0.6",
+    "npm:ignore@^7.0.6": "7.0.6",
     "npm:lay-sing@~0.4.2": "0.4.2",
     "npm:minimatch@*": "10.2.5",
     "npm:minimatch@^10.2.5": "10.2.5"
@@ -160,6 +162,9 @@
     "commander@15.0.0": {
       "integrity": "sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg=="
     },
+    "ignore@7.0.6": {
+      "integrity": "sha512-BAg6QkE8W+TuQLrrw0Ugr7HegXduRuuj8/ti2kSOc+jz1dmx8/WNcjr6XGnq5YpDWxFwwaavqD0+jIUOKelTsw=="
+    },
     "lay-sing@0.4.2": {
       "integrity": "sha512-kEkJosE2aguIdIhfS82UGXBdHm05Egc103FqPIy8t1+iC0ardeK58ZB28DTkuV1FV31oa97RpCWmWaCuMbm/LQ=="
     },
@@ -178,6 +183,7 @@
       "jsr:@std/fs@^1.0.22",
       "jsr:@std/path@^1.1.4",
       "npm:commander@15",
+      "npm:ignore@^7.0.6",
       "npm:lay-sing@~0.4.2",
       "npm:minimatch@^10.2.5"
     ]

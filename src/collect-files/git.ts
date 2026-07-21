@@ -1,21 +1,50 @@
+import * as path from '@std/path'
+import ignore from 'ignore'
+
 /**
- * Get all Git-tracked file paths (relative to repo root) under the given directory.
+ * Get all file paths under the given directory that are not excluded by .gitignore.
+ *
+ * Walks the directory tree, reads .gitignore files at each level, and filters
+ * out matching paths using the `ignore` package (implements .gitignore spec 2.22.1).
  */
-export async function getGitTrackedFiles(dir: string): Promise<string[]> {
-  const command = new Deno.Command('git', {
-    args: ['ls-files', '-z'],
-    cwd: dir,
-    stdout: 'piped',
-    stderr: 'piped',
-  })
+export async function getGitNonIgnoredFiles(dir: string): Promise<string[]> {
+  const results: string[] = []
+  await walk(dir, '', ignore(), results)
+  return results.sort()
+}
 
-  const { code, stdout, stderr } = await command.output()
+async function walk(
+  absoluteDir: string,
+  relParent: string,
+  parentIg: ReturnType<typeof ignore>,
+  results: string[],
+): Promise<void> {
+  // Create a child ignore instance inheriting parent rules
+  const ig = ignore()
+  ig.add(parentIg as any)
 
-  if (code !== 0) {
-    const errorText = new TextDecoder().decode(stderr)
-    throw new Error(`git ls-files failed in "${dir}": ${errorText}`)
+  // Read .gitignore in this directory if it exists
+  try {
+    const content = await Deno.readTextFile(path.join(absoluteDir, '.gitignore'))
+    ig.add(content)
+  } catch {
+    // No .gitignore file
   }
 
-  const output = new TextDecoder().decode(stdout)
-  return output.split('\0').filter((f) => f.length > 0).sort()
+  for await (const entry of Deno.readDir(absoluteDir)) {
+    const rel = relParent ? `${relParent}/${entry.name}` : entry.name
+
+    // Always skip .git directory
+    if (entry.name === '.git') { continue }
+
+    // Use trailing slash for directories to match .gitignore semantics
+    const testPath = entry.isDirectory ? `${rel}/` : rel
+    if (ig.ignores(testPath)) { continue }
+
+    if (entry.isDirectory) {
+      await walk(path.join(absoluteDir, entry.name), rel, ig, results)
+    } else {
+      results.push(rel)
+    }
+  }
 }
