@@ -59,7 +59,7 @@ export class ThrottledAction<T> {
       this.timeoutId = setTimeout(() => {
         this.timeoutId = undefined
         this.waited.resolve(this.executeImmediately())
-      }, this.lastExecutedAt + this.interval - now)
+      }, this.lastExecutedAt + this.interval - now) as any as number
     }
     return this.waited.wait()
   }
